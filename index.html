@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スロット教材</title>
+<title>スロット</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
 <style>
   :root {
@@ -18,15 +18,31 @@
     --btn-reset-active: #2b6aa0;
     --text: #fffdf7;
     --shadow: rgba(0,0,0,0.35);
+    --hist-item: clamp(42px, 8vmin, 62px);
+    --top-safe: 70px;
+    --edge: 16px;
+    --pad-m: clamp(10px, 3vmin, 24px);
+    --gap-m: clamp(12px, 3.5vmin, 36px);
+    --btn-f: clamp(22px, 4.5vmin, 34px);
+    --btn-py: clamp(12px, 3vmin, 26px);
+    --btn-px: clamp(34px, 11vmin, 90px);
+    --slot: clamp(160px, 60vmin, 900px);
+    --rsv: 24px;
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   @media (orientation: landscape) {
-    :root { --slot: clamp(200px, 70vh, 1100px); }
+    :root {
+      --slot: clamp(140px, min(60vh, 74vh - 94px), 1100px);
+      --rsv: 24px;
+    }
   }
   @media (orientation: portrait) {
-    :root { --slot: clamp(200px, 82vw, 1100px); }
+    :root {
+      --slot: clamp(160px, min(82vw, 100vh - 210px - var(--hist-item) - min(24vw, 180px)), 1100px);
+      --rsv: calc(var(--hist-item) + 132px);
+    }
   }
 
   html, body {
@@ -40,16 +56,17 @@
 
   .main-col {
     position: fixed;
-    top: 46%; left: 50%;
+    left: 50%;
+    top: calc(var(--top-safe) + (100vh - var(--top-safe) - var(--rsv)) / 2);
     transform: translate(-50%, -50%);
     display: flex; flex-direction: column;
-    align-items: center; gap: clamp(18px, 3.5vh, 36px);
+    align-items: center; gap: var(--gap-m);
     z-index: 5;
   }
 
   .machine {
     position: relative;
-    padding: clamp(14px, 3vw, 24px);
+    padding: var(--pad-m);
     background: linear-gradient(160deg, var(--frame), var(--frame-dark));
     border-radius: 28px;
     box-shadow: 0 14px 30px var(--shadow), inset 0 2px 6px rgba(255,255,255,0.5);
@@ -57,8 +74,8 @@
 
   .window {
     position: relative;
-    width: var(--slot, clamp(200px, min(60vw, 50vh), 900px));
-    height: var(--slot, clamp(200px, min(60vw, 50vh), 900px));
+    width: var(--slot);
+    height: var(--slot);
     background: var(--window-bg);
     border-radius: 18px;
     overflow: hidden;
@@ -68,7 +85,8 @@
   .cell {
     width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
-    font-size: clamp(80px, min(44vw, 42vh), 640px);
+    font-size: calc(var(--slot) * 0.6);
+    line-height: 1;
   }
   .cell img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
 
@@ -84,9 +102,10 @@
     border: none;
     background: linear-gradient(160deg, var(--btn), var(--btn-active));
     color: #fff;
-    font-size: clamp(24px, 6vw, 34px);
+    font-size: var(--btn-f);
+    line-height: 1.2;
     font-weight: 800; letter-spacing: 0.08em;
-    padding: clamp(18px, 3vh, 26px) clamp(50px, 14vw, 90px);
+    padding: var(--btn-py) var(--btn-px);
     border-radius: 999px; cursor: pointer;
     box-shadow: 0 10px 0 var(--btn-active), 0 14px 24px var(--shadow);
     transition: transform 0.08s, box-shadow 0.08s;
@@ -111,33 +130,39 @@
     background: rgba(255,255,255,0.08);
     border: 1.5px solid rgba(255,255,255,0.18);
     z-index: 8;
+    flex-wrap: nowrap;
   }
   .history:empty { display: none; }
 
-  .history.horizontal {
-    left: 50%; bottom: 16px;
-    transform: translateX(-50%);
-    flex-direction: row; flex-wrap: nowrap;
-    max-width: min(94vw, 900px);
-    overflow-x: auto; overflow-y: hidden;
+  @media (orientation: portrait) {
+    .history {
+      left: 50%; bottom: var(--edge);
+      transform: translateX(-50%);
+      flex-direction: row;
+      max-width: min(94vw, 900px);
+      overflow-x: auto; overflow-y: hidden;
+    }
   }
-  .history.vertical {
-    right: 16px; top: 50%;
-    transform: translateY(-50%);
-    flex-direction: column; flex-wrap: nowrap;
-    max-height: 88vh;
-    overflow-y: auto; overflow-x: hidden;
+  @media (orientation: landscape) {
+    .history {
+      right: var(--edge); top: 50%;
+      transform: translateY(-50%);
+      flex-direction: column;
+      max-height: calc(100vh - 152px);
+      overflow-y: auto; overflow-x: hidden;
+    }
   }
 
   .hist-item {
     position: relative;
     flex: 0 0 auto;
-    width: clamp(46px, 8vw, 62px);
-    height: clamp(46px, 8vw, 62px);
+    width: var(--hist-item);
+    height: var(--hist-item);
     border-radius: 10px;
     background: var(--window-bg);
     display: flex; align-items: center; justify-content: center;
-    font-size: clamp(24px, 4.5vw, 34px);
+    font-size: calc(var(--hist-item) * 0.55);
+    line-height: 1;
     box-shadow: 0 3px 8px rgba(0,0,0,0.25);
   }
   .hist-item img { width: 100%; height: 100%; object-fit: contain; padding: 4px; border-radius: 10px; }
@@ -163,7 +188,8 @@
     background: rgba(255,255,255,0.15); color: var(--text);
     border: 1.5px solid rgba(255,255,255,0.4);
     border-radius: 12px; padding: 10px 16px;
-    font-size: 15px; font-weight: 600; cursor: pointer;
+    font-size: 15px; line-height: 1.2;
+    font-weight: 600; cursor: pointer;
     backdrop-filter: blur(4px);
   }
   .mini-btn:active { background: rgba(255,255,255,0.3); }
@@ -173,15 +199,23 @@
 
   #resultBtn {
     position: fixed;
-    left: 50%; bottom: 16px;
-    transform: translateX(-50%);
     display: none;
     z-index: 9;
     font-size: 17px;
     padding: 12px 24px;
   }
   @media (orientation: portrait) {
-    #resultBtn { bottom: calc(16px + clamp(46px, 8vw, 62px) + 34px); }
+    #resultBtn {
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(var(--edge) + var(--hist-item) + 39px);
+    }
+  }
+  @media (orientation: landscape) {
+    #resultBtn {
+      right: var(--edge);
+      bottom: var(--edge);
+    }
   }
   #resultBtn.show { display: block; }
 
@@ -214,6 +248,7 @@
     border-radius: 16px;
     background: var(--window-bg);
     display: flex; align-items: center; justify-content: center;
+    line-height: 1;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   }
   .modal-item img { width: 100%; height: 100%; object-fit: contain; padding: 8px; border-radius: 16px; }
@@ -280,7 +315,7 @@
     <button class="spin-btn" id="spinBtn">スタート</button>
   </div>
 
-  <div class="history horizontal" id="history"></div>
+  <div class="history" id="history"></div>
 
   <button class="mini-btn" id="resultBtn">結果を見る</button>
 
@@ -448,20 +483,6 @@
     if (!spinning) startSpin();
     else if (!stopping) stopSpin();
   });
-
-  function updateHistoryLayout() {
-    const landscape = window.innerWidth >= window.innerHeight;
-    if (landscape) {
-      historyEl.classList.remove("horizontal");
-      historyEl.classList.add("vertical");
-    } else {
-      historyEl.classList.remove("vertical");
-      historyEl.classList.add("horizontal");
-    }
-  }
-  updateHistoryLayout();
-  window.addEventListener("resize", updateHistoryLayout);
-  window.addEventListener("orientationchange", updateHistoryLayout);
 
   pickBtn.addEventListener("click", () => fileInput.click());
   fileInput.addEventListener("change", (e) => {
