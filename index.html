@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スロット教材</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+<style>
+  :root {
+    --bg: #1b2a4a;
+    --bg2: #24396a;
+    --frame: #f4d35e;
+    --frame-dark: #e0a800;
+    --window-bg: #fffdf7;
+    --btn: #ee6c4d;
+    --btn-active: #c9503a;
+    --btn-reset: #3a86c9;
+    --btn-reset-active: #2b6aa0;
+    --text: #fffdf7;
+    --shadow: rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  @media (orientation: landscape) {
+    :root { --slot: clamp(200px, 70vh, 1100px); }
+  }
+  @media (orientation: portrait) {
+    :root { --slot: clamp(200px, 82vw, 1100px); }
+  }
+
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    background: radial-gradient(circle at 50% 30%, var(--bg2), var(--bg));
+    color: var(--text);
+    overflow: hidden;
+    user-select: none; -webkit-user-select: none;
+  }
+
+  .main-col {
+    position: fixed;
+    top: 46%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column;
+    align-items: center; gap: clamp(18px, 3.5vh, 36px);
+    z-index: 5;
+  }
+
+  .machine {
+    position: relative;
+    padding: clamp(14px, 3vw, 24px);
+    background: linear-gradient(160deg, var(--frame), var(--frame-dark));
+    border-radius: 28px;
+    box-shadow: 0 14px 30px var(--shadow), inset 0 2px 6px rgba(255,255,255,0.5);
+  }
+
+  .window {
+    position: relative;
+    width: var(--slot, clamp(200px, min(60vw, 50vh), 900px));
+    height: var(--slot, clamp(200px, min(60vw, 50vh), 900px));
+    background: var(--window-bg);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 4px rgba(0,0,0,0.15), inset 0 6px 16px rgba(0,0,0,0.2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cell {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(80px, min(44vw, 42vh), 640px);
+  }
+  .cell img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+
+  .window::after {
+    content: ""; position: absolute; inset: 0;
+    border-radius: 18px; pointer-events: none;
+    box-shadow: inset 0 0 0 5px rgba(238,108,77,0);
+    transition: box-shadow 0.3s;
+  }
+  .window.stopped::after { box-shadow: inset 0 0 0 5px rgba(238,108,77,0.85); }
+
+  .spin-btn {
+    border: none;
+    background: linear-gradient(160deg, var(--btn), var(--btn-active));
+    color: #fff;
+    font-size: clamp(24px, 6vw, 34px);
+    font-weight: 800; letter-spacing: 0.08em;
+    padding: clamp(18px, 3vh, 26px) clamp(50px, 14vw, 90px);
+    border-radius: 999px; cursor: pointer;
+    box-shadow: 0 10px 0 var(--btn-active), 0 14px 24px var(--shadow);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .spin-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 4px 0 var(--btn-active), 0 8px 14px var(--shadow);
+  }
+  .spin-btn:focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
+  .spin-btn.reset {
+    background: linear-gradient(160deg, var(--btn-reset), var(--btn-reset-active));
+    box-shadow: 0 10px 0 var(--btn-reset-active), 0 14px 24px var(--shadow);
+  }
+  .spin-btn.reset:active {
+    box-shadow: 0 4px 0 var(--btn-reset-active), 0 8px 14px var(--shadow);
+  }
+
+  .history {
+    position: fixed;
+    display: flex; gap: 10px;
+    padding: 12px; border-radius: 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    z-index: 8;
+  }
+  .history:empty { display: none; }
+
+  .history.horizontal {
+    left: 50%; bottom: 16px;
+    transform: translateX(-50%);
+    flex-direction: row; flex-wrap: nowrap;
+    max-width: min(94vw, 900px);
+    overflow-x: auto; overflow-y: hidden;
+  }
+  .history.vertical {
+    right: 16px; top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column; flex-wrap: nowrap;
+    max-height: 88vh;
+    overflow-y: auto; overflow-x: hidden;
+  }
+
+  .hist-item {
+    position: relative;
+    flex: 0 0 auto;
+    width: clamp(46px, 8vw, 62px);
+    height: clamp(46px, 8vw, 62px);
+    border-radius: 10px;
+    background: var(--window-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(24px, 4.5vw, 34px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  }
+  .hist-item img { width: 100%; height: 100%; object-fit: contain; padding: 4px; border-radius: 10px; }
+  .hist-item .num {
+    position: absolute; top: -8px; left: -8px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--btn); color: #fff;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .controls {
+    position: fixed; top: 14px; right: 14px;
+    display: flex; gap: 10px; align-items: center; z-index: 10;
+    transition: opacity 0.4s ease;
+  }
+  .controls.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .mini-btn {
+    background: rgba(255,255,255,0.15); color: var(--text);
+    border: 1.5px solid rgba(255,255,255,0.4);
+    border-radius: 12px; padding: 10px 16px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+  .mini-btn:active { background: rgba(255,255,255,0.3); }
+  .mini-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+  input[type="file"] { display: none; }
+
+  #resultBtn {
+    position: fixed;
+    left: 50%; bottom: 16px;
+    transform: translateX(-50%);
+    display: none;
+    z-index: 9;
+    font-size: 17px;
+    padding: 12px 24px;
+  }
+  @media (orientation: portrait) {
+    #resultBtn { bottom: calc(16px + clamp(46px, 8vw, 62px) + 34px); }
+  }
+  #resultBtn.show { display: block; }
+
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(10, 18, 35, 0.82);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 50;
+    padding: 30px;
+  }
+  .modal.show { display: flex; }
+  .modal-inner {
+    display: flex; flex-direction: column;
+    align-items: center; gap: clamp(16px, 3vh, 28px);
+    width: 96vw; height: 92vh;
+    justify-content: center;
+  }
+  .modal-grid {
+    display: grid;
+    gap: clamp(14px, 2vw, 30px);
+    justify-content: center;
+    align-content: center;
+    padding: 20px;
+    overflow: hidden;
+  }
+  .modal-item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    background: var(--window-bg);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .modal-item img { width: 100%; height: 100%; object-fit: contain; padding: 8px; border-radius: 16px; }
+  .modal-item .num {
+    position: absolute; top: -10px; left: -10px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--btn); color: #fff;
+    font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+  }
+  #closeBtn { font-size: 17px; padding: 12px 28px; }
+
+  .confirm {
+    position: fixed; inset: 0;
+    background: rgba(10, 18, 35, 0.72);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 60;
+    padding: 24px;
+  }
+  .confirm.show { display: flex; }
+  .confirm-box {
+    background: var(--window-bg);
+    color: #2a2a2a;
+    border-radius: 22px;
+    padding: clamp(24px, 4vw, 38px);
+    text-align: center;
+    max-width: 420px; width: 100%;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.4);
+  }
+  .confirm-box p {
+    margin: 0 0 24px;
+    font-size: clamp(19px, 3vw, 23px);
+    font-weight: 700;
+  }
+  .confirm-btns { display: flex; gap: 14px; justify-content: center; }
+  .confirm-btns button {
+    border: none; cursor: pointer;
+    border-radius: 999px;
+    padding: 14px 30px;
+    font-size: 17px; font-weight: 700;
+    color: #fff;
+  }
+  .confirm-btns button:focus-visible { outline: 3px solid #333; outline-offset: 2px; }
+  #confirmYes { background: linear-gradient(160deg, var(--btn-reset), var(--btn-reset-active)); }
+  #confirmNo { background: #9aa3af; }
+</style>
+</head>
+<body>
+  <div class="controls">
+    <button class="mini-btn" id="pickBtn">写真を選ぶ</button>
+    <button class="mini-btn" id="soundBtn" aria-pressed="true" aria-label="音のオンオフ">🔊</button>
+    <button class="mini-btn" id="fullBtn">全画面</button>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+  </div>
+
+  <div class="main-col">
+    <div class="machine">
+      <div class="window" id="window">
+        <div class="cell" id="cell"></div>
+      </div>
+    </div>
+    <button class="spin-btn" id="spinBtn">スタート</button>
+  </div>
+
+  <div class="history horizontal" id="history"></div>
+
+  <button class="mini-btn" id="resultBtn">結果を見る</button>
+
+  <div class="modal" id="modal">
+    <div class="modal-inner">
+      <div class="modal-grid" id="modalGrid"></div>
+      <button class="mini-btn" id="closeBtn">とじる</button>
+    </div>
+  </div>
+
+  <div class="confirm" id="confirm">
+    <div class="confirm-box">
+      <p>リセットしますか？</p>
+      <div class="confirm-btns">
+        <button id="confirmYes">はい</button>
+        <button id="confirmNo">いいえ</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const defaultFaces = ["🍎","🐶","🐱","🚗","🌸","🌳","⭐","🐟","☂️","🍇"];
+  let items = defaultFaces.map(e => ({ type: "emoji", value: e }));
+
+  const cell = document.getElementById("cell");
+  const windowEl = document.getElementById("window");
+  const spinBtn = document.getElementById("spinBtn");
+  const pickBtn = document.getElementById("pickBtn");
+  const fileInput = document.getElementById("fileInput");
+  const soundBtn = document.getElementById("soundBtn");
+  const historyEl = document.getElementById("history");
+  const resultBtn = document.getElementById("resultBtn");
+  const modal = document.getElementById("modal");
+  const modalGrid = document.getElementById("modalGrid");
+  const closeBtn = document.getElementById("closeBtn");
+  const confirmEl = document.getElementById("confirm");
+  const confirmYes = document.getElementById("confirmYes");
+  const confirmNo = document.getElementById("confirmNo");
+  const controlsEl = document.querySelector(".controls");
+
+  let spinning = false;
+  let stopping = false;
+  let soundOn = true;
+  let finished = false;
+  let used = [];
+  let currentIndex = 0;
+  let spinInterval = null;
+  let tickTimer = null;
+
+  function faceHTML(item) {
+    if (item.type === "emoji") return document.createTextNode(item.value);
+    const img = document.createElement("img");
+    img.src = item.value; img.alt = "";
+    return img;
+  }
+  function showCell(item) {
+    cell.innerHTML = "";
+    cell.appendChild(faceHTML(item));
+  }
+
+  let audioCtx = null;
+  function ensureAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  }
+  function playTick() {
+    if (!soundOn || !audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = "square"; o.frequency.value = 660;
+    g.gain.setValueAtTime(0.07, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.05);
+  }
+  function playStop() {
+    if (!soundOn || !audioCtx) return;
+    const notes = [523, 659, 784];
+    notes.forEach((f, i) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = "triangle"; o.frequency.value = f;
+      const t = audioCtx.currentTime + i * 0.09;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.18, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t); o.stop(t + 0.35);
+    });
+  }
+
+  function addHistory(index) {
+    const box = document.createElement("div");
+    box.className = "hist-item";
+    box.appendChild(faceHTML(items[index]));
+    const num = document.createElement("span");
+    num.className = "num";
+    num.textContent = used.length;
+    box.appendChild(num);
+    historyEl.appendChild(box);
+    historyEl.scrollTo({ left: historyEl.scrollWidth, top: historyEl.scrollHeight, behavior: "smooth" });
+  }
+  function clearHistory() { historyEl.innerHTML = ""; }
+
+  function pickTarget() {
+    let candidates = [];
+    for (let i = 0; i < items.length; i++) if (!used.includes(i)) candidates.push(i);
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  function startSpin() {
+    spinning = true; stopping = false;
+    windowEl.classList.remove("stopped");
+    spinBtn.textContent = "ストップ";
+    spinInterval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % items.length;
+      showCell(items[currentIndex]);
+      playTick();
+    }, 60);
+  }
+  function stopSpin() {
+    stopping = true;
+    spinBtn.textContent = "スタート";
+    clearInterval(spinInterval);
+    const target = pickTarget();
+    let delay = 80;
+    const slowStep = () => {
+      currentIndex = (currentIndex + 1) % items.length;
+      showCell(items[currentIndex]);
+      playTick();
+      delay += 35;
+      if (delay < 380) {
+        tickTimer = setTimeout(slowStep, delay);
+      } else {
+        currentIndex = target;
+        showCell(items[target]);
+        used.push(target);
+        addHistory(target);
+        spinning = false; stopping = false;
+        windowEl.classList.add("stopped");
+        playStop();
+        if (used.length >= items.length) {
+          finished = true;
+          spinBtn.textContent = "リセット";
+          spinBtn.classList.add("reset");
+          resultBtn.classList.add("show");
+        }
+      }
+    };
+    tickTimer = setTimeout(slowStep, delay);
+  }
+  function doReset() {
+    used = []; finished = false;
+    clearHistory();
+    windowEl.classList.remove("stopped");
+    spinBtn.classList.remove("reset");
+    spinBtn.textContent = "スタート";
+    resultBtn.classList.remove("show");
+    cell.innerHTML = "";
+  }
+
+  spinBtn.addEventListener("click", () => {
+    ensureAudio();
+    if (finished) { confirmEl.classList.add("show"); return; }
+    if (!spinning) startSpin();
+    else if (!stopping) stopSpin();
+  });
+
+  function updateHistoryLayout() {
+    const landscape = window.innerWidth >= window.innerHeight;
+    if (landscape) {
+      historyEl.classList.remove("horizontal");
+      historyEl.classList.add("vertical");
+    } else {
+      historyEl.classList.remove("vertical");
+      historyEl.classList.add("horizontal");
+    }
+  }
+  updateHistoryLayout();
+  window.addEventListener("resize", updateHistoryLayout);
+  window.addEventListener("orientationchange", updateHistoryLayout);
+
+  pickBtn.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", (e) => {
+    const files = Array.from(e.target.files).slice(0, 30);
+    if (files.length === 0) return;
+    const readers = files.map(f => new Promise(res => {
+      const r = new FileReader();
+      r.onload = () => res({ type: "image", value: r.result });
+      r.readAsDataURL(f);
+    }));
+    Promise.all(readers).then(imgs => {
+      items = imgs;
+      currentIndex = 0;
+      doReset();
+      cell.innerHTML = "";
+    });
+  });
+
+  soundBtn.addEventListener("click", () => {
+    soundOn = !soundOn;
+    soundBtn.textContent = soundOn ? "🔊" : "🔇";
+    soundBtn.setAttribute("aria-pressed", String(soundOn));
+    if (soundOn) ensureAudio();
+  });
+
+  const fullBtn = document.getElementById("fullBtn");
+  fullBtn.addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+      const el = document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (req) req.call(el);
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit) exit.call(document);
+    }
+  });
+  document.addEventListener("fullscreenchange", () => {
+    fullBtn.textContent = document.fullscreenElement ? "戻す" : "全画面";
+    if (document.fullscreenElement) {
+      controlsEl.classList.add("hidden");
+    } else {
+      controlsEl.classList.remove("hidden");
+    }
+  });
+
+  function layoutModal() {
+    const n = used.length;
+    if (n === 0) return;
+    const gap = Math.max(14, Math.min(window.innerWidth * 0.02, 30));
+    const availW = window.innerWidth * 0.96 - 40;
+    const availH = window.innerHeight * 0.92 - 40 - 90;
+
+    let best = { size: 0, cols: 1 };
+    for (let cols = 1; cols <= n; cols++) {
+      const rows = Math.ceil(n / cols);
+      const sizeW = (availW - gap * (cols - 1)) / cols;
+      const sizeH = (availH - gap * (rows - 1)) / rows;
+      const size = Math.min(sizeW, sizeH);
+      if (size > best.size) best = { size, cols };
+    }
+    modalGrid.style.gridTemplateColumns = `repeat(${best.cols}, ${best.size}px)`;
+    modalGrid.querySelectorAll(".modal-item").forEach(el => {
+      el.style.fontSize = (best.size * 0.62) + "px";
+    });
+  }
+
+  function openResult() {
+    modalGrid.innerHTML = "";
+    used.forEach((idx, order) => {
+      const box = document.createElement("div");
+      box.className = "modal-item";
+      box.appendChild(faceHTML(items[idx]));
+      const num = document.createElement("span");
+      num.className = "num";
+      num.textContent = order + 1;
+      box.appendChild(num);
+      modalGrid.appendChild(box);
+    });
+    modal.classList.add("show");
+    layoutModal();
+  }
+  function closeResult() { modal.classList.remove("show"); }
+
+  resultBtn.addEventListener("click", openResult);
+  closeBtn.addEventListener("click", closeResult);
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeResult(); });
+  window.addEventListener("resize", () => {
+    if (modal.classList.contains("show")) layoutModal();
+  });
+
+  confirmYes.addEventListener("click", () => {
+    confirmEl.classList.remove("show");
+    doReset();
+  });
+  confirmNo.addEventListener("click", () => confirmEl.classList.remove("show"));
+  confirmEl.addEventListener("click", (e) => { if (e.target === confirmEl) confirmEl.classList.remove("show"); });
+
+  function isFullscreen() { return !!document.fullscreenElement; }
+
+  document.addEventListener("click", (e) => {
+    if (!isFullscreen()) return;
+    if (e.target.closest("#spinBtn, #resultBtn, .modal, .confirm, .controls")) return;
+    controlsEl.classList.toggle("hidden");
+  });
+</script>
+</body>
+</html>
