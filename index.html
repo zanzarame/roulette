@@ -28,6 +28,11 @@
     --btn-px: clamp(34px, 11vmin, 90px);
     --slot: clamp(160px, 60vmin, 900px);
     --rsv: 24px;
+    --viewport-h: 100vh;
+  }
+
+  @supports (height: 100dvh) {
+    :root { --viewport-h: 100dvh; }
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -44,6 +49,14 @@
       --rsv: calc(var(--hist-item) + 132px);
     }
   }
+  @supports (height: 100dvh) {
+    @media (orientation: landscape) {
+      :root { --slot: clamp(140px, min(60dvh, 74dvh - 94px), 1100px); }
+    }
+    @media (orientation: portrait) {
+      :root { --slot: clamp(160px, min(82vw, 100dvh - 210px - var(--hist-item) - min(24vw, 180px)), 1100px); }
+    }
+  }
 
   html, body {
     margin: 0; padding: 0; height: 100%;
@@ -57,7 +70,7 @@
   .main-col {
     position: fixed;
     left: 50%;
-    top: calc(var(--top-safe) + (100vh - var(--top-safe) - var(--rsv)) / 2);
+    top: calc(var(--top-safe) + (var(--viewport-h) - var(--top-safe) - var(--rsv)) / 2);
     transform: translate(-50%, -50%);
     display: flex; flex-direction: column;
     align-items: center; gap: var(--gap-m);
@@ -115,6 +128,13 @@
     box-shadow: 0 4px 0 var(--btn-active), 0 8px 14px var(--shadow);
   }
   .spin-btn:focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
+  .spin-btn:disabled {
+    background: linear-gradient(160deg, #6b7280, #4b5563);
+    box-shadow: 0 6px 0 #374151, 0 10px 18px rgba(0,0,0,0.28);
+    color: rgba(255,255,255,0.72);
+    cursor: not-allowed;
+    transform: none;
+  }
   .spin-btn.reset {
     background: linear-gradient(160deg, var(--btn-reset), var(--btn-reset-active));
     box-shadow: 0 10px 0 var(--btn-reset-active), 0 14px 24px var(--shadow);
@@ -148,7 +168,7 @@
       right: var(--edge); top: 50%;
       transform: translateY(-50%);
       flex-direction: column;
-      max-height: calc(100vh - 152px);
+      max-height: calc(var(--viewport-h) - 152px);
       overflow-y: auto; overflow-x: hidden;
     }
   }
@@ -194,6 +214,10 @@
   }
   .mini-btn:active { background: rgba(255,255,255,0.3); }
   .mini-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .mini-btn:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+  }
 
   input[type="file"] { display: none; }
 
@@ -298,11 +322,21 @@
   .confirm-btns button:focus-visible { outline: 3px solid #333; outline-offset: 2px; }
   #confirmYes { background: linear-gradient(160deg, var(--btn-reset), var(--btn-reset-active)); }
   #confirmNo { background: #9aa3af; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
 </style>
 </head>
 <body>
   <div class="controls">
     <button class="mini-btn" id="pickBtn">写真を選ぶ</button>
+    <button class="mini-btn" id="resetBtn">やり直す</button>
     <button class="mini-btn" id="soundBtn" aria-pressed="true" aria-label="音のオンオフ">🔊</button>
     <button class="mini-btn" id="fullBtn">全画面</button>
     <input type="file" id="fileInput" accept="image/*" multiple>
@@ -321,16 +355,16 @@
 
   <button class="mini-btn" id="resultBtn">結果を見る</button>
 
-  <div class="modal" id="modal">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="結果一覧" aria-hidden="true">
     <div class="modal-inner">
       <div class="modal-grid" id="modalGrid"></div>
       <button class="mini-btn" id="closeBtn">とじる</button>
     </div>
   </div>
 
-  <div class="confirm" id="confirm">
+  <div class="confirm" id="confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-hidden="true">
     <div class="confirm-box">
-      <p>リセットしますか？</p>
+      <p id="confirmTitle">リセットしますか？</p>
       <div class="confirm-btns">
         <button id="confirmYes">はい</button>
         <button id="confirmNo">いいえ</button>
@@ -340,14 +374,18 @@
 
 <script>
   const defaultFaces = ["🍎","🐶","🐱","🚗","🌸","🌳","⭐","🐟","☂️","🍇"];
+  const MAX_FILES = 30;
+  const MAX_IMAGE_EDGE = 1600;
   let items = defaultFaces.map(e => ({ type: "emoji", value: e }));
 
   const cell = document.getElementById("cell");
   const windowEl = document.getElementById("window");
   const spinBtn = document.getElementById("spinBtn");
   const pickBtn = document.getElementById("pickBtn");
+  const resetBtn = document.getElementById("resetBtn");
   const fileInput = document.getElementById("fileInput");
   const soundBtn = document.getElementById("soundBtn");
+  const fullBtn = document.getElementById("fullBtn");
   const historyEl = document.getElementById("history");
   const resultBtn = document.getElementById("resultBtn");
   const modal = document.getElementById("modal");
@@ -357,25 +395,57 @@
   const confirmYes = document.getElementById("confirmYes");
   const confirmNo = document.getElementById("confirmNo");
   const controlsEl = document.querySelector(".controls");
+  const mainColEl = document.querySelector(".main-col");
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   let spinning = false;
   let stopping = false;
+  let loading = false;
   let soundOn = true;
   let finished = false;
   let used = [];
   let currentIndex = 0;
   let spinInterval = null;
   let tickTimer = null;
+  let resultReturnFocus = null;
+  let confirmReturnFocus = null;
+
+  function prefersReducedMotion() {
+    return motionQuery.matches;
+  }
 
   function faceHTML(item) {
     if (item.type === "emoji") return document.createTextNode(item.value);
     const img = document.createElement("img");
-    img.src = item.value; img.alt = "";
+    img.src = item.value;
+    img.alt = "";
     return img;
   }
+
   function showCell(item) {
     cell.innerHTML = "";
-    cell.appendChild(faceHTML(item));
+    if (item) cell.appendChild(faceHTML(item));
+  }
+
+  function stopAllTimers() {
+    clearInterval(spinInterval);
+    clearTimeout(tickTimer);
+    spinInterval = null;
+    tickTimer = null;
+  }
+
+  function updateControls() {
+    spinBtn.disabled = stopping || loading || items.length === 0;
+    pickBtn.disabled = spinning || stopping || loading;
+    resetBtn.disabled = spinning || stopping || loading;
+  }
+
+  function releaseItemUrls(itemList) {
+    itemList.forEach(item => {
+      if (item.type === "image" && typeof item.value === "string" && item.value.startsWith("blob:")) {
+        URL.revokeObjectURL(item.value);
+      }
+    });
   }
 
   let audioCtx = null;
@@ -418,89 +488,284 @@
     num.textContent = used.length;
     box.appendChild(num);
     historyEl.appendChild(box);
-    historyEl.scrollTo({ left: historyEl.scrollWidth, top: historyEl.scrollHeight, behavior: "smooth" });
+    historyEl.scrollTo({
+      left: historyEl.scrollWidth,
+      top: historyEl.scrollHeight,
+      behavior: prefersReducedMotion() ? "auto" : "smooth"
+    });
   }
   function clearHistory() { historyEl.innerHTML = ""; }
 
   function pickTarget() {
-    let candidates = [];
-    for (let i = 0; i < items.length; i++) if (!used.includes(i)) candidates.push(i);
+    const candidates = [];
+    for (let i = 0; i < items.length; i++) {
+      if (!used.includes(i)) candidates.push(i);
+    }
     return candidates[Math.floor(Math.random() * candidates.length)];
   }
 
+  function buildStopPlan(target) {
+    const n = items.length;
+    const forward = (target - currentIndex + n) % n;
+
+    if (prefersReducedMotion()) {
+      const backward = (currentIndex - target + n) % n;
+      if (forward === 0) return { direction: 1, steps: 0 };
+      return backward < forward
+        ? { direction: -1, steps: backward }
+        : { direction: 1, steps: forward };
+    }
+
+    let steps = forward;
+    const minimumSteps = Math.max(n + forward, 12);
+    while (steps < minimumSteps) steps += n;
+    return { direction: 1, steps };
+  }
+
+  function getStopDelay(completedSteps, totalSteps) {
+    if (prefersReducedMotion()) {
+      const progress = totalSteps ? completedSteps / totalSteps : 1;
+      return Math.round(240 + 140 * progress * progress);
+    }
+
+    const tailLength = Math.min(8, totalSteps);
+    const tailStart = totalSteps - tailLength;
+    if (completedSteps <= tailStart) return 60;
+    const progress = (completedSteps - tailStart) / Math.max(1, tailLength);
+    return Math.round(80 + 300 * progress * progress);
+  }
+
+  function finishSelection(target) {
+    currentIndex = target;
+    showCell(items[target]);
+    used.push(target);
+    addHistory(target);
+    spinning = false;
+    stopping = false;
+    windowEl.classList.add("stopped");
+    playStop();
+
+    if (used.length >= items.length) {
+      finished = true;
+      spinBtn.textContent = "リセット";
+      spinBtn.classList.add("reset");
+      resultBtn.classList.add("show");
+    } else {
+      spinBtn.textContent = "スタート";
+    }
+    updateControls();
+  }
+
   function startSpin() {
-    spinning = true; stopping = false;
+    if (items.length === 0) return;
+    stopAllTimers();
+    spinning = true;
+    stopping = false;
     windowEl.classList.remove("stopped");
     spinBtn.textContent = "ストップ";
+    updateControls();
+
+    const interval = prefersReducedMotion() ? 240 : 60;
     spinInterval = setInterval(() => {
       currentIndex = (currentIndex + 1) % items.length;
       showCell(items[currentIndex]);
       playTick();
-    }, 60);
+    }, interval);
   }
+
   function stopSpin() {
     stopping = true;
     spinBtn.textContent = "スタート";
-    clearInterval(spinInterval);
+    stopAllTimers();
+    updateControls();
+
     const target = pickTarget();
-    let delay = 80;
+    const plan = buildStopPlan(target);
+    let completed = 0;
+
+    if (plan.steps === 0) {
+      tickTimer = setTimeout(() => finishSelection(target), 300);
+      return;
+    }
+
     const slowStep = () => {
-      currentIndex = (currentIndex + 1) % items.length;
+      currentIndex = (currentIndex + plan.direction + items.length) % items.length;
       showCell(items[currentIndex]);
       playTick();
-      delay += 35;
-      if (delay < 380) {
-        tickTimer = setTimeout(slowStep, delay);
+      completed += 1;
+
+      if (completed < plan.steps) {
+        tickTimer = setTimeout(slowStep, getStopDelay(completed, plan.steps));
       } else {
-        currentIndex = target;
-        showCell(items[target]);
-        used.push(target);
-        addHistory(target);
-        spinning = false; stopping = false;
-        windowEl.classList.add("stopped");
-        playStop();
-        if (used.length >= items.length) {
-          finished = true;
-          spinBtn.textContent = "リセット";
-          spinBtn.classList.add("reset");
-          resultBtn.classList.add("show");
-        }
+        finishSelection(target);
       }
     };
-    tickTimer = setTimeout(slowStep, delay);
+
+    tickTimer = setTimeout(slowStep, getStopDelay(0, plan.steps));
   }
+
   function doReset() {
-    used = []; finished = false;
+    stopAllTimers();
+    spinning = false;
+    stopping = false;
+    used = [];
+    finished = false;
+    currentIndex = 0;
     clearHistory();
     windowEl.classList.remove("stopped");
     spinBtn.classList.remove("reset");
     spinBtn.textContent = "スタート";
     resultBtn.classList.remove("show");
     cell.innerHTML = "";
+    updateControls();
+  }
+
+  function setBackgroundInert(isInert) {
+    [controlsEl, mainColEl, historyEl, resultBtn].forEach(el => {
+      if (el) el.inert = isInert;
+    });
+  }
+
+  function getFocusableElements(container) {
+    return Array.from(container.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(el => !el.hidden && el.offsetParent !== null);
+  }
+
+  function trapFocus(event, container) {
+    if (event.key !== "Tab") return;
+    const focusable = getFocusableElements(container);
+    if (focusable.length === 0) {
+      event.preventDefault();
+      container.focus();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function openConfirm(trigger) {
+    confirmReturnFocus = trigger || document.activeElement;
+    confirmEl.classList.add("show");
+    confirmEl.setAttribute("aria-hidden", "false");
+    setBackgroundInert(true);
+    confirmNo.focus();
+  }
+
+  function closeConfirm(restoreFocus = true) {
+    confirmEl.classList.remove("show");
+    confirmEl.setAttribute("aria-hidden", "true");
+    setBackgroundInert(false);
+    if (restoreFocus && confirmReturnFocus?.isConnected) confirmReturnFocus.focus();
+    confirmReturnFocus = null;
   }
 
   spinBtn.addEventListener("click", () => {
     ensureAudio();
-    if (finished) { confirmEl.classList.add("show"); return; }
+    if (finished) {
+      openConfirm(spinBtn);
+      return;
+    }
     if (!spinning) startSpin();
     else if (!stopping) stopSpin();
   });
 
-  pickBtn.addEventListener("click", () => fileInput.click());
-  fileInput.addEventListener("change", (e) => {
-    const files = Array.from(e.target.files).slice(0, 30);
-    if (files.length === 0) return;
-    const readers = files.map(f => new Promise(res => {
-      const r = new FileReader();
-      r.onload = () => res({ type: "image", value: r.result });
-      r.readAsDataURL(f);
-    }));
-    Promise.all(readers).then(imgs => {
-      items = imgs;
-      currentIndex = 0;
-      doReset();
-      cell.innerHTML = "";
+  resetBtn.addEventListener("click", () => openConfirm(resetBtn));
+
+  function resizeImageFile(file) {
+    return new Promise((resolve, reject) => {
+      const sourceUrl = URL.createObjectURL(file);
+      const img = new Image();
+
+      img.onload = () => {
+        try {
+          const longestEdge = Math.max(img.naturalWidth, img.naturalHeight);
+          if (!longestEdge) throw new Error("画像サイズを取得できませんでした。");
+
+          const scale = Math.min(1, MAX_IMAGE_EDGE / longestEdge);
+          const width = Math.max(1, Math.round(img.naturalWidth * scale));
+          const height = Math.max(1, Math.round(img.naturalHeight * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const context = canvas.getContext("2d", { alpha: true });
+          if (!context) throw new Error("画像処理を開始できませんでした。");
+          context.drawImage(img, 0, 0, width, height);
+
+          const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
+          canvas.toBlob(blob => {
+            URL.revokeObjectURL(sourceUrl);
+            if (!blob) {
+              reject(new Error("画像の縮小に失敗しました。"));
+              return;
+            }
+            resolve({ type: "image", value: URL.createObjectURL(blob) });
+          }, outputType, 0.9);
+        } catch (error) {
+          URL.revokeObjectURL(sourceUrl);
+          reject(error);
+        }
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(sourceUrl);
+        reject(new Error(`${file.name}を読み込めませんでした。`));
+      };
+      img.src = sourceUrl;
     });
+  }
+
+  pickBtn.addEventListener("click", () => {
+    fileInput.value = "";
+    fileInput.click();
+  });
+
+  fileInput.addEventListener("change", async event => {
+    const selectedFiles = Array.from(event.target.files || []);
+    if (selectedFiles.length === 0) return;
+    if (selectedFiles.length > MAX_FILES) {
+      alert("写真は最大30枚です。先頭30枚を読み込みました。");
+    }
+
+    const files = selectedFiles.slice(0, MAX_FILES);
+    const loadedItems = [];
+    let failedCount = 0;
+    loading = true;
+    pickBtn.textContent = "読み込み中…";
+    updateControls();
+
+    for (const file of files) {
+      try {
+        loadedItems.push(await resizeImageFile(file));
+      } catch (error) {
+        console.error(error);
+        failedCount += 1;
+      }
+    }
+
+    if (loadedItems.length > 0) {
+      releaseItemUrls(items);
+      items = loadedItems;
+      doReset();
+    }
+
+    loading = false;
+    pickBtn.textContent = "写真を選ぶ";
+    fileInput.value = "";
+    updateControls();
+
+    if (loadedItems.length === 0) {
+      alert("写真を読み込めませんでした。対応している画像形式か確認してください。");
+    } else if (failedCount > 0) {
+      alert(`${failedCount}枚の写真を読み込めませんでした。対応している画像形式か確認してください。`);
+    }
   });
 
   soundBtn.addEventListener("click", () => {
@@ -510,25 +775,37 @@
     if (soundOn) ensureAudio();
   });
 
-  const fullBtn = document.getElementById("fullBtn");
-  fullBtn.addEventListener("click", () => {
-    if (!document.fullscreenElement) {
-      const el = document.documentElement;
-      const req = el.requestFullscreen || el.webkitRequestFullscreen;
-      if (req) req.call(el);
-    } else {
-      const exit = document.exitFullscreen || document.webkitExitFullscreen;
-      if (exit) exit.call(document);
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  }
+
+  async function toggleFullscreen() {
+    try {
+      if (!isFullscreen()) {
+        const el = document.documentElement;
+        const request = el.requestFullscreen || el.webkitRequestFullscreen;
+        if (!request) throw new Error("Fullscreen API is unavailable.");
+        await Promise.resolve(request.call(el));
+      } else {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        if (!exit) throw new Error("Fullscreen API is unavailable.");
+        await Promise.resolve(exit.call(document));
+      }
+    } catch (error) {
+      console.error(error);
+      alert("全画面表示を切り替えられませんでした。ブラウザーの設定をご確認ください。");
     }
-  });
-  document.addEventListener("fullscreenchange", () => {
-    fullBtn.textContent = document.fullscreenElement ? "戻す" : "全画面";
-    if (document.fullscreenElement) {
-      controlsEl.classList.add("hidden");
-    } else {
-      controlsEl.classList.remove("hidden");
-    }
-  });
+  }
+
+  function handleFullscreenChange() {
+    fullBtn.textContent = isFullscreen() ? "戻す" : "全画面";
+    if (isFullscreen()) controlsEl.classList.add("hidden");
+    else controlsEl.classList.remove("hidden");
+  }
+
+  fullBtn.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
   function layoutModal() {
     const n = used.length;
@@ -552,6 +829,7 @@
   }
 
   function openResult() {
+    resultReturnFocus = document.activeElement;
     modalGrid.innerHTML = "";
     used.forEach((idx, order) => {
       const box = document.createElement("div");
@@ -564,31 +842,65 @@
       modalGrid.appendChild(box);
     });
     modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+    setBackgroundInert(true);
     layoutModal();
+    closeBtn.focus();
   }
-  function closeResult() { modal.classList.remove("show"); }
+
+  function closeResult() {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+    setBackgroundInert(false);
+    if (resultReturnFocus?.isConnected) resultReturnFocus.focus();
+    resultReturnFocus = null;
+  }
 
   resultBtn.addEventListener("click", openResult);
   closeBtn.addEventListener("click", closeResult);
-  modal.addEventListener("click", (e) => { if (e.target === modal) closeResult(); });
+  modal.addEventListener("click", event => {
+    if (event.target === modal) closeResult();
+  });
+  modal.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeResult();
+      return;
+    }
+    trapFocus(event, modal);
+  });
+
+  confirmEl.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeConfirm();
+      return;
+    }
+    trapFocus(event, confirmEl);
+  });
+
   window.addEventListener("resize", () => {
     if (modal.classList.contains("show")) layoutModal();
   });
 
   confirmYes.addEventListener("click", () => {
-    confirmEl.classList.remove("show");
+    closeConfirm(false);
     doReset();
+    spinBtn.focus();
   });
-  confirmNo.addEventListener("click", () => confirmEl.classList.remove("show"));
-  confirmEl.addEventListener("click", (e) => { if (e.target === confirmEl) confirmEl.classList.remove("show"); });
+  confirmNo.addEventListener("click", () => closeConfirm());
+  confirmEl.addEventListener("click", event => {
+    if (event.target === confirmEl) closeConfirm();
+  });
 
-  function isFullscreen() { return !!document.fullscreenElement; }
-
-  document.addEventListener("click", (e) => {
+  document.addEventListener("click", event => {
     if (!isFullscreen()) return;
-    if (e.target.closest("#spinBtn, #resultBtn, .modal, .confirm, .controls")) return;
+    if (event.target.closest("#spinBtn, #resultBtn, .modal, .confirm, .controls")) return;
     controlsEl.classList.toggle("hidden");
   });
+
+  window.addEventListener("beforeunload", () => releaseItemUrls(items));
+  updateControls();
 </script>
 </body>
 </html>
