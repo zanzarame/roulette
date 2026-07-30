@@ -25,6 +25,8 @@
     --shadow: 0 16px 40px rgba(11, 34, 53, .22);
     --radius: 22px;
     --vh: 100vh;
+    --fullscreen-top-guard: 0px;
+    --effective-safe-top: max(env(safe-area-inset-top, 0px), var(--fullscreen-top-guard));
   }
 
   @supports (height: 100dvh) {
@@ -1366,6 +1368,52 @@
     }
   }
 
+
+
+  /* Touch feedback and iPad fullscreen safe area */
+  html {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+  :where(*, *::before, *::after) {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+  :where(button, [role="button"], a, label, input, select, textarea) {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :where(button, [role="button"], a, label) {
+    touch-action: manipulation;
+  }
+  .roulette-card.one-touch { -webkit-tap-highlight-color: transparent; }
+
+  .play-topbar {
+    min-height: calc(62px + var(--effective-safe-top));
+    padding-top: calc(8px + var(--effective-safe-top));
+  }
+
+  @media (orientation: landscape) and (max-height: 650px) {
+    .play-topbar {
+      min-height: calc(56px + var(--effective-safe-top));
+      padding-top: calc(6px + var(--effective-safe-top));
+    }
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .button:not(:disabled):active,
+    .icon-button:not(:disabled):active,
+    .menu-option:not(:disabled):active,
+    .reset-option:not(:disabled):active {
+      filter: brightness(.94);
+      transform: translateY(1px) scale(.985);
+    }
+    .top-button:not(:disabled):active,
+    .close-x:active,
+    .step-option:active {
+      filter: brightness(.92);
+      transform: scale(.94);
+    }
+    .toggle-switch:active { filter: brightness(.94); }
+  }
+
 </style>
 </head>
 <body>
@@ -1823,7 +1871,7 @@
     });
   }
 
-  function addNameParticipant({ fixedApple = false, keepActionButton = null } = {}) {
+  function addNameParticipant({ fixedApple = false, keepActionButton = null, selectNewInput = true } = {}) {
     if (state.participants.length >= MAX_PARTICIPANTS) {
       showToast("参加者は最大30人です");
       return;
@@ -1838,13 +1886,14 @@
     state.participants.push(participantFromSample(sample));
     renderEditor();
     if (anchor) restoreEditorActionPosition(anchor);
-    else requestAnimationFrame(() => participantGrid.lastElementChild?.querySelector("input")?.select());
+    else if (selectNewInput) requestAnimationFrame(() => participantGrid.lastElementChild?.querySelector("input")?.select());
   }
 
   function startNameOnly() {
     releaseAllParticipants();
     state.participants = [];
-    addNameParticipant({ fixedApple: true });
+    addNameParticipant({ fixedApple: true, selectNewInput: false });
+    requestAnimationFrame(() => document.activeElement?.blur());
   }
 
   function loadSample() {
@@ -1989,13 +2038,22 @@
     });
   }
 
-  function returnToEditor() {
+  function returnToEditorView() {
     stopTimers();
     state.phase = Phase.SETUP;
     rouletteView.hidden = true;
     setupView.hidden = false;
     renderEditor();
+    requestAnimationFrame(() => document.activeElement?.blur());
     window.scrollTo({ top: 0, behavior: state.settings.reduceEffects ? "auto" : "smooth" });
+  }
+
+  function returnToEditor() {
+    if (isAppleTouchDevice() && isFullscreen()) {
+      exitFullscreenForAppleInteraction().finally(returnToEditorView);
+      return;
+    }
+    returnToEditorView();
   }
 
   function returnToStart() {
@@ -2478,7 +2536,10 @@
     return JSON.stringify(getSettingsDraft());
   }
 
-  function openSettings() {
+  async function openSettings() {
+    if (isAppleTouchDevice() && isFullscreen()) {
+      await exitFullscreenForAppleInteraction();
+    }
     state.settingsDraftSoundOn = state.soundOn;
     populateSettingsControls();
     state.settingsSnapshot = settingsDraftSignature();
@@ -2631,6 +2692,33 @@
   }
 
   function isFullscreen() { return Boolean(document.fullscreenElement || document.webkitFullscreenElement); }
+
+  function isAppleTouchDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  }
+
+  async function exitFullscreenForAppleInteraction() {
+    if (!isAppleTouchDevice() || !isFullscreen()) return false;
+    try {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (!exit) return false;
+      await Promise.resolve(exit.call(document));
+      return true;
+    } catch (error) {
+      console.warn("全画面表示を終了できませんでした", error);
+      return false;
+    }
+  }
+
+  function updateFullscreenSafeArea() {
+    const fullscreen = isFullscreen();
+    const visualTop = fullscreen ? Math.max(0, Math.round(window.visualViewport?.offsetTop || 0)) : 0;
+    const fallbackTop = fullscreen && isAppleTouchDevice() ? 30 : 0;
+    const topGuard = Math.max(visualTop, fallbackTop);
+    document.documentElement.style.setProperty("--fullscreen-top-guard", `${topGuard}px`);
+    scheduleLayoutUpdate();
+  }
   async function toggleFullscreen() {
     try {
       if (!isFullscreen()) {
@@ -2744,7 +2832,7 @@
   $("menuSettingsBtn").addEventListener("click", () => {
     closeMenuPopover();
     $("menuBtn").focus();
-    openSettings();
+    void openSettings();
   });
   $("menuResetBtn").addEventListener("click", () => {
     closeMenuPopover();
@@ -2831,12 +2919,23 @@
     if (state.soundOn) ensureAudio();
     saveSettingsToStorage();
   });
+  document.addEventListener("focusin", event => {
+    if (!isAppleTouchDevice() || !isFullscreen()) return;
+    if (!(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) return;
+    const type = event.target instanceof HTMLInputElement ? event.target.type : "textarea";
+    if (!["text", "search", "email", "tel", "url", "password", "number", "textarea"].includes(type)) return;
+    void exitFullscreenForAppleInteraction();
+  });
+
   $("fullscreenBtn").addEventListener("click", toggleFullscreen);
   const updateFullscreenIcon = () => {
     setIconButton($("fullscreenBtn"), isFullscreen() ? iconMarkup.exitFullscreen : iconMarkup.fullscreen, isFullscreen() ? "全画面表示を終了" : "全画面表示");
+    updateFullscreenSafeArea();
   };
   document.addEventListener("fullscreenchange", updateFullscreenIcon);
   document.addEventListener("webkitfullscreenchange", updateFullscreenIcon);
+  window.visualViewport?.addEventListener("resize", updateFullscreenSafeArea, { passive: true });
+  window.visualViewport?.addEventListener("scroll", updateFullscreenSafeArea, { passive: true });
 
   showResultsBtn.addEventListener("click", openResults);
   $("closeResultsBtn").addEventListener("click", () => closeModal(resultsModal));
@@ -2889,6 +2988,7 @@
   loadSavedSettings();
   setIconButton($("soundBtn"), state.soundOn ? iconMarkup.soundOn : iconMarkup.soundOff, state.soundOn ? "音を消す" : "音を出す");
   $("soundBtn").setAttribute("aria-pressed", String(state.soundOn));
+  updateFullscreenSafeArea();
   playLayout.classList.add("stacked");
   updateEditorVisibility();
 })();
