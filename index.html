@@ -1680,6 +1680,97 @@
   /* Selector buttons are intentionally transparent controls; focus and selection supply their state. */
   .step-option { border: 0; box-shadow: none; }
 
+
+
+  /* Per-session participant-name display */
+  .editor-head-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .participant-name-setting {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 8px 6px 14px;
+    border-radius: 999px;
+    background: var(--button-neutral-bg);
+  }
+  .participant-name-setting-label {
+    font-weight: 800;
+    line-height: 1.3;
+  }
+  .participant-card.names-hidden .participant-media {
+    margin-bottom: 0;
+  }
+  #editorSection.names-hidden .participant-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+  .roulette-view.names-hidden .current-name {
+    display: none;
+  }
+  .roulette-view.names-hidden .result-summary {
+    gap: 0;
+  }
+  .roulette-view.names-hidden .history-item {
+    grid-template-columns: 36px minmax(54px, 1fr);
+  }
+  .roulette-view.names-hidden .history-media {
+    width: min(68px, 100%);
+    height: auto;
+    aspect-ratio: 1 / 1;
+    justify-self: center;
+  }
+  .roulette-view.names-hidden .play-layout.stacked .history-list {
+    grid-auto-columns: 96px;
+  }
+  .roulette-view.names-hidden .play-layout.stacked .history-item {
+    grid-template-columns: 30px 44px;
+  }
+  .roulette-view.names-hidden .play-layout.stacked .history-media {
+    width: 44px;
+    height: 44px;
+  }
+  .result-grid.names-hidden {
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+    gap: 12px;
+  }
+  .result-grid.names-hidden .result-card {
+    padding: 7px;
+  }
+  .reset-option-title.long-label {
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  @media (max-width: 620px) {
+    .editor-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 14px 10px;
+    }
+    .editor-head h2 {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .editor-head-controls {
+      display: contents;
+    }
+    .editor-head-controls .count-badge {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .participant-name-setting {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      width: 100%;
+      max-width: 100%;
+      justify-content: space-between;
+    }
+  }
 </style>
 </head>
 <body>
@@ -1702,11 +1793,17 @@
 
     <main class="panel" id="editorSection" hidden>
         <div class="editor-head">
-          <div>
-            <h2>参加者の確認</h2>
-            <p>名前を確認し、必要に応じて編集してください。</p>
-        </div>
-          <div class="count-badge" id="participantCount">0人</div>
+          <h2>参加者の確認</h2>
+          <div class="editor-head-controls">
+            <div class="participant-name-setting" id="participantNameSetting" hidden>
+              <span class="participant-name-setting-label">参加者名を表示する</span>
+              <label class="switch-control" aria-label="参加者名を表示する">
+                <input class="toggle-input" type="checkbox" id="showNamesToggle" checked>
+                <span class="toggle-switch" aria-hidden="true"></span>
+              </label>
+            </div>
+            <div class="count-badge" id="participantCount">0人</div>
+          </div>
       </div>
         <div class="participant-grid" id="participantGrid"></div>
         <div class="editor-actions">
@@ -1838,7 +1935,7 @@
         </button>
         <button class="reset-option" id="editParticipantsBtn">
           <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 16-.8 4.8L8 20l10.8-10.8-4-4L4 16Z"/><path d="m13.8 6.2 4 4"/></svg></span>
-          <span class="reset-option-title">参加者を編集</span>
+          <span class="reset-option-title long-label">参加者を編集する</span>
         </button>
         <button class="reset-option destructive" id="returnToStartBtn">
           <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span>
@@ -1935,6 +2032,7 @@
     settingsSnapshot: null,
     isPristineNameOnly: false,
     isEditorOpen: false,
+    showNames: true,
     isFinalSoloSpin: false
   };
 
@@ -1945,6 +2043,8 @@
   const editorSection = $("editorSection");
   const participantGrid = $("participantGrid");
   const participantCount = $("participantCount");
+  const participantNameSetting = $("participantNameSetting");
+  const showNamesToggle = $("showNamesToggle");
   const imageInput = $("imageInput");
   const loadingLine = $("loadingLine");
   const beginBtn = $("beginBtn");
@@ -2072,6 +2172,22 @@
     showToast.timer = setTimeout(() => { toast.hidden = true; }, duration);
   }
 
+  function canToggleParticipantNames() {
+    return state.participants.length > 0
+      && state.participants.every(participant => participant.type === "image");
+  }
+
+  function syncNameDisplayMode() {
+    const canToggle = canToggleParticipantNames();
+    if (!canToggle) state.showNames = true;
+    participantNameSetting.hidden = !canToggle;
+    showNamesToggle.checked = state.showNames;
+    editorSection.classList.toggle("names-hidden", !state.showNames);
+    participantGrid.classList.toggle("names-hidden", !state.showNames);
+    rouletteView.classList.toggle("names-hidden", !state.showNames);
+    resultGrid.classList.toggle("names-hidden", !state.showNames);
+  }
+
   function updateEditorVisibility() {
     const count = state.participants.length;
     introSection.hidden = state.isEditorOpen;
@@ -2084,38 +2200,48 @@
   }
 
   function renderEditor() {
+    syncNameDisplayMode();
     participantGrid.replaceChildren();
     state.participants.forEach((participant, index) => {
       const card = document.createElement("article");
       card.className = "participant-card";
+      card.classList.toggle("names-hidden", !state.showNames);
       card.dataset.id = participant.id;
 
       const media = createFaceNode(participant, "participant-media");
-      const input = document.createElement("input");
-      input.className = "name-input";
-      input.type = "text";
-      input.value = participant.name;
-      input.maxLength = 40;
-      input.setAttribute("aria-label", `${index + 1}人目の名前`);
-      input.addEventListener("input", () => {
-        participant.name = input.value;
-        state.isPristineNameOnly = false;
-      });
-
       const remove = document.createElement("button");
       remove.className = "participant-remove";
       remove.type = "button";
       remove.textContent = "×";
-      const updateRemoveLabel = () => {
-        const labelName = participant.name.trim() || `${index + 1}人目`;
-        const label = `${labelName}を削除`;
+
+      if (state.showNames) {
+        const input = document.createElement("input");
+        input.className = "name-input";
+        input.type = "text";
+        input.value = participant.name;
+        input.maxLength = 40;
+        input.setAttribute("aria-label", `${index + 1}人目の名前`);
+        const updateRemoveLabel = () => {
+          const labelName = participant.name.trim() || `${index + 1}人目`;
+          const label = `${labelName}を削除`;
+          remove.setAttribute("aria-label", label);
+          remove.title = label;
+        };
+        input.addEventListener("input", () => {
+          participant.name = input.value;
+          state.isPristineNameOnly = false;
+          updateRemoveLabel();
+        });
+        updateRemoveLabel();
+        card.append(media, input, remove);
+      } else {
+        const label = `${index + 1}人目の参加者を削除`;
         remove.setAttribute("aria-label", label);
         remove.title = label;
-      };
-      updateRemoveLabel();
-      input.addEventListener("input", updateRemoveLabel);
+        card.append(media, remove);
+      }
+
       remove.addEventListener("click", () => removeParticipant(participant.id));
-      card.append(media, input, remove);
       participantGrid.appendChild(card);
     });
     updateEditorVisibility();
@@ -2157,6 +2283,7 @@
 
   function addNameParticipant({ fixedApple = false, keepActionButton = null, selectNewInput = true } = {}) {
     state.isPristineNameOnly = false;
+    state.showNames = true;
     if (state.participants.length >= MAX_PARTICIPANTS) {
       showToast("参加者は最大30人です");
       return;
@@ -2177,6 +2304,7 @@
   function startNameOnly() {
     releaseAllParticipants();
     state.participants = [];
+    state.showNames = true;
     state.isEditorOpen = true;
     addNameParticipant({ fixedApple: true, selectNewInput: false });
     state.isPristineNameOnly = true;
@@ -2185,6 +2313,7 @@
 
   function loadSample() {
     state.isPristineNameOnly = false;
+    state.showNames = true;
     releaseAllParticipants();
     state.participants = shuffled(sampleParticipants).slice(0, 8).map(participantFromSample);
     enterRoulette();
@@ -2314,7 +2443,8 @@
       showToast("2人以上の参加者を登録してください");
       return;
     }
-    validateNames();
+    syncNameDisplayMode();
+    if (state.showNames) validateNames();
     resetOrder(false);
     state.phase = Phase.READY;
     setupView.hidden = true;
@@ -2358,6 +2488,7 @@
     state.poolPosition = 0;
     state.isPristineNameOnly = false;
     state.isEditorOpen = false;
+    state.showNames = true;
     state.phase = Phase.SETUP;
     rouletteView.hidden = true;
     setupView.hidden = false;
@@ -2479,7 +2610,7 @@
       emoji.textContent = participant.value;
       rouletteFace.appendChild(emoji);
     }
-    const displayName = showName ? (participant?.name || "") : "";
+    const displayName = state.showNames && showName ? (participant?.name || "") : "";
     currentName.classList.remove("result-reveal");
     currentName.textContent = displayName;
     applyNameClass(currentName, displayName);
@@ -2563,6 +2694,7 @@
   }
 
   function renderPlayState({ updateHistory = true } = {}) {
+    rouletteView.classList.toggle("names-hidden", !state.showNames);
     const total = state.participants.length;
     const decided = state.order.length;
     const remaining = total - decided;
@@ -2614,6 +2746,7 @@
   }
 
   function renderHistory() {
+    historyList.classList.toggle("names-hidden", !state.showNames);
     historyList.replaceChildren();
     if (!state.order.length) {
       requestAnimationFrame(updateHistoryScrollHint);
@@ -2623,15 +2756,21 @@
       const participant = participantById(id);
       const item = document.createElement("div");
       item.className = "history-item";
+      item.setAttribute("aria-label", state.showNames
+        ? `${index + 1}番 ${participant.name}`
+        : `${index + 1}番の参加者`);
       const order = document.createElement("div");
       order.className = "history-order";
       order.textContent = String(index + 1);
       const media = createFaceNode(participant, "history-media");
-      const name = document.createElement("div");
-      name.className = "history-name";
-      name.textContent = participant.name;
-      applyNameClass(name, participant.name);
-      item.append(order, media, name);
+      item.append(order, media);
+      if (state.showNames) {
+        const name = document.createElement("div");
+        name.className = "history-name";
+        name.textContent = participant.name;
+        applyNameClass(name, participant.name);
+        item.appendChild(name);
+      }
       historyList.appendChild(item);
     });
     if (!state.settings.reduceEffects) {
@@ -3027,20 +3166,27 @@
   }
 
   function openResults() {
+    resultGrid.classList.toggle("names-hidden", !state.showNames);
     resultGrid.replaceChildren();
     state.order.forEach((id, index) => {
       const participant = participantById(id);
       const card = document.createElement("article");
       card.className = "result-card";
+      card.setAttribute("aria-label", state.showNames
+        ? `${index + 1}番 ${participant.name}`
+        : `${index + 1}番の参加者`);
       const number = document.createElement("div");
       number.className = "result-num";
       number.textContent = String(index + 1);
       const media = createFaceNode(participant, "result-media");
-      const name = document.createElement("div");
-      name.className = "result-name";
-      name.textContent = participant.name;
-      applyNameClass(name, participant.name);
-      card.append(number, media, name);
+      card.append(number, media);
+      if (state.showNames) {
+        const name = document.createElement("div");
+        name.className = "result-name";
+        name.textContent = participant.name;
+        applyNameClass(name, participant.name);
+        card.appendChild(name);
+      }
       resultGrid.appendChild(card);
     });
     openModal(resultsModal, $("closeResultsBtn"));
@@ -3395,6 +3541,11 @@
   });
   $("firstNameBtn").addEventListener("click", startNameOnly);
   $("addNameBtn").addEventListener("click", () => addNameParticipant({ keepActionButton: $("addNameBtn") }));
+  showNamesToggle.addEventListener("change", () => {
+    if (!canToggleParticipantNames()) return;
+    state.showNames = showNamesToggle.checked;
+    renderEditor();
+  });
   $("sampleBtn").addEventListener("click", loadSample);
   imageInput.addEventListener("change", event => {
     const files = event.target.files;
