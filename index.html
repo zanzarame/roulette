@@ -80,6 +80,11 @@
   .secondary { background: #e7f2f8; color: var(--blue-dark); border: 2px solid #a9cddd; }
   .danger-solid { background: var(--danger); color: #fff; }
   .ghost { background: #edf3f6; color: var(--ink); }
+  .danger-soft {
+    background: #f8e8e8;
+    color: var(--danger);
+  }
+  .danger-soft:hover { background: #f3dada; }
   .large { min-height: 54px; font-size: 18px; }
 
   .editor-head {
@@ -105,6 +110,7 @@
     gap: 15px;
   }
   .participant-card {
+    position: relative;
     border: 1px solid var(--line);
     border-radius: 18px;
     background: #fff;
@@ -132,18 +138,36 @@
   }
   .name-input:focus { border-color: var(--blue); }
   .name-input:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; }
-  .card-actions { display: grid; grid-template-columns: 1fr 1fr auto; gap: 7px; margin-top: 9px; }
-  .icon-button {
-    border: 0;
-    border-radius: 10px;
-    min-height: 38px;
-    background: #edf3f6;
-    color: var(--ink);
-    font-weight: 800;
+  .participant-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 4;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border: 2px solid #eccaca;
+    border-radius: 50%;
+    padding: 0;
+    background: #fffafa;
+    color: var(--danger);
+    box-shadow: 0 4px 12px rgba(95, 31, 31, .14);
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 900;
     cursor: pointer;
+    transition: transform .08s, filter .15s, background .15s, border-color .15s;
   }
-  .icon-button.remove { color: var(--danger); background: #f8e8e8; }
-  .icon-button:disabled { opacity: .32; cursor: not-allowed; }
+  .participant-remove:hover {
+    background: #fff1f1;
+    border-color: var(--danger);
+  }
+  .participant-remove:active { transform: translateY(1px) scale(.96); }
+  .participant-remove:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring);
+    outline-offset: 2px;
+  }
   .editor-actions {
     display: flex;
     flex-wrap: wrap;
@@ -376,8 +400,6 @@
     font-weight: 700;
     line-height: 1.65 !important;
   }
-  .card-actions { display: flex; justify-content: flex-end; margin-top: 9px; }
-  .card-actions .remove { min-width: 78px; padding: 0 14px; }
 
   .roulette-view {
     height: var(--vh);
@@ -858,7 +880,7 @@
   }
   @keyframes selectionOverlayPop {
     0% { transform: scale(1); }
-    48% { transform: scale(1.045); }
+    48% { transform: scale(1.075); }
     100% { transform: scale(1); }
   }
 
@@ -1051,12 +1073,12 @@
     border-radius: 22px;
     background: #e8f3f8;
     color: var(--blue-dark);
-    box-shadow: inset 0 0 0 1px rgba(28, 101, 140, .08);
+    box-shadow: none;
   }
   .confirm-icon.danger {
     background: #f9eaea;
     color: var(--danger);
-    box-shadow: inset 0 0 0 1px rgba(177, 48, 48, .08);
+    box-shadow: none;
   }
   .confirm-icon[hidden] { display: none; }
   .confirm-icon svg {
@@ -1095,6 +1117,7 @@
     width: 100%;
     margin: 0;
     padding: 0;
+    white-space: pre-line;
     color: var(--muted);
     font-size: 14px;
     line-height: 1.65;
@@ -1413,7 +1436,7 @@
 
   @media (hover: none) and (pointer: coarse) {
     .button:not(:disabled):active,
-    .icon-button:not(:disabled):active,
+    .participant-remove:not(:disabled):active,
     .menu-option:not(:disabled):active,
     .reset-option:not(:disabled):active {
       filter: brightness(.94);
@@ -1427,6 +1450,224 @@
     }
     .toggle-switch:active { filter: brightness(.94); }
   }
+
+
+  /* Mobile touch targets, rounded-screen bottom guard, and one-touch completion */
+  @media (max-width: 760px), (hover: none) and (pointer: coarse) {
+    .menu-popover {
+      min-width: 184px;
+      max-width: min(220px, calc(100vw - 20px));
+      padding: 7px;
+      border-radius: 15px;
+    }
+    .menu-popover .menu-option {
+      min-height: 52px;
+      padding: 14px 16px;
+      border-radius: 11px;
+      font-size: 16px;
+      line-height: 1.3;
+      display: flex;
+      align-items: center;
+    }
+    .menu-popover .menu-option + .menu-option { margin-top: 4px; }
+  }
+
+  @media (orientation: portrait) and (max-width: 760px) {
+    .play-layout.stacked,
+    .roulette-view.scroll-mode .play-layout {
+      padding-bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+    }
+  }
+
+  .roulette-card.one-touch.complete-action { cursor: pointer; }
+
+  .reset-modal-box .modal-head {
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Swipeable step selectors and result-name reveal */
+  .step-selector {
+    touch-action: pan-y;
+  }
+  .step-option[aria-checked="true"] {
+    cursor: grab;
+  }
+  .step-selector.is-dragging,
+  .step-selector.is-dragging .step-option[aria-checked="true"] {
+    cursor: grabbing;
+  }
+  .current-name.result-reveal {
+    animation: resultNameReveal .42s ease-out;
+  }
+  @keyframes resultNameReveal {
+    0% { opacity: 0; transform: translateY(7px) scale(.94); }
+    58% { opacity: 1; transform: translateY(0) scale(1.045); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+
+
+  /* Final-participant focus animation */
+  .roulette-card.final-solo-active {
+    --solo-focus-duration: 1800ms;
+    isolation: isolate;
+  }
+  .roulette-card.final-solo-active::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    z-index: 2;
+    border-radius: 12px;
+    box-shadow: 0 0 0 36px var(--cream);
+    pointer-events: none;
+  }
+  .roulette-card.final-solo-active .roulette-face {
+    will-change: filter, transform;
+    filter: blur(48px) saturate(.82) brightness(.95);
+    transform: scale(1.11) translate3d(0, 0, 0);
+    animation: finalSoloBlurDrift 1.08s ease-in-out infinite alternate;
+  }
+  .roulette-card.final-solo-active.final-solo-reduced .roulette-face {
+    animation: none;
+    filter: blur(46px) saturate(.88) brightness(.96);
+    transform: scale(1.045);
+  }
+  .roulette-card.final-solo-active.final-solo-stopping .roulette-face {
+    animation: none;
+    filter: blur(0) saturate(1) brightness(1);
+    transform: scale(1) translate3d(0, 0, 0);
+    transition:
+      filter var(--solo-focus-duration) cubic-bezier(.72, 0, .88, .46),
+      transform var(--solo-focus-duration) cubic-bezier(.35, .05, .2, 1);
+  }
+  @keyframes finalSoloBlurDrift {
+    0% {
+      filter: blur(62px) saturate(.72) brightness(.92);
+      transform: scale(1.14) translate3d(-1.4%, 1%, 0);
+    }
+    34% {
+      filter: blur(42px) saturate(.9) brightness(.97);
+      transform: scale(1.095) translate3d(1.2%, -1.3%, 0);
+    }
+    68% {
+      filter: blur(56px) saturate(.78) brightness(.94);
+      transform: scale(1.125) translate3d(.8%, 1.4%, 0);
+    }
+    100% {
+      filter: blur(36px) saturate(.94) brightness(.99);
+      transform: scale(1.085) translate3d(-1%, -.8%, 0);
+    }
+  }
+
+  /* Unified button system */
+  :root {
+    --button-primary-bg: var(--blue);
+    --button-primary-hover: #3478a6;
+    --button-secondary-bg: #e7f2f8;
+    --button-secondary-hover: #d9ebf4;
+    --button-secondary-text: var(--blue-dark);
+    --button-neutral-bg: #edf3f6;
+    --button-neutral-hover: #e2ebf0;
+    --button-danger-bg: #f8e8e8;
+    --button-danger-hover: #f3dada;
+    --button-danger-text: var(--danger);
+    --button-on-dark-bg: rgba(255,255,255,.14);
+    --button-on-dark-hover: rgba(255,255,255,.22);
+  }
+
+  /* Text buttons use filled surfaces rather than outline-only variants. */
+  .button {
+    border: 0;
+    box-shadow: none;
+  }
+  .button:hover { filter: none; }
+  .primary { background: var(--button-primary-bg); color: #fff; }
+  .primary:hover { background: var(--button-primary-hover); }
+  .secondary {
+    border: 0;
+    background: var(--button-secondary-bg);
+    color: var(--button-secondary-text);
+  }
+  .secondary:hover { background: var(--button-secondary-hover); }
+  .ghost { background: var(--button-neutral-bg); color: var(--ink); }
+  .ghost:hover { background: var(--button-neutral-hover); }
+  .danger-soft {
+    border: 0;
+    background: var(--button-danger-bg);
+    color: var(--button-danger-text);
+  }
+  .danger-soft:hover { background: var(--button-danger-hover); }
+  .danger-solid { border: 0; background: var(--danger); color: #fff; }
+  .danger-solid:hover { background: #a74343; }
+
+  /* Header icon buttons share the same borderless translucent treatment. */
+  .top-button {
+    border: 0;
+    background: var(--button-on-dark-bg);
+    box-shadow: none;
+  }
+  .top-button:hover { background: var(--button-on-dark-hover); filter: none; }
+
+  /* Neutral close buttons and destructive participant removal use the same circular construction. */
+  .close-x {
+    border: 0;
+    background: var(--button-neutral-bg);
+    box-shadow: none;
+  }
+  .close-x:hover { background: var(--button-neutral-hover); }
+  .participant-remove {
+    border: 0;
+    background: var(--button-danger-bg);
+    color: var(--button-danger-text);
+    box-shadow: none;
+  }
+  .participant-remove:hover { background: var(--button-danger-hover); }
+
+  /* Popover commands remain flat until hover, matching neutral auxiliary actions. */
+  .menu-option {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .menu-option:hover {
+    border: 0;
+    background: var(--button-neutral-bg);
+  }
+
+  /* Reset choices are filled action cards, not outlined panels. */
+  .reset-option {
+    border: 0;
+    background: var(--button-secondary-bg);
+    color: var(--button-secondary-text);
+    box-shadow: none;
+  }
+  .reset-option:hover {
+    border: 0;
+    background: var(--button-secondary-hover);
+    box-shadow: none;
+  }
+  .reset-option-icon {
+    background: rgba(255,255,255,.72);
+    color: var(--button-secondary-text);
+  }
+  .reset-option.destructive {
+    border: 0;
+    background: var(--button-danger-bg);
+    color: var(--button-danger-text);
+  }
+  .reset-option.destructive:hover {
+    border: 0;
+    background: var(--button-danger-hover);
+  }
+  .reset-option.destructive .reset-option-icon {
+    background: rgba(255,255,255,.72);
+    color: var(--button-danger-text);
+  }
+  .reset-option.destructive .reset-option-title { color: var(--button-danger-text); }
+
+  /* Selector buttons are intentionally transparent controls; focus and selection supply their state. */
+  .step-option { border: 0; box-shadow: none; }
 
 </style>
 </head>
@@ -1458,9 +1699,9 @@
       </div>
         <div class="participant-grid" id="participantGrid"></div>
         <div class="editor-actions">
-          <button class="button secondary" id="addImageBtn">画像を追加</button>
-          <button class="button ghost" id="addNameBtn">名前を追加</button>
-          <button class="button ghost" id="backToIntroBtn">はじめに戻る</button>
+          <button class="button primary" id="addImageBtn">画像を追加</button>
+          <button class="button secondary" id="addNameBtn">名前を追加</button>
+          <button class="button danger-soft" id="backToIntroBtn">はじめに戻る</button>
       </div>
         <div class="loading-line" id="loadingLine" hidden></div>
         <div class="start-row">
@@ -1494,7 +1735,7 @@
     <main class="stage">
       <div class="stage-visual" id="stageVisual"><div class="roulette-card" id="rouletteCard"><div class="roulette-face media-box" id="rouletteFace"></div></div></div>
       <div class="result-summary">
-        <div class="current-name" id="currentName"></div>
+        <div class="current-name" id="currentName" role="status" aria-live="polite" aria-atomic="true"></div>
         <div class="progress-panel" id="progressPanel" role="status" aria-live="polite">
           <div class="progress-copy"><span id="orderStatus">まだ選ばれていません</span><span id="remainingStatus"></span></div>
           <div class="progress-track" id="progressTrack" role="progressbar" aria-label="順番の決定状況" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><span class="progress-fill" id="progressFill"></span></div>
@@ -1504,7 +1745,7 @@
   </main>
 
     <aside class="history-panel">
-      <div class="history-head"><h2>決まった順番</h2><div class="history-controls"><span id="historyCount">0人</span><button class="button ghost result-button" id="showResultsBtn" disabled>結果一覧</button></div></div>
+      <div class="history-head"><h2>決まった順番</h2><div class="history-controls"><button class="button ghost result-button" id="showResultsBtn" disabled>結果一覧</button></div></div>
       <div class="history-list-wrap" id="historyListWrap"><div class="history-list" id="historyList"></div></div>
   </aside>
 </div>
@@ -1526,7 +1767,7 @@
 
 <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
   <div class="modal-box small">
-    <div class="modal-head"><h2 id="settingsTitle">ルーレット設定</h2><button class="close-x" id="closeSettingsBtn" aria-label="閉じる">×</button></div>
+    <div class="modal-head"><h2 id="settingsTitle">設定</h2><button class="close-x" id="closeSettingsBtn" aria-label="閉じる">×</button></div>
     <div class="modal-body">
       <div class="settings-grid">
         <section class="settings-group" aria-labelledby="behaviorSettingsTitle">
@@ -1551,7 +1792,7 @@
               </div>
             </div>
             <div class="setting toggle-row setting-toggle">
-              <div class="toggle-copy"><label for="oneTouchToggle">ワンタッチでスタート&amp;ストップ</label><small>ルーレットの枠内を押すと回転し自動で停止します</small></div>
+              <div class="toggle-copy"><label for="oneTouchToggle">ワンタッチでスタート&amp;ストップ</label><small>ルーレットを押すと回転が始まり自動で停止します</small></div>
               <label class="switch-control" aria-label="ワンタッチでスタート&ストップ"><input class="toggle-input" type="checkbox" id="oneTouchToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
             </div>
           </div>
@@ -1560,7 +1801,7 @@
           <h3 class="settings-group-title" id="appearanceSettingsTitle">表示と演出</h3>
           <div class="settings-group-content">
             <div class="setting toggle-row setting-toggle">
-              <div class="toggle-copy"><label for="hideSelectedToggle">回転中に選出済みを表示しない</label><small class="note-lines"><span>選出済みの参加者を回転中だけ表示しません</span><span>ルーレットの結果には影響しません</span></small></div>
+              <div class="toggle-copy"><label for="hideSelectedToggle">回転中に選出済みを表示しない</label><small class="note-lines"><span>順番が決まった参加者を回転中に表示しません</span><span>ルーレットの結果には影響しません</span></small></div>
               <label class="switch-control" aria-label="回転中に選出済みを表示しない"><input class="toggle-input" type="checkbox" id="hideSelectedToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
             </div>
             <div class="setting toggle-row setting-toggle">
@@ -1577,7 +1818,7 @@
 
 <div class="modal-backdrop" id="resetModal" role="dialog" aria-modal="true" aria-labelledby="resetTitle" hidden>
   <div class="modal-box reset-modal-box">
-    <div class="modal-head"><h2 id="resetTitle">リセット</h2><button class="close-x" id="closeResetBtn" aria-label="閉じる">×</button></div>
+    <div class="modal-head"><h2 id="resetTitle">リセット</h2></div>
     <div class="modal-body">
       <div class="reset-options">
         <button class="reset-option" id="restartRouletteBtn">
@@ -1600,7 +1841,6 @@
 
 <div class="modal-backdrop" id="confirmModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText" hidden>
   <div class="modal-box small confirm-modal-box">
-    <button class="close-x confirm-close" id="closeConfirmBtn" aria-label="閉じる">×</button>
     <div class="confirm-content">
       <div class="confirm-icon" id="confirmIcon" aria-hidden="true"></div>
       <h2 class="confirm-title" id="confirmTitle">確認</h2>
@@ -1662,6 +1902,7 @@
     spinPool: [],
     poolPosition: 0,
     spinTimer: null,
+    lastSpinTickAt: 0,
     stopTimer: null,
     autoStopTimer: null,
     soundOn: DEFAULT_SETTINGS.soundOn,
@@ -1676,7 +1917,10 @@
     confirmAction: null,
     confirmCancelAction: null,
     settingsDraftSoundOn: DEFAULT_SETTINGS.soundOn,
-    settingsSnapshot: null
+    settingsSnapshot: null,
+    isPristineNameOnly: false,
+    isEditorOpen: false,
+    isFinalSoloSpin: false
   };
 
   const $ = id => document.getElementById(id);
@@ -1701,7 +1945,6 @@
   const mainButton = $("mainButton");
   const historyList = $("historyList");
   const historyListWrap = $("historyListWrap");
-  const historyCount = $("historyCount");
   const showResultsBtn = $("showResultsBtn");
   const playLayout = document.querySelector(".play-layout");
   const resultsModal = $("resultsModal");
@@ -1813,9 +2056,8 @@
 
   function updateEditorVisibility() {
     const count = state.participants.length;
-    const hasParticipants = count > 0;
-    introSection.hidden = hasParticipants;
-    editorSection.hidden = !hasParticipants;
+    introSection.hidden = state.isEditorOpen;
+    editorSection.hidden = !state.isEditorOpen;
     participantCount.textContent = `${count}人`;
     const tooFew = count < 2;
     beginBtn.disabled = state.phase === Phase.LOADING;
@@ -1837,16 +2079,25 @@
       input.value = participant.name;
       input.maxLength = 40;
       input.setAttribute("aria-label", `${index + 1}人目の名前`);
-      input.addEventListener("input", () => { participant.name = input.value; });
+      input.addEventListener("input", () => {
+        participant.name = input.value;
+        state.isPristineNameOnly = false;
+      });
 
-      const actions = document.createElement("div");
-      actions.className = "card-actions";
       const remove = document.createElement("button");
-      remove.className = "icon-button remove";
-      remove.textContent = "削除";
+      remove.className = "participant-remove";
+      remove.type = "button";
+      remove.textContent = "×";
+      const updateRemoveLabel = () => {
+        const labelName = participant.name.trim() || `${index + 1}人目`;
+        const label = `${labelName}を削除`;
+        remove.setAttribute("aria-label", label);
+        remove.title = label;
+      };
+      updateRemoveLabel();
+      input.addEventListener("input", updateRemoveLabel);
       remove.addEventListener("click", () => removeParticipant(participant.id));
-      actions.append(remove);
-      card.append(media, input, actions);
+      card.append(media, input, remove);
       participantGrid.appendChild(card);
     });
     updateEditorVisibility();
@@ -1854,6 +2105,7 @@
 
 
   function removeParticipant(id) {
+    state.isPristineNameOnly = false;
     const index = state.participants.findIndex(participant => participant.id === id);
     if (index < 0) return;
     releaseParticipant(state.participants[index]);
@@ -1886,6 +2138,7 @@
   }
 
   function addNameParticipant({ fixedApple = false, keepActionButton = null, selectNewInput = true } = {}) {
+    state.isPristineNameOnly = false;
     if (state.participants.length >= MAX_PARTICIPANTS) {
       showToast("参加者は最大30人です");
       return;
@@ -1906,11 +2159,14 @@
   function startNameOnly() {
     releaseAllParticipants();
     state.participants = [];
+    state.isEditorOpen = true;
     addNameParticipant({ fixedApple: true, selectNewInput: false });
+    state.isPristineNameOnly = true;
     requestAnimationFrame(() => document.activeElement?.blur());
   }
 
   function loadSample() {
+    state.isPristineNameOnly = false;
     releaseAllParticipants();
     state.participants = shuffled(sampleParticipants).slice(0, 8).map(participantFromSample);
     enterRoulette();
@@ -1961,6 +2217,7 @@
   }
 
   async function handleImageFiles(fileList, editorAnchor = null) {
+    state.isPristineNameOnly = false;
     const available = MAX_PARTICIPANTS - state.participants.length;
     if (available <= 0) {
       showToast("参加者は最大30人です");
@@ -1996,6 +2253,7 @@
       addImageBtn.textContent = progressText;
     }
     state.phase = Phase.SETUP;
+    if (state.participants.length > 0 || editorAnchor) state.isEditorOpen = true;
     loadingLine.hidden = true;
     firstImageBtn.disabled = false;
     addImageBtn.disabled = false;
@@ -2055,6 +2313,7 @@
   function returnToEditorView() {
     stopTimers();
     state.phase = Phase.SETUP;
+    state.isEditorOpen = true;
     rouletteView.hidden = true;
     setupView.hidden = false;
     renderEditor();
@@ -2079,6 +2338,8 @@
     state.currentId = null;
     state.spinPool = [];
     state.poolPosition = 0;
+    state.isPristineNameOnly = false;
+    state.isEditorOpen = false;
     state.phase = Phase.SETUP;
     rouletteView.hidden = true;
     setupView.hidden = false;
@@ -2126,13 +2387,16 @@
     openModal(resetModal, $("restartRouletteBtn"));
   }
 
-  function stopTimers() {
+  function stopTimers({ preserveFinalSolo = false } = {}) {
     clearInterval(state.spinTimer);
     clearTimeout(state.stopTimer);
     clearTimeout(state.autoStopTimer);
     state.spinTimer = null;
+    state.lastSpinTickAt = 0;
     state.stopTimer = null;
     state.autoStopTimer = null;
+    stopActiveTickSources();
+    if (!preserveFinalSolo) clearFinalSoloAnimation();
   }
 
   function randomInt(maxExclusive) {
@@ -2157,7 +2421,7 @@
     return state.settings.hideSelectedDuringSpin ? unselected : [...state.participants];
   }
 
-  function showParticipant(participant, selected = false) {
+  function showParticipant(participant, selected = false, showName = true) {
     rouletteFace.replaceChildren();
     if (participant?.type === "image") {
       const img = document.createElement("img");
@@ -2171,28 +2435,37 @@
       emoji.textContent = participant.value;
       rouletteFace.appendChild(emoji);
     }
-    currentName.textContent = participant?.name || "";
-    applyNameClass(currentName, participant?.name || "");
+    const displayName = showName ? (participant?.name || "") : "";
+    currentName.classList.remove("result-reveal");
+    currentName.textContent = displayName;
+    applyNameClass(currentName, displayName);
     rouletteCard.classList.toggle("selected", selected);
+    if (selected && displayName && !state.settings.reduceEffects) {
+      void currentName.offsetWidth;
+      currentName.classList.add("result-reveal");
+    }
   }
 
   function updateRouletteInteraction() {
     const enabled = state.settings.oneTouch;
-    mainButton.hidden = enabled && state.phase !== Phase.COMPLETE;
-    $("mainButtonSlot").hidden = mainButton.hidden;
+    const busy = state.phase === Phase.SPINNING || state.phase === Phase.STOPPING;
+    mainButton.hidden = enabled;
+    $("mainButtonSlot").hidden = enabled;
     rouletteCard.classList.toggle("one-touch", enabled);
-    rouletteCard.classList.toggle("busy", enabled && (state.phase === Phase.SPINNING || state.phase === Phase.STOPPING));
+    rouletteCard.classList.toggle("busy", enabled && busy);
+    rouletteCard.classList.toggle("complete-action", enabled && state.phase === Phase.COMPLETE);
     if (enabled) {
       rouletteCard.setAttribute("role", "button");
       rouletteCard.tabIndex = 0;
-      const label = state.phase === Phase.SPINNING || state.phase === Phase.STOPPING
+      const label = busy
         ? "ルーレットを処理中"
         : state.phase === Phase.COMPLETE
-          ? "全員の順番が決まりました"
+          ? "全員の順番が決まりました リセットメニューを開く"
           : "ルーレットをスタート";
       rouletteCard.setAttribute("aria-label", label);
-      rouletteCard.setAttribute("aria-disabled", String(state.phase === Phase.SPINNING || state.phase === Phase.STOPPING || state.phase === Phase.COMPLETE));
+      rouletteCard.setAttribute("aria-disabled", String(busy));
     } else {
+      rouletteCard.classList.remove("complete-action");
       rouletteCard.removeAttribute("role");
       rouletteCard.removeAttribute("tabindex");
       rouletteCard.removeAttribute("aria-label");
@@ -2235,13 +2508,12 @@
     requestAnimationFrame(() => focusableElements(menuPopover)[0]?.focus());
   }
 
-  function renderPlayState() {
+  function renderPlayState({ updateHistory = true } = {}) {
     const total = state.participants.length;
     const decided = state.order.length;
     const remaining = total - decided;
     const busy = state.phase === Phase.SPINNING || state.phase === Phase.STOPPING;
     remainingStatus.textContent = `残り${remaining}人`;
-    historyCount.textContent = `${decided}人`;
     showResultsBtn.disabled = decided === 0;
     progressTrack.setAttribute("aria-valuemax", String(total));
     progressTrack.setAttribute("aria-valuenow", String(decided));
@@ -2277,7 +2549,7 @@
       orderStatus.textContent = decided ? `${decided}番まで決定` : "まだ選ばれていません";
     }
     updateRouletteInteraction();
-    renderHistory();
+    if (updateHistory) renderHistory();
   }
 
   function updateHistoryScrollHint() {
@@ -2319,68 +2591,256 @@
   }
 
   let audioContext = null;
+  let effectMasterGain = null;
+  let effectCompressor = null;
+  let tickOutputGain = null;
+  let tickBuffer = null;
+  const activeTickSources = new Set();
+
+  function createTickBuffer(context) {
+    const duration = .016;
+    const frameCount = Math.max(1, Math.round(context.sampleRate * duration));
+    const buffer = context.createBuffer(1, frameCount, context.sampleRate);
+    const channel = buffer.getChannelData(0);
+    let phasePrimary = 0;
+    let phaseOvertone = 0;
+    for (let index = 0; index < frameCount; index += 1) {
+      const time = index / context.sampleRate;
+      const progress = time / duration;
+      const frequency = 1120 - 360 * progress;
+      phasePrimary += 2 * Math.PI * frequency / context.sampleRate;
+      phaseOvertone += 2 * Math.PI * frequency * 1.72 / context.sampleRate;
+      const attack = Math.min(1, time / .0012);
+      const decay = Math.exp(-time * 235);
+      channel[index] = (Math.sin(phasePrimary) + .34 * Math.sin(phaseOvertone)) * attack * decay * .72;
+    }
+    return buffer;
+  }
+
   function ensureAudio() {
-    if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+      tickOutputGain = audioContext.createGain();
+      tickOutputGain.gain.value = .92;
+      tickOutputGain.connect(audioContext.destination);
+      tickBuffer = createTickBuffer(audioContext);
+
+      effectMasterGain = audioContext.createGain();
+      effectMasterGain.gain.value = .92;
+      effectCompressor = audioContext.createDynamicsCompressor();
+      effectCompressor.threshold.value = -7;
+      effectCompressor.knee.value = 8;
+      effectCompressor.ratio.value = 2.6;
+      effectCompressor.attack.value = .002;
+      effectCompressor.release.value = .12;
+      effectMasterGain.connect(effectCompressor);
+      effectCompressor.connect(audioContext.destination);
+    }
     if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
   }
-  function playTick() {
-    if (!state.soundOn || !audioContext) return;
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    oscillator.type = "square";
-    oscillator.frequency.value = 650;
-    gain.gain.setValueAtTime(.055, audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + .045);
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + .05);
+
+  function connectEffectAudio(node) {
+    node.connect(effectMasterGain || audioContext.destination);
   }
-  function playStop() {
-    if (!state.soundOn || !audioContext) return;
-    [523, 659, 784].forEach((frequency, index) => {
+
+  function stopActiveTickSources() {
+    activeTickSources.forEach(source => {
+      try { source.stop(); } catch (error) { /* Already stopped. */ }
+      try { source.disconnect(); } catch (error) { /* Already disconnected. */ }
+    });
+    activeTickSources.clear();
+  }
+
+  function playTick() {
+    if (!state.soundOn || !audioContext || !tickBuffer || !tickOutputGain) return;
+    stopActiveTickSources();
+    const source = audioContext.createBufferSource();
+    source.buffer = tickBuffer;
+    source.connect(tickOutputGain);
+    activeTickSources.add(source);
+    source.addEventListener("ended", () => {
+      activeTickSources.delete(source);
+      try { source.disconnect(); } catch (error) { /* Already disconnected. */ }
+    }, { once: true });
+    source.start(audioContext.currentTime);
+  }
+
+  function scheduleResultTone(frequency, startTime, duration, level) {
+    [
+      { type: "sine", ratio: 1, gain: level },
+      { type: "triangle", ratio: 2, gain: level * .30 }
+    ].forEach(voice => {
       const oscillator = audioContext.createOscillator();
       const gain = audioContext.createGain();
-      const time = audioContext.currentTime + index * .085;
-      oscillator.type = "triangle";
-      oscillator.frequency.value = frequency;
-      gain.gain.setValueAtTime(.0001, time);
-      gain.gain.exponentialRampToValueAtTime(.15, time + .02);
-      gain.gain.exponentialRampToValueAtTime(.0001, time + .32);
+      oscillator.type = voice.type;
+      oscillator.frequency.setValueAtTime(frequency * voice.ratio, startTime);
+      gain.gain.setValueAtTime(.0001, startTime);
+      gain.gain.exponentialRampToValueAtTime(voice.gain, startTime + .014);
+      gain.gain.setTargetAtTime(.0001, startTime + Math.max(.09, duration * .34), Math.max(.045, duration * .17));
       oscillator.connect(gain);
-      gain.connect(audioContext.destination);
-      oscillator.start(time);
-      oscillator.stop(time + .34);
+      connectEffectAudio(gain);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration + .12);
     });
+  }
+
+  function playStop(isComplete = false) {
+    if (!state.soundOn || !audioContext) return;
+    stopActiveTickSources();
+    const start = audioContext.currentTime + .028;
+    const notes = isComplete
+      ? [
+          { frequency: 659.25, duration: .50, level: .48 },
+          { frequency: 880.00, duration: .52, level: .50 },
+          { frequency: 1108.73, duration: .78, level: .53 }
+        ]
+      : [
+          { frequency: 659.25, duration: .50, level: .48 },
+          { frequency: 880.00, duration: .56, level: .51 }
+        ];
+    notes.forEach((note, index) => {
+      scheduleResultTone(note.frequency, start + index * .12, note.duration, note.level);
+    });
+  }
+
+  function clearFinalSoloAnimation() {
+    state.isFinalSoloSpin = false;
+    rouletteCard.classList.remove("final-solo-active", "final-solo-reduced", "final-solo-stopping");
+    rouletteCard.style.removeProperty("--solo-focus-duration");
+    rouletteFace.style.removeProperty("transition");
+    rouletteFace.style.removeProperty("filter");
+    rouletteFace.style.removeProperty("transform");
+  }
+
+  function beginFinalSoloAnimation() {
+    state.isFinalSoloSpin = true;
+    rouletteCard.classList.add("final-solo-active");
+    rouletteCard.classList.toggle("final-solo-reduced", state.settings.reduceEffects);
+    rouletteCard.classList.remove("final-solo-stopping");
+  }
+
+  function beginFinalSoloFocusTransition(durationMs) {
+    const duration = Math.max(420, Math.round(Number(durationMs) || 1200));
+    const currentStyle = getComputedStyle(rouletteFace);
+    const currentFilter = currentStyle.filter;
+    const currentTransform = currentStyle.transform;
+
+    rouletteCard.style.setProperty("--solo-focus-duration", `${duration}ms`);
+    rouletteFace.style.transition = "none";
+    rouletteFace.style.filter = currentFilter;
+    rouletteFace.style.transform = currentTransform;
+    rouletteCard.classList.add("final-solo-stopping");
+    void rouletteFace.offsetWidth;
+
+    rouletteFace.style.transition = [
+      `filter ${duration}ms cubic-bezier(.72, 0, .88, .46)`,
+      `transform ${duration}ms cubic-bezier(.35, .05, .2, 1)`
+    ].join(", ");
+    rouletteFace.style.filter = "blur(0) saturate(1) brightness(1)";
+    rouletteFace.style.transform = "scale(1) translate3d(0, 0, 0)";
+  }
+
+  function startFinalSoloSpin(target, interval) {
+    state.spinPool = [target];
+    state.poolPosition = 0;
+    state.currentId = target.id;
+    showParticipant(target, false, false);
+    void rouletteFace.offsetWidth;
+    beginFinalSoloAnimation();
+    state.phase = Phase.SPINNING;
+    renderPlayState({ updateHistory: false });
+
+    const tick = () => {
+      state.lastSpinTickAt = performance.now();
+      playTick();
+      state.spinTimer = setTimeout(tick, interval);
+    };
+    tick();
+  }
+
+  function stopFinalSoloSpin(target, elapsedSinceTick) {
+    const config = stopMap[state.settings.stopLength];
+    const baseDelay = speedMap[state.settings.speed];
+    const totalSteps = Math.max(8, Math.round(config.minSteps * .68));
+    const stepDelays = Array.from({ length: totalSteps }, (_, index) => {
+      const progress = Math.min(1, index / Math.max(1, totalSteps - 1));
+      return Math.round(baseDelay + (config.maxDelay - baseDelay) * easeInCubic(progress));
+    });
+    const firstDelay = Math.max(4, Math.min(baseDelay, baseDelay - elapsedSinceTick));
+    const focusDuration = firstDelay + stepDelays.slice(1).reduce((sum, delay) => sum + delay, 0);
+    let completed = 0;
+
+    state.phase = Phase.STOPPING;
+    beginFinalSoloFocusTransition(focusDuration);
+    renderPlayState({ updateHistory: false });
+
+    const advance = () => {
+      state.lastSpinTickAt = performance.now();
+      playTick();
+      completed += 1;
+      if (completed < totalSteps) {
+        state.stopTimer = setTimeout(advance, stepDelays[completed]);
+      } else {
+        finishSelection(target);
+      }
+    };
+
+    state.stopTimer = setTimeout(advance, firstDelay);
   }
 
   function startSpin() {
     const pool = buildSpinPool();
     if (!pool.length) return;
+    document.querySelectorAll(".selection-overlay-card").forEach(element => element.remove());
     stopTimers();
+    const interval = speedMap[state.settings.speed];
+    const isFinalSolo = state.settings.hideSelectedDuringSpin && pool.length === 1 && getUnselected().length === 1;
+    if (isFinalSolo) {
+      startFinalSoloSpin(pool[0], interval);
+      return;
+    }
+
     state.spinPool = pool;
     const currentPosition = pool.findIndex(participant => participant.id === state.currentId);
     state.poolPosition = currentPosition >= 0 ? currentPosition : 0;
     state.phase = Phase.SPINNING;
     rouletteCard.classList.remove("selected", "pop");
-    renderPlayState();
-    const interval = speedMap[state.settings.speed];
-    state.spinTimer = setInterval(() => {
+    currentName.classList.remove("result-reveal");
+    currentName.textContent = "";
+    applyNameClass(currentName, "");
+    renderPlayState({ updateHistory: false });
+    const advanceSpin = () => {
       state.poolPosition = (state.poolPosition + 1) % state.spinPool.length;
       const participant = state.spinPool[state.poolPosition];
       state.currentId = participant.id;
-      showParticipant(participant, false);
+      showParticipant(participant, false, false);
+      state.lastSpinTickAt = performance.now();
       playTick();
-    }, interval);
+      state.spinTimer = setTimeout(advanceSpin, interval);
+    };
+    state.lastSpinTickAt = performance.now();
+    state.spinTimer = setTimeout(advanceSpin, interval);
   }
 
   function easeInCubic(t) { return t * t * t; }
 
   function stopSpin() {
-    stopTimers();
+    const stopRequestedAt = performance.now();
+    const elapsedSinceTick = state.lastSpinTickAt
+      ? Math.max(0, stopRequestedAt - state.lastSpinTickAt)
+      : 0;
+    const wasFinalSolo = state.isFinalSoloSpin;
+    stopTimers({ preserveFinalSolo: wasFinalSolo });
     const candidates = getUnselected();
     if (!candidates.length) return;
     const target = candidates[randomInt(candidates.length)];
+
+    if (wasFinalSolo) {
+      stopFinalSoloSpin(target, elapsedSinceTick);
+      return;
+    }
+
     const targetPosition = state.spinPool.findIndex(participant => participant.id === target.id);
     const poolLength = state.spinPool.length;
     const forward = (targetPosition - state.poolPosition + poolLength) % poolLength;
@@ -2393,7 +2853,7 @@
     let completed = 0;
 
     state.phase = Phase.STOPPING;
-    renderPlayState();
+    renderPlayState({ updateHistory: false });
 
     const nextDelay = () => {
       if (completed < easingStart) return baseDelay;
@@ -2402,10 +2862,12 @@
     };
 
     const advance = () => {
+      const currentDelay = nextDelay();
       state.poolPosition = (state.poolPosition + 1) % poolLength;
       const participant = state.spinPool[state.poolPosition];
       state.currentId = participant.id;
-      showParticipant(participant, false);
+      showParticipant(participant, false, false);
+      state.lastSpinTickAt = performance.now();
       playTick();
       completed += 1;
       if (completed < totalSteps) {
@@ -2414,7 +2876,8 @@
         finishSelection(target);
       }
     };
-    state.stopTimer = setTimeout(advance, nextDelay());
+    const firstDelay = Math.max(4, Math.min(baseDelay, baseDelay - elapsedSinceTick));
+    state.stopTimer = setTimeout(advance, firstDelay);
   }
 
   function playSelectionOverlay() {
@@ -2437,14 +2900,16 @@
   }
 
   function finishSelection(target) {
+    clearFinalSoloAnimation();
     state.currentId = target.id;
     state.order.push(target.id);
     state.selectedIds.add(target.id);
-    state.phase = state.order.length === state.participants.length ? Phase.COMPLETE : Phase.RESULT;
-    showParticipant(target, true);
+    const isComplete = state.order.length === state.participants.length;
+    state.phase = isComplete ? Phase.COMPLETE : Phase.RESULT;
+    showParticipant(target, true, true);
     rouletteCard.classList.remove("pop");
     playSelectionOverlay();
-    playStop();
+    playStop(isComplete);
     renderPlayState();
   }
 
@@ -2456,7 +2921,7 @@
     state.currentId = previousId;
     state.phase = state.order.length ? Phase.RESULT : Phase.READY;
     const previous = participantById(previousId);
-    showParticipant(previous, Boolean(previous));
+    showParticipant(previous, Boolean(previous), true);
     rouletteCard.classList.remove("pop");
     renderPlayState();
     showToast("直前の結果を取り消しました", 2200);
@@ -2472,6 +2937,7 @@
     state.phase = rouletteView.hidden ? Phase.SETUP : Phase.READY;
     showParticipant(null, false);
     rouletteCard.classList.remove("selected", "pop");
+    clearFinalSoloAnimation();
     if (render) renderPlayState();
   }
 
@@ -2511,8 +2977,32 @@
 
   function setupStepSelector(selector) {
     const options = Array.from(selector.querySelectorAll(".step-option"));
+    let dragState = null;
+    let suppressClickUntil = 0;
+
+    const nearestOptionIndex = clientX => {
+      let nearestIndex = 0;
+      let nearestDistance = Infinity;
+      options.forEach((option, index) => {
+        const rect = option.getBoundingClientRect();
+        const center = rect.left + rect.width / 2;
+        const distance = Math.abs(clientX - center);
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestIndex = index;
+        }
+      });
+      return nearestIndex;
+    };
+
     options.forEach((option, index) => {
-      option.addEventListener("click", () => setStepSelector(selector, option.dataset.value));
+      option.addEventListener("click", event => {
+        if (performance.now() < suppressClickUntil) {
+          event.preventDefault();
+          return;
+        }
+        setStepSelector(selector, option.dataset.value);
+      });
       option.addEventListener("keydown", event => {
         if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
         event.preventDefault();
@@ -2524,6 +3014,51 @@
         setStepSelector(selector, options[nextIndex].dataset.value, true);
       });
     });
+
+    selector.addEventListener("pointerdown", event => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      const selectedOption = selector.querySelector('.step-option[aria-checked="true"]');
+      if (!selectedOption?.contains(event.target)) return;
+      dragState = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        dragging: false
+      };
+    });
+
+    selector.addEventListener("pointermove", event => {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+      const deltaX = event.clientX - dragState.startX;
+      const deltaY = event.clientY - dragState.startY;
+      if (!dragState.dragging) {
+        if (Math.hypot(deltaX, deltaY) < 8) return;
+        if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+          dragState = null;
+          return;
+        }
+        dragState.dragging = true;
+        selector.classList.add("is-dragging");
+        selector.setPointerCapture?.(event.pointerId);
+      }
+      event.preventDefault();
+      const index = nearestOptionIndex(event.clientX);
+      setStepSelector(selector, options[index].dataset.value);
+    });
+
+    const finishDrag = event => {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+      if (dragState.dragging) {
+        event.preventDefault();
+        suppressClickUntil = performance.now() + 350;
+        if (selector.hasPointerCapture?.(event.pointerId)) selector.releasePointerCapture(event.pointerId);
+      }
+      selector.classList.remove("is-dragging");
+      dragState = null;
+    };
+    selector.addEventListener("pointerup", finishDrag);
+    selector.addEventListener("pointercancel", finishDrag);
+
     setStepSelector(selector, selector.dataset.value || options[0].dataset.value);
   }
 
@@ -2577,6 +3112,7 @@
       icon: "warning",
       action: forceCloseSettings,
       okLabel: "保存せず閉じる",
+      cancelLabel: "設定に戻る",
       tone: "danger",
       singleLineTitle: true
     });
@@ -2611,6 +3147,7 @@
     message = "",
     action,
     okLabel = "実行する",
+    cancelLabel = "キャンセル",
     tone = "primary",
     icon = "warning",
     compactTitle = false,
@@ -2628,6 +3165,7 @@
     confirmIcon.hidden = !icon;
     confirmIcon.innerHTML = icon ? (confirmIconMarkup[icon] || confirmIconMarkup.warning) : "";
     confirmIcon.classList.toggle("danger", tone === "danger");
+    $("confirmCancelBtn").textContent = cancelLabel;
     $("confirmOkBtn").textContent = okLabel;
     $("confirmOkBtn").className = `button ${tone === "danger" ? "danger-solid" : "primary"}`;
     openModal(confirmModal, $("confirmCancelBtn"));
@@ -2777,14 +3315,20 @@
     pendingImageEditorAnchor = null;
     handleImageFiles(files, anchor);
   });
-  $("backToIntroBtn").addEventListener("click", () => openConfirm({
-    title: "はじめの画面に戻りますか？",
-    message: "登録した参加者とこれまでの結果はすべて消えます",
-    icon: "home",
-    action: returnToStart,
-    okLabel: "はじめに戻る",
-    tone: "danger"
-  }));
+  $("backToIntroBtn").addEventListener("click", () => {
+    if (state.isPristineNameOnly || state.participants.length === 0) {
+      returnToStart();
+      return;
+    }
+    openConfirm({
+      title: "はじめの画面に戻りますか？",
+      message: "登録した参加者はすべてリセットされます",
+      icon: "home",
+      action: returnToStart,
+      okLabel: "はじめに戻る",
+      tone: "danger"
+    });
+  });
   beginBtn.addEventListener("click", enterRoulette);
 
   mainButton.addEventListener("click", () => {
@@ -2796,6 +3340,10 @@
 
   function activateOneTouch() {
     if (!state.settings.oneTouch) return;
+    if (state.phase === Phase.COMPLETE) {
+      openReset();
+      return;
+    }
     if (state.phase !== Phase.READY && state.phase !== Phase.RESULT) return;
     ensureAudio();
     startSpin();
@@ -2858,11 +3406,10 @@
     openReset();
   });
 
-  $("closeResetBtn").addEventListener("click", () => closeModal(resetModal));
   $("cancelResetBtn").addEventListener("click", () => closeModal(resetModal));
   $("restartRouletteBtn").addEventListener("click", () => openConfirm({
     title: "ルーレットをやり直しますか？",
-    message: "これまでの結果は消えます",
+    message: "これまでの結果はリセットされます",
     icon: "restart",
     action: () => {
       closeModal(resetModal, false);
@@ -2873,7 +3420,7 @@
   }));
   $("editParticipantsBtn").addEventListener("click", () => openConfirm({
     title: "参加者の編集画面に戻りますか？",
-    message: "これまでの結果は消えます",
+    message: "これまでの結果はリセットされます",
     icon: "edit",
     compactTitle: true,
     action: () => {
@@ -2885,7 +3432,7 @@
   }));
   $("returnToStartBtn").addEventListener("click", () => openConfirm({
     title: "はじめの画面に戻りますか？",
-    message: "登録した参加者とこれまでの結果はすべて消えます",
+    message: "登録内容はすべてリセットされます\nこれまでの結果もリセットされます",
     icon: "home",
     action: () => {
       closeModal(resetModal, false);
@@ -2963,7 +3510,6 @@
   imageErrorModal.addEventListener("keydown", event => handleModalKeys(event, imageErrorModal));
 
   $("confirmCancelBtn").addEventListener("click", dismissConfirm);
-  $("closeConfirmBtn").addEventListener("click", dismissConfirm);
   $("confirmOkBtn").addEventListener("click", acceptConfirm);
   confirmModal.addEventListener("keydown", event => {
     if (event.key === "Escape") {
