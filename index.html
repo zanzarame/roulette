@@ -2,905 +2,2267 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>順番ルーレット</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>順番ルーレット Sui Edition</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
 <style>
   :root {
-    --bg: #1b2a4a;
-    --bg2: #24396a;
-    --frame: #f4d35e;
-    --frame-dark: #e0a800;
-    --window-bg: #fffdf7;
-    --btn: #ee6c4d;
-    --btn-active: #c9503a;
-    --btn-reset: #3a86c9;
-    --btn-reset-active: #2b6aa0;
-    --text: #fffdf7;
-    --shadow: rgba(0,0,0,0.35);
-    --hist-item: clamp(42px, 8vmin, 62px);
-    --top-safe: 70px;
-    --edge: 16px;
-    --pad-m: clamp(10px, 3vmin, 24px);
-    --gap-m: clamp(12px, 3.5vmin, 36px);
-    --btn-f: clamp(22px, 4.5vmin, 34px);
-    --btn-py: clamp(12px, 3vmin, 26px);
-    --btn-px: clamp(34px, 11vmin, 90px);
-    --slot: clamp(160px, 60vmin, 900px);
-    --rsv: 24px;
-    --viewport-h: 100vh;
+    --navy: #17324d;
+    --navy-2: #214a6c;
+    --cream: #fffaf0;
+    --paper: #ffffff;
+    --ink: #17324d;
+    --muted: #657789;
+    --line: #d9e2e8;
+    --accent: #e96b4c;
+    --accent-dark: #bd4d35;
+    --gold: #f2c94c;
+    --blue: #3b82b4;
+    --blue-dark: #28678f;
+    --danger: #b84c4c;
+    --shadow: 0 16px 40px rgba(11, 34, 53, .22);
+    --radius: 22px;
+    --vh: 100vh;
   }
 
   @supports (height: 100dvh) {
-    :root { --viewport-h: 100dvh; }
+    :root { --vh: 100dvh; }
   }
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,.16), transparent 30%),
+      linear-gradient(145deg, var(--navy-2), var(--navy));
+    min-height: var(--vh);
+  }
+  button, input, select { font: inherit; }
+  button { touch-action: manipulation; }
+  [hidden] { display: none !important; }
 
-  @media (orientation: landscape) {
-    :root {
-      --slot: clamp(140px, min(60vh, 74vh - 94px), 1100px);
-      --rsv: 24px;
-    }
+  .view { min-height: var(--vh); }
+  .setup-view {
+    padding: clamp(18px, 3vw, 36px);
+    overflow-y: auto;
   }
-  @media (orientation: portrait) {
-    :root {
-      --slot: clamp(160px, min(82vw, 100vh - 210px - var(--hist-item) - min(24vw, 180px)), 1100px);
-      --rsv: calc(var(--hist-item) + 132px);
-    }
+  .setup-shell {
+    width: min(1160px, 100%);
+    margin: 0 auto;
   }
-  @supports (height: 100dvh) {
-    @media (orientation: landscape) {
-      :root { --slot: clamp(140px, min(60dvh, 74dvh - 94px), 1100px); }
-    }
-    @media (orientation: portrait) {
-      :root { --slot: clamp(160px, min(82vw, 100dvh - 210px - var(--hist-item) - min(24vw, 180px)), 1100px); }
-    }
-  }
-
-  html, body {
-    margin: 0; padding: 0; height: 100%;
-    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
-    background: radial-gradient(circle at 50% 30%, var(--bg2), var(--bg));
-    color: var(--text);
-    overflow: hidden;
-    user-select: none; -webkit-user-select: none;
-  }
-
-  .main-col {
-    position: fixed;
-    left: 50%;
-    top: calc(var(--top-safe) + (var(--viewport-h) - var(--top-safe) - var(--rsv)) / 2);
-    transform: translate(-50%, -50%);
-    display: flex; flex-direction: column;
-    align-items: center; gap: var(--gap-m);
-    z-index: 5;
-  }
-
-  .machine {
-    position: relative;
-    padding: var(--pad-m);
-    background: linear-gradient(160deg, var(--frame), var(--frame-dark));
-    border-radius: 28px;
-    box-shadow: 0 14px 30px var(--shadow), inset 0 2px 6px rgba(255,255,255,0.5);
-  }
-
-  .window {
-    position: relative;
-    width: var(--slot);
-    height: var(--slot);
-    background: var(--window-bg);
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: inset 0 0 0 4px rgba(0,0,0,0.15), inset 0 6px 16px rgba(0,0,0,0.2);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .cell {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: calc(var(--slot) * 0.6);
-    line-height: 1;
-  }
-  .cell img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
-
-  .window::after {
-    content: ""; position: absolute; inset: 0;
-    border-radius: 18px; pointer-events: none;
-    box-shadow: inset 0 0 0 5px rgba(238,108,77,0);
-    transition: box-shadow 0.3s;
-  }
-  .window.stopped::after { box-shadow: inset 0 0 0 5px rgba(238,108,77,0.85); }
-
-  .spin-btn {
-    border: none;
-    background: linear-gradient(160deg, var(--btn), var(--btn-active));
+  .brand {
     color: #fff;
-    font-size: var(--btn-f);
-    line-height: 1.2;
-    font-weight: 800; letter-spacing: 0.08em;
-    padding: var(--btn-py) var(--btn-px);
-    border-radius: 999px; cursor: pointer;
-    box-shadow: 0 10px 0 var(--btn-active), 0 14px 24px var(--shadow);
-    transition: transform 0.08s, box-shadow 0.08s;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
   }
-  .spin-btn:active {
-    transform: translateY(6px);
-    box-shadow: 0 4px 0 var(--btn-active), 0 8px 14px var(--shadow);
+  .brand h1 {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 46px);
+    letter-spacing: .04em;
   }
-  .spin-btn:focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
-  .spin-btn:disabled {
-    background: linear-gradient(160deg, #6b7280, #4b5563);
-    box-shadow: 0 6px 0 #374151, 0 10px 18px rgba(0,0,0,0.28);
-    color: rgba(255,255,255,0.72);
+  .brand p { margin: 8px 0 0; color: rgba(255,255,255,.82); }
+  .privacy-badge {
+    flex: 0 0 auto;
+    border: 1px solid rgba(255,255,255,.4);
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    border-radius: 999px;
+    padding: 9px 14px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .panel {
+    background: rgba(255,255,255,.97);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    padding: clamp(20px, 4vw, 38px);
+  }
+  .intro {
+    display: grid;
+    grid-template-columns: 1.25fr .75fr;
+    gap: clamp(20px, 4vw, 46px);
+    align-items: center;
+  }
+  .intro h2 { margin: 0 0 10px; font-size: clamp(23px, 3vw, 34px); }
+  .intro p { margin: 0; color: var(--muted); line-height: 1.75; }
+  .intro-actions { display: grid; gap: 12px; }
+
+  .button {
+    border: 0;
+    border-radius: 14px;
+    padding: 13px 18px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform .08s, filter .15s, opacity .15s;
+  }
+  .button:hover { filter: brightness(1.04); }
+  .button:active { transform: translateY(2px); }
+  .button:focus-visible { outline: 4px solid rgba(242,201,76,.9); outline-offset: 3px; }
+  .button:disabled { opacity: .42; cursor: not-allowed; transform: none; filter: none; }
+  .primary { background: var(--accent); color: #fff; }
+  .secondary { background: var(--blue); color: #fff; }
+  .ghost { background: #edf3f6; color: var(--ink); }
+  .danger { background: #f8e8e8; color: var(--danger); }
+  .large { min-height: 54px; font-size: 18px; }
+
+  .editor-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .editor-head h2 { margin: 0; font-size: clamp(23px, 3vw, 32px); }
+  .editor-head p { margin: 7px 0 0; color: var(--muted); }
+  .count-badge {
+    min-width: 92px;
+    text-align: center;
+    border-radius: 999px;
+    background: #edf3f6;
+    padding: 10px 16px;
+    font-weight: 800;
+  }
+  .participant-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 15px;
+  }
+  .participant-card {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fff;
+    padding: 12px;
+    box-shadow: 0 5px 14px rgba(11,34,53,.08);
+  }
+  .participant-media {
+    aspect-ratio: 4 / 3;
+    border-radius: 13px;
+    background: var(--cream);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    margin-bottom: 10px;
+    font-size: 72px;
+  }
+  .participant-media img { width: 100%; height: 100%; object-fit: contain; }
+  .name-input {
+    width: 100%;
+    border: 2px solid var(--line);
+    border-radius: 11px;
+    padding: 10px 11px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .name-input:focus { border-color: var(--blue); outline: 3px solid rgba(59,130,180,.18); }
+  .card-actions { display: grid; grid-template-columns: 1fr 1fr auto; gap: 7px; margin-top: 9px; }
+  .icon-button {
+    border: 0;
+    border-radius: 10px;
+    min-height: 38px;
+    background: #edf3f6;
+    color: var(--ink);
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .icon-button.remove { color: var(--danger); background: #f8e8e8; }
+  .icon-button:disabled { opacity: .32; cursor: not-allowed; }
+  .editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .start-row {
+    border-top: 1px solid var(--line);
+    margin-top: 22px;
+    padding-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+  .start-row small { color: var(--muted); line-height: 1.6; }
+  .loading-line { margin-top: 14px; color: var(--blue-dark); font-weight: 700; }
+
+  .roulette-view {
+    min-height: var(--vh);
+    color: #fff;
+    overflow: hidden;
+  }
+  .play-topbar {
+    height: 68px;
+    padding: 10px max(12px, env(safe-area-inset-right)) 10px max(12px, env(safe-area-inset-left));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .play-title { font-weight: 900; letter-spacing: .05em; font-size: 19px; }
+  .top-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .top-button {
+    border: 1px solid rgba(255,255,255,.42);
+    background: rgba(255,255,255,.13);
+    color: #fff;
+    backdrop-filter: blur(6px);
+    border-radius: 11px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .top-button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .top-button:disabled { opacity: .38; cursor: not-allowed; }
+
+  .play-layout {
+    height: calc(var(--vh) - 68px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(230px, 310px);
+    gap: 16px;
+    padding: 0 16px 16px;
+  }
+  .stage {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    place-items: center;
+    gap: clamp(10px, 2vh, 18px);
+  }
+  .roulette-card {
+    width: min(70vh, 72vw, 720px);
+    aspect-ratio: 1 / 1;
+    border: clamp(10px, 2vw, 20px) solid var(--gold);
+    border-radius: 30px;
+    background: var(--cream);
+    box-shadow: 0 10px 30px rgba(0,0,0,.30), inset 0 0 0 4px rgba(0,0,0,.12);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+    font-size: min(40vh, 38vw);
+    position: relative;
+  }
+  .roulette-card img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+  .roulette-card.selected::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 6px solid var(--accent);
+    border-radius: 18px;
+    pointer-events: none;
+  }
+  .roulette-card.pop { animation: pop .38s ease-out; }
+  @keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.035); } 100% { transform: scale(1); } }
+
+  .current-name {
+    min-height: 1.35em;
+    max-width: 80vw;
+    text-align: center;
+    font-size: clamp(23px, 4vw, 38px);
+    font-weight: 900;
+    letter-spacing: .03em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .status-line {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    color: rgba(255,255,255,.86);
+    font-weight: 700;
+  }
+  .main-button {
+    border: 0;
+    min-width: min(380px, 78vw);
+    padding: clamp(15px, 2.5vh, 23px) 40px;
+    border-radius: 999px;
+    background: linear-gradient(160deg, var(--accent), var(--accent-dark));
+    color: #fff;
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: 900;
+    letter-spacing: .08em;
+    box-shadow: 0 10px 0 var(--accent-dark), 0 16px 30px rgba(0,0,0,.3);
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  .main-button:active { transform: translateY(6px); box-shadow: 0 4px 0 var(--accent-dark), 0 10px 20px rgba(0,0,0,.28); }
+  .main-button:disabled {
+    background: linear-gradient(160deg, #697684, #4b5661);
+    box-shadow: 0 6px 0 #37404a, 0 10px 20px rgba(0,0,0,.24);
+    color: rgba(255,255,255,.72);
     cursor: not-allowed;
     transform: none;
   }
-  .spin-btn.reset {
-    background: linear-gradient(160deg, var(--btn-reset), var(--btn-reset-active));
-    box-shadow: 0 10px 0 var(--btn-reset-active), 0 14px 24px var(--shadow);
-  }
-  .spin-btn.reset:active {
-    box-shadow: 0 4px 0 var(--btn-reset-active), 0 8px 14px var(--shadow);
-  }
+  .main-button.complete { background: linear-gradient(160deg, var(--blue), var(--blue-dark)); box-shadow: 0 10px 0 var(--blue-dark), 0 16px 30px rgba(0,0,0,.3); }
 
-  .history {
+  .history-panel {
+    min-height: 0;
+    border: 1px solid rgba(255,255,255,.22);
+    background: rgba(255,255,255,.09);
+    border-radius: 20px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+  }
+  .history-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .history-head h2 { font-size: 17px; margin: 0; }
+  .history-head span { color: rgba(255,255,255,.75); font-size: 14px; }
+  .history-list { overflow-y: auto; display: grid; gap: 9px; padding: 2px; }
+  .history-empty { color: rgba(255,255,255,.68); line-height: 1.7; padding: 20px 8px; text-align: center; }
+  .history-item {
+    display: grid;
+    grid-template-columns: 36px 54px minmax(0,1fr);
+    align-items: center;
+    gap: 9px;
+    border-radius: 13px;
+    background: rgba(255,255,255,.11);
+    padding: 7px;
+  }
+  .history-order { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; font-weight: 900; }
+  .history-media { width: 54px; height: 54px; border-radius: 9px; background: var(--cream); display: grid; place-items: center; overflow: hidden; font-size: 32px; }
+  .history-media img { width: 100%; height: 100%; object-fit: contain; }
+  .history-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+  .result-button { margin-top: auto; width: 100%; }
+
+  .modal-backdrop {
     position: fixed;
-    display: flex; gap: 10px;
-    padding: 12px; border-radius: 16px;
-    background: rgba(255,255,255,0.08);
-    border: 1.5px solid rgba(255,255,255,0.18);
-    z-index: 8;
-    flex-wrap: nowrap;
+    inset: 0;
+    z-index: 100;
+    background: rgba(7, 19, 31, .82);
+    display: grid;
+    place-items: center;
+    padding: 20px;
   }
-  .history:empty { display: none; }
+  .modal-box {
+    width: min(780px, 96vw);
+    max-height: min(88vh, 820px);
+    overflow: auto;
+    background: #fff;
+    color: var(--ink);
+    border-radius: 24px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.42);
+    padding: clamp(20px, 4vw, 34px);
+  }
+  .modal-box.small { width: min(470px, 94vw); }
+  .modal-head { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 18px; }
+  .modal-head h2 { margin: 0; }
+  .close-x { border: 0; background: #edf3f6; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-weight: 900; }
+  .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 13px; }
+  .result-card { border: 1px solid var(--line); border-radius: 15px; padding: 9px; position: relative; background: #fff; }
+  .result-media { aspect-ratio: 1 / 1; display: grid; place-items: center; background: var(--cream); border-radius: 11px; overflow: hidden; font-size: 66px; }
+  .result-media img { width: 100%; height: 100%; object-fit: contain; }
+  .result-name { margin-top: 8px; font-weight: 800; text-align: center; overflow-wrap: anywhere; }
+  .result-num { position: absolute; top: -8px; left: -8px; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font-weight: 900; }
+  .settings-grid { display: grid; gap: 18px; }
+  .setting { display: grid; gap: 7px; }
+  .setting label { font-weight: 900; }
+  .setting small { color: var(--muted); line-height: 1.55; }
+  .setting select { border: 2px solid var(--line); border-radius: 11px; padding: 11px; }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .toggle-row input { width: 24px; height: 24px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+  .confirm-text { line-height: 1.7; font-weight: 700; }
 
-  @media (orientation: portrait) {
-    .history {
-      left: 50%; bottom: var(--edge);
-      transform: translateX(-50%);
-      flex-direction: row;
-      max-width: min(94vw, 900px);
-      overflow-x: auto; overflow-y: hidden;
-    }
-  }
-  @media (orientation: landscape) {
-    .history {
-      right: var(--edge); top: 50%;
-      transform: translateY(-50%);
-      flex-direction: column;
-      max-height: calc(var(--viewport-h) - 152px);
-      overflow-y: auto; overflow-x: hidden;
-    }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 150;
+    max-width: min(90vw, 650px);
+    background: rgba(7,19,31,.94);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.24);
+    border-radius: 14px;
+    padding: 12px 18px;
+    box-shadow: var(--shadow);
+    font-weight: 700;
   }
 
-  .hist-item {
-    position: relative;
+
+
+  /* Sui Edition v1.1 */
+  body {
+    font-family:
+      "BIZ UDPGothic",
+      "Hiragino Kaku Gothic ProN",
+      "Hiragino Sans",
+      "Yu Gothic",
+      "YuGothic",
+      "Meiryo",
+      system-ui,
+      sans-serif;
+  }
+  .participant-media,
+  .roulette-face,
+  .history-media,
+  .result-media {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  }
+  .brand { align-items: center; }
+  .privacy-note {
+    margin-top: 14px !important;
+    padding: 11px 14px;
+    border-radius: 12px;
+    background: #edf5f8;
+    color: var(--ink) !important;
+    font-weight: 700;
+    line-height: 1.65 !important;
+  }
+  .card-actions { display: flex; justify-content: flex-end; margin-top: 9px; }
+  .card-actions .remove { min-width: 78px; padding: 0 14px; }
+
+  .roulette-view {
+    height: var(--vh);
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .play-topbar { height: auto; min-height: 68px; }
+  .play-layout {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 310px);
+  }
+  .stage {
+    min-height: 0;
+    overflow: hidden;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+  }
+  .stage-visual {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .roulette-card {
+    width: var(--roulette-size, min(62vh, 62vw, 720px));
+    height: var(--roulette-size, min(62vh, 62vw, 720px));
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: auto;
     flex: 0 0 auto;
-    width: var(--hist-item);
-    height: var(--hist-item);
-    border-radius: 10px;
-    background: var(--window-bg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: calc(var(--hist-item) * 0.55);
-    line-height: 1;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
   }
-  .hist-item img { width: 100%; height: 100%; object-fit: contain; padding: 4px; border-radius: 10px; }
-  .hist-item .num {
-    position: absolute; top: -8px; left: -8px;
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--btn); color: #fff;
-    font-size: 12px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  .roulette-face {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
   }
+  .roulette-card img,
+  .roulette-face > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    padding: 10px;
+  }
+  .current-name:empty { visibility: hidden; }
 
-  .controls {
-    position: fixed; top: 14px; right: 14px;
-    display: flex; gap: 10px; align-items: center; z-index: 10;
-    transition: opacity 0.4s ease;
+  .history-head { gap: 10px; }
+  .history-controls { display: flex; align-items: center; gap: 9px; }
+  .result-button { width: auto; margin: 0; padding: 8px 11px; white-space: nowrap; }
+  .history-list { min-height: 0; flex: 1 1 auto; }
+
+  .setting.toggle-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
   }
-  .controls.hidden {
+  .toggle-copy { min-width: 0; }
+  .toggle-copy label, .toggle-copy small { display: block; }
+  .toggle-copy small { margin-top: 7px; }
+  .switch-control {
+    position: relative;
+    display: inline-flex;
+    width: 54px;
+    height: 30px;
+    flex: 0 0 54px;
+    cursor: pointer;
+  }
+  .toggle-input {
+    position: absolute;
+    width: 1px !important;
+    height: 1px !important;
     opacity: 0;
     pointer-events: none;
   }
-  .mini-btn {
-    background: rgba(255,255,255,0.15); color: var(--text);
-    border: 1.5px solid rgba(255,255,255,0.4);
-    border-radius: 12px; padding: 10px 16px;
-    font-size: 15px; line-height: 1.2;
-    font-weight: 600; cursor: pointer;
-    backdrop-filter: blur(4px);
-  }
-  .mini-btn:active { background: rgba(255,255,255,0.3); }
-  .mini-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-  .mini-btn:disabled {
-    opacity: 0.42;
-    cursor: not-allowed;
-  }
-
-  input[type="file"] { display: none; }
-
-  #resultBtn {
-    position: fixed;
-    display: none;
-    z-index: 9;
-    font-size: 17px;
-    padding: 12px 24px;
-  }
-  @media (orientation: portrait) {
-    #resultBtn {
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: calc(var(--edge) + var(--hist-item) + 39px);
-    }
-  }
-  @media (orientation: landscape) {
-    #resultBtn {
-      right: var(--edge);
-      bottom: var(--edge);
-    }
-  }
-  #resultBtn.show { display: block; }
-
-  .modal {
-    position: fixed; inset: 0;
-    background: rgba(10, 18, 35, 0.82);
-    display: none;
-    align-items: center; justify-content: center;
-    z-index: 50;
-    padding: 30px;
-  }
-  .modal.show { display: flex; }
-  .modal-inner {
-    display: flex; flex-direction: column;
-    align-items: center; gap: clamp(16px, 3vh, 28px);
-    width: 96vw; height: 92vh;
-    justify-content: center;
-  }
-  .modal-grid {
-    display: grid;
-    gap: clamp(14px, 2vw, 30px);
-    justify-content: center;
-    align-content: center;
-    padding: 20px;
-    overflow: hidden;
-  }
-  .modal-item {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    border-radius: 16px;
-    background: var(--window-bg);
-    display: flex; align-items: center; justify-content: center;
-    line-height: 1;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  }
-  .modal-item img { width: 100%; height: 100%; object-fit: contain; padding: 8px; border-radius: 16px; }
-  .modal-item .num {
-    position: absolute; top: -10px; left: -10px;
-    width: 34px; height: 34px; border-radius: 50%;
-    background: var(--btn); color: #fff;
-    font-size: 16px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
-  }
-  #closeBtn { font-size: 17px; padding: 12px 28px; }
-
-  .confirm {
-    position: fixed; inset: 0;
-    background: rgba(10, 18, 35, 0.72);
-    display: none;
-    align-items: center; justify-content: center;
-    z-index: 60;
-    padding: 24px;
-  }
-  .confirm.show { display: flex; }
-  .confirm-box {
-    background: var(--window-bg);
-    color: #2a2a2a;
-    border-radius: 22px;
-    padding: clamp(24px, 4vw, 38px);
-    text-align: center;
-    max-width: 420px; width: 100%;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.4);
-  }
-  .confirm-box p {
-    margin: 0 0 24px;
-    font-size: clamp(19px, 3vw, 23px);
-    font-weight: 700;
-  }
-  .confirm-btns { display: flex; gap: 20px; }
-  .confirm-btns button {
-    flex: 1 1 0;
-    min-width: 0;
-    border: none; cursor: pointer;
+  .toggle-switch {
+    position: absolute;
+    inset: 0;
+    border: 2px solid #9cacb8;
     border-radius: 999px;
-    padding: 14px 12px;
-    font-size: 17px; line-height: 1.2; font-weight: 700;
-    color: #fff;
+    background: #dce4e9;
+    transition: background .18s, border-color .18s;
   }
-  .confirm-btns button:focus-visible { outline: 3px solid #333; outline-offset: 2px; }
-  #confirmYes { background: linear-gradient(160deg, var(--btn-reset), var(--btn-reset-active)); }
-  #confirmNo { background: #9aa3af; }
+  .toggle-switch::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    left: 2px;
+    top: 2px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(20,45,65,.28);
+    transition: transform .18s;
+  }
+  .toggle-input:checked + .toggle-switch { background: var(--blue); border-color: var(--blue-dark); }
+  .toggle-input:checked + .toggle-switch::after { transform: translateX(24px); }
+  .toggle-input:focus-visible + .toggle-switch { outline: 4px solid rgba(242,201,76,.9); outline-offset: 3px; }
 
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      scroll-behavior: auto !important;
-      transition-duration: 0.01ms !important;
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-    }
+  .reset-options { display: grid; gap: 12px; }
+  .reset-option {
+    width: 100%;
+    border: 2px solid var(--line);
+    border-radius: 15px;
+    background: #fff;
+    color: var(--ink);
+    padding: 15px 16px;
+    text-align: left;
+    cursor: pointer;
   }
+  .reset-option:hover { border-color: var(--blue); background: #f5fafc; }
+  .reset-option:focus-visible { outline: 4px solid rgba(242,201,76,.9); outline-offset: 2px; }
+  .reset-option.destructive { border-color: #eccaca; background: #fff8f8; color: var(--danger); }
+  .reset-option-title { display: block; font-weight: 900; font-size: 17px; }
+  .reset-option-text { display: block; margin-top: 6px; font-weight: 600; line-height: 1.55; color: var(--muted); }
+  .reset-option.destructive .reset-option-text { color: #865b5b; }
+
+  @media (orientation: portrait), (max-width: 760px) {
+    .intro { grid-template-columns: 1fr; }
+    .play-layout {
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(0, 1fr) minmax(120px, 25vh);
+      gap: 9px;
+      padding: 0 9px 9px;
+    }
+    .history-panel { min-height: 120px; padding: 10px; }
+    .history-head { margin-bottom: 7px; }
+    .history-list {
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(190px, 230px);
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    .history-empty { padding: 10px; }
+    .stage { gap: clamp(7px, 1.5vh, 12px); }
+    .main-button { margin-bottom: 2px; }
+  }
+
+  @media (max-width: 620px) {
+    .editor-head, .start-row { flex-direction: column; align-items: stretch; }
+    .start-row .button { width: 100%; }
+    .play-topbar { align-items: flex-start; }
+    .play-title { padding-top: 8px; }
+    .top-actions { max-width: 78%; }
+    .top-button { padding: 8px 9px; font-size: 13px; }
+    .history-head h2 { font-size: 15px; }
+    .result-button { font-size: 13px; padding: 7px 9px; }
+  }
+
+  @media (orientation: landscape) and (max-height: 650px) {
+    .play-topbar { min-height: 56px; padding-top: 6px; padding-bottom: 6px; }
+    .play-layout { gap: 10px; padding: 0 10px 10px; }
+    .stage { gap: 6px; }
+    .current-name { font-size: clamp(19px, 3.2vw, 28px); }
+    .status-line { min-height: 24px; font-size: 14px; }
+    .main-button { padding: 12px 34px; font-size: clamp(21px, 3vw, 28px); margin-bottom: 2px; }
+  }
+
+
+
+  /* Sui Edition v1.2 */
+  .setup-shell { width: min(980px, 100%); }
+  .title-panel { padding: clamp(26px, 5vw, 54px); }
+  .intro { grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); }
+  .intro-copy h1 {
+    margin: 0;
+    font-size: clamp(38px, 5.2vw, 58px);
+    line-height: 1.12;
+    letter-spacing: .035em;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .title-lead { margin-top: 18px !important; font-size: clamp(17px, 2.3vw, 22px); color: var(--ink) !important; font-weight: 800; }
+  .privacy-note {
+    margin-top: 20px !important;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted) !important;
+    font-weight: 600;
+  }
+
+  .button.pseudo-disabled {
+    opacity: .42;
+    filter: grayscale(.15);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .media-box {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    min-height: 0;
+  }
+  .media-box > img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  .emoji-content {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    line-height: 1;
+    text-align: center;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  }
+  .participant-media .emoji-content { font-size: 68px; }
+  .history-media .emoji-content { font-size: 32px; }
+  .result-media .emoji-content { font-size: clamp(46px, 7vw, 66px); }
+  .roulette-face .emoji-content { font-size: calc(var(--roulette-size, 400px) * .54); }
+  .participant-media > img, .history-media > img, .result-media > img { padding: 4px; }
+
+  .play-topbar {
+    min-height: 62px;
+    padding: 8px max(10px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+  }
+  .play-title { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .top-actions { flex: 0 0 auto; display: flex; gap: 7px; flex-wrap: nowrap; max-width: none; }
+  .top-button.icon-only {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    flex: 0 0 44px;
+  }
+  .top-button svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+  .top-button svg circle { fill: currentColor; stroke: none; }
+
+  .play-layout {
+    min-height: 0;
+    height: auto;
+    display: grid;
+    gap: 14px;
+    padding: 0 14px max(14px, env(safe-area-inset-bottom));
+  }
+  .play-layout.side {
+    grid-template-columns: minmax(0, 1fr) minmax(245px, 310px);
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .play-layout.stacked {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 116px;
+    gap: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .stage {
+    min-height: 0;
+    overflow: hidden;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    gap: clamp(7px, 1.4vh, 14px);
+  }
+  .roulette-card {
+    border-width: 14px;
+    border-radius: 28px;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .roulette-card.selected::after { border-width: 6px; }
+  .roulette-card.one-touch {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .roulette-card.one-touch:focus-visible { outline: 5px solid #fff; outline-offset: 5px; }
+  .roulette-card.one-touch.busy { cursor: wait; }
+  .roulette-card > .roulette-face > img { padding: 10px; }
+  .main-button { margin-bottom: 0; }
+
+  .history-panel { min-height: 0; }
+  .play-layout.stacked .history-panel { padding: 8px 9px; border-radius: 16px; }
+  .play-layout.stacked .history-head { margin-bottom: 5px; }
+  .play-layout.stacked .history-list {
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(176px, 210px);
+    grid-template-columns: none;
+    gap: 7px;
+    padding: 0 1px 2px;
+  }
+  .play-layout.stacked .history-item {
+    height: 58px;
+    grid-template-columns: 30px 44px minmax(0, 1fr);
+    gap: 7px;
+    padding: 5px;
+  }
+  .play-layout.stacked .history-order { width: 29px; height: 29px; font-size: 13px; }
+  .play-layout.stacked .history-media { width: 44px; height: 44px; }
+  .play-layout.stacked .history-media .emoji-content { font-size: 27px; }
+  .history-empty { display: none; }
+
+  .menu-box { width: min(380px, 92vw); }
+  .menu-options { display: grid; gap: 10px; }
+  .menu-option {
+    width: 100%;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--ink);
+    padding: 15px 18px;
+    text-align: left;
+    font-weight: 900;
+    font-size: 17px;
+    cursor: pointer;
+  }
+  .menu-option:hover { border-color: var(--blue); background: #f5fafc; }
+  .menu-option:focus-visible { outline: 4px solid rgba(242,201,76,.9); outline-offset: 2px; }
+
+  @media (max-width: 620px) {
+    .title-panel { padding: 26px 20px; }
+    .intro { grid-template-columns: 1fr; }
+    .intro-copy { text-align: center; }
+    .intro-copy h1 { font-size: clamp(32px, 9vw, 42px); }
+    .play-topbar { align-items: center; }
+    .play-title { padding-top: 0; font-size: 17px; }
+    .top-button.icon-only { width: 41px; height: 41px; flex-basis: 41px; }
+    .top-button svg { width: 23px; height: 23px; }
+    .history-head h2 { font-size: 14px; }
+    .history-head span { font-size: 12px; }
+    .result-button { font-size: 12px; padding: 6px 8px; }
+  }
+
+  @media (max-width: 390px) {
+    .play-title { font-size: 15px; }
+    .top-actions { gap: 5px; }
+    .top-button.icon-only { width: 38px; height: 38px; flex-basis: 38px; }
+  }
+
+
+
+  /* Sui Edition v1.4 */
+  .title-screen {
+    min-height: calc(var(--vh) - clamp(36px, 7vw, 72px));
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: clamp(26px, 5vh, 54px);
+    padding: clamp(12px, 3vw, 26px) 0;
+  }
+  .title-hero {
+    color: #fff;
+    text-align: center;
+    max-width: 780px;
+  }
+  .title-hero h1 {
+    margin: 0;
+    font-size: clamp(42px, 7vw, 76px);
+    line-height: 1.08;
+    letter-spacing: .045em;
+    text-shadow: 0 8px 28px rgba(0,0,0,.24);
+  }
+  .title-hero .title-lead {
+    margin: 18px 0 0 !important;
+    color: rgba(255,255,255,.9) !important;
+    font-size: clamp(17px, 2.4vw, 23px);
+    font-weight: 800;
+    line-height: 1.75;
+  }
+  .start-card {
+    width: min(640px, 100%);
+    padding: clamp(22px, 4vw, 34px);
+  }
+  .start-card .intro-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .start-card #sampleBtn { grid-column: 1 / -1; }
+  .start-card .privacy-note { text-align: center; margin-bottom: 0 !important; }
+
+  .main-button-slot {
+    min-height: clamp(80px, 11vh, 104px);
+    width: 100%;
+    display: grid;
+    place-items: start center;
+    padding: 0 6px 18px;
+    overflow: visible;
+  }
+  .stage, .stage-visual { overflow: visible; }
+  .play-layout { overflow: hidden; }
+
+  .menu-popover {
+    position: fixed;
+    z-index: 220;
+    width: min(250px, calc(100vw - 24px));
+    padding: 8px;
+    border: 1px solid rgba(23,50,77,.16);
+    border-radius: 15px;
+    background: #fff;
+    color: var(--ink);
+    box-shadow: 0 16px 42px rgba(7,19,31,.3);
+  }
+  .menu-popover .menu-option {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 13px;
+    font-size: 15px;
+  }
+  .menu-popover .menu-option + .menu-option { margin-top: 3px; }
+  .menu-popover .menu-option:hover { background: #edf5f8; }
+  .menu-popover .menu-option[hidden] { display: none; }
+
+  .setting-label { font-weight: 900; }
+  .step-selector {
+    --step-progress: 50%;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-top: 2px;
+    user-select: none;
+  }
+  .step-line {
+    position: absolute;
+    top: 12px;
+    left: calc(100% / 6);
+    right: calc(100% / 6);
+    height: 4px;
+    border-radius: 999px;
+    background: #cbd6dd;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .step-fill {
+    display: block;
+    width: var(--step-progress);
+    height: 100%;
+    border-radius: inherit;
+    background: var(--blue);
+    transition: width .18s ease;
+  }
+  .step-option {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 0 4px 5px;
+    cursor: pointer;
+    font-weight: 800;
+  }
+  .step-dot {
+    width: 20px;
+    height: 20px;
+    border: 4px solid #cbd6dd;
+    border-radius: 50%;
+    background: #fff;
+    transition: border-color .18s, background .18s, transform .18s;
+  }
+  .step-option.is-reached { color: var(--ink); }
+  .step-option.is-reached .step-dot { border-color: var(--blue); background: var(--blue); }
+  .step-option[aria-checked="true"] .step-dot { transform: scale(1.2); box-shadow: 0 0 0 4px rgba(59,130,180,.16); }
+  .step-option:focus-visible { outline: 4px solid rgba(242,201,76,.9); outline-offset: 2px; border-radius: 10px; }
+  .settings-actions { justify-content: space-between; }
+
+  .history-list {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  .play-layout.stacked .history-list {
+    touch-action: pan-x;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+  }
+  .play-layout.stacked .history-item { scroll-snap-align: start; }
+
+  .result-card { isolation: isolate; }
+  .result-media { position: relative; z-index: 1; }
+  .result-num {
+    z-index: 3;
+    box-shadow: 0 0 0 3px #fff, 0 3px 9px rgba(0,0,0,.22);
+  }
+
+  .selection-overlay-card {
+    position: fixed;
+    z-index: 1000;
+    margin: 0;
+    pointer-events: none;
+    transform-origin: center;
+    animation: selectionOverlayPop .42s ease-out forwards;
+  }
+  @keyframes selectionOverlayPop {
+    0% { transform: scale(1); }
+    48% { transform: scale(1.045); }
+    100% { transform: scale(1); }
+  }
+
+  .current-name {
+    white-space: normal;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    line-height: 1.16;
+    max-height: 2.32em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .current-name.name-medium { font-size: clamp(20px, 3.5vw, 32px); }
+  .current-name.name-long { font-size: clamp(17px, 3vw, 27px); }
+  .history-name {
+    white-space: normal;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    line-height: 1.15;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .history-name.name-long { font-size: 13px; }
+  .result-name { line-height: 1.35; }
+  .result-name.name-long { font-size: 14px; }
+
+  .image-error-summary { margin: 0 0 12px; line-height: 1.65; font-weight: 700; }
+  .image-error-list {
+    max-height: 260px;
+    overflow: auto;
+    margin: 0;
+    padding-left: 1.4em;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+  .image-error-list li + li { margin-top: 7px; }
+
+  .top-button[aria-disabled="true"],
+  .top-button:disabled {
+    opacity: .34;
+    cursor: not-allowed;
+    filter: grayscale(.25);
+  }
+  .current-name {
+    position: relative;
+    z-index: 2;
+  }
+
+  @media (max-width: 620px) {
+    .title-screen { align-content: start; padding-top: clamp(36px, 10vh, 78px); }
+    .title-hero h1 { font-size: clamp(38px, 12vw, 54px); }
+    .start-card .intro-actions { grid-template-columns: 1fr; }
+    .start-card #sampleBtn { grid-column: auto; }
+    .main-button-slot { min-height: 86px; padding-bottom: 20px; }
+    .settings-actions { flex-direction: column-reverse; }
+    .settings-actions .button { width: 100%; }
+  }
+
 </style>
 </head>
 <body>
-  <div class="controls">
-    <button class="mini-btn" id="pickBtn">写真を選ぶ</button>
-    <button class="mini-btn" id="resetBtn">やり直す</button>
-    <button class="mini-btn" id="soundBtn" aria-pressed="true" aria-label="音のオンオフ">🔊</button>
-    <button class="mini-btn" id="fullBtn">全画面</button>
-    <input type="file" id="fileInput" accept="image/*" multiple>
-  </div>
+<section class="view setup-view" id="setupView">
+  <div class="setup-shell">
+    <section class="title-screen" id="introSection">
+      <header class="title-hero">
+        <h1>順番ルーレット</h1>
+        <p class="title-lead">参加者を登録して、順番をランダムに決めます。</p>
+      </header>
+      <div class="panel start-card">
+        <div class="intro-actions">
+          <button class="button primary large" id="firstImageBtn">画像を選ぶ</button>
+          <button class="button secondary large" id="firstNameBtn">名前だけで使う</button>
+          <button class="button ghost" id="sampleBtn">サンプルで試す</button>
+        </div>
+        <p class="privacy-note">選んだ画像はこの端末内で処理され、外部には送信されません。</p>
+      </div>
+    </section>
 
-  <div class="main-col">
-    <div class="machine">
-      <div class="window" id="window">
-        <div class="cell" id="cell"></div>
+    <main class="panel" id="editorSection" hidden>
+        <div class="editor-head">
+          <div>
+            <h2>参加者の確認</h2>
+            <p>名前を確認し、必要に応じて編集してください。</p>
+          </div>
+          <div class="count-badge" id="participantCount">0人</div>
+        </div>
+        <div class="participant-grid" id="participantGrid"></div>
+        <div class="editor-actions">
+          <button class="button secondary" id="addImageBtn">画像を追加</button>
+          <button class="button ghost" id="addNameBtn">名前を追加</button>
+          <button class="button ghost" id="backToIntroBtn">はじめに戻る</button>
+        </div>
+        <div class="loading-line" id="loadingLine" hidden></div>
+        <div class="start-row">
+          <small>参加者は最大30人です<br>画像は長辺1600ピクセル以内に縮小されます。</small>
+          <button class="button primary large" id="beginBtn" aria-disabled="true">ルーレットを始める</button>
+        </div>
+    </main>
+  </div>
+</section>
+
+<section class="view roulette-view" id="rouletteView" hidden>
+  <header class="play-topbar">
+    <div class="play-title">順番ルーレット</div>
+    <div class="top-actions" aria-label="ルーレットの操作">
+      <button class="top-button icon-only" id="undoBtn" aria-label="直前の結果を取り消す" title="直前の結果を取り消す" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a6 6 0 1 1 0 12"/></svg>
+      </button>
+      <button class="top-button icon-only" id="soundBtn" aria-pressed="true" aria-label="音を消す" title="音を消す">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16 8.5c1.2 1 1.8 2.1 1.8 3.5S17.2 14.5 16 15.5"/><path d="M18.6 6c2 1.7 3 3.7 3 6s-1 4.3-3 6"/></svg>
+      </button>
+      <button class="top-button icon-only" id="fullscreenBtn" aria-label="全画面表示" title="全画面表示">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+      </button>
+      <button class="top-button icon-only" id="menuBtn" aria-label="メニューを開く" title="メニューを開く">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="play-layout">
+    <main class="stage">
+      <div class="stage-visual" id="stageVisual"><div class="roulette-card" id="rouletteCard"><div class="roulette-face media-box" id="rouletteFace"></div></div></div>
+      <div>
+        <div class="current-name" id="currentName"></div>
+        <div class="status-line"><span id="orderStatus">まだ選ばれていません</span><span>・</span><span id="remainingStatus"></span></div>
+      </div>
+      <div class="main-button-slot" id="mainButtonSlot"><button class="main-button" id="mainButton">スタート</button></div>
+    </main>
+
+    <aside class="history-panel">
+      <div class="history-head"><h2>決まった順番</h2><div class="history-controls"><span id="historyCount">0人</span><button class="button ghost result-button" id="showResultsBtn" disabled>結果一覧</button></div></div>
+      <div class="history-list" id="historyList"></div>
+    </aside>
+  </div>
+</section>
+
+<input type="file" id="imageInput" accept="image/*" multiple hidden>
+
+<div class="modal-backdrop" id="resultsModal" role="dialog" aria-modal="true" aria-labelledby="resultsTitle" hidden>
+  <div class="modal-box">
+    <div class="modal-head"><h2 id="resultsTitle">結果一覧</h2><button class="close-x" id="closeResultsBtn" aria-label="閉じる">×</button></div>
+    <div class="result-grid" id="resultGrid"></div>
+  </div>
+</div>
+
+<div class="menu-popover" id="menuPopover" role="menu" aria-label="メニュー" hidden>
+  <button class="menu-option" id="menuSettingsBtn" role="menuitem">設定</button>
+  <button class="menu-option" id="menuResetBtn" role="menuitem">リセット</button>
+</div>
+
+<div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+  <div class="modal-box small">
+    <div class="modal-head"><h2 id="settingsTitle">ルーレット設定</h2><button class="close-x" id="closeSettingsBtn" aria-label="閉じる">×</button></div>
+    <div class="settings-grid">
+      <div class="setting">
+        <div class="setting-label" id="speedLabel">回転速度</div>
+        <div class="step-selector" id="speedSelector" role="radiogroup" aria-labelledby="speedLabel" data-value="standard">
+          <div class="step-line" aria-hidden="true"><span class="step-fill"></span></div>
+          <button type="button" class="step-option" role="radio" data-value="slow" aria-checked="false"><span class="step-dot"></span><span class="step-text">ゆっくり</span></button>
+          <button type="button" class="step-option" role="radio" data-value="standard" aria-checked="true"><span class="step-dot"></span><span class="step-text">標準</span></button>
+          <button type="button" class="step-option" role="radio" data-value="fast" aria-checked="false"><span class="step-dot"></span><span class="step-text">速い</span></button>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="setting-label" id="stopLabel">停止までの長さ</div>
+        <div class="step-selector" id="stopSelector" role="radiogroup" aria-labelledby="stopLabel" data-value="standard">
+          <div class="step-line" aria-hidden="true"><span class="step-fill"></span></div>
+          <button type="button" class="step-option" role="radio" data-value="short" aria-checked="false"><span class="step-dot"></span><span class="step-text">短い</span></button>
+          <button type="button" class="step-option" role="radio" data-value="standard" aria-checked="true"><span class="step-dot"></span><span class="step-text">標準</span></button>
+          <button type="button" class="step-option" role="radio" data-value="long" aria-checked="false"><span class="step-dot"></span><span class="step-text">長い</span></button>
+        </div>
+      </div>
+      <div class="setting toggle-row">
+        <div class="toggle-copy"><label for="oneTouchToggle">ワンタッチでスタート&amp;ストップ</label><small>ルーレットの枠内を押すとスタートし、自動でストップします。</small></div>
+        <label class="switch-control" aria-label="ワンタッチでスタート&ストップ"><input class="toggle-input" type="checkbox" id="oneTouchToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
+      </div>
+      <div class="setting toggle-row">
+        <div class="toggle-copy"><label for="hideSelectedToggle">回転中に選出済みを表示しない</label><small>ルーレットの結果には影響しません。</small></div>
+        <label class="switch-control" aria-label="回転中に選出済みを表示しない"><input class="toggle-input" type="checkbox" id="hideSelectedToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
+      </div>
+      <div class="setting toggle-row">
+        <div class="toggle-copy"><label for="reduceEffectsToggle">演出を控えめにする</label><small id="motionNote">演出を少なくします。ルーレットの回転速度は変わりません。</small></div>
+        <label class="switch-control" aria-label="演出を控えめにする"><input class="toggle-input" type="checkbox" id="reduceEffectsToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
       </div>
     </div>
-    <button class="spin-btn" id="spinBtn">スタート</button>
+    <div class="modal-actions settings-actions"><button class="button ghost" id="resetSettingsBtn">初期設定に戻す</button><button class="button primary" id="saveSettingsBtn">決定</button></div>
   </div>
+</div>
 
-  <div class="history" id="history"></div>
-
-  <button class="mini-btn" id="resultBtn">結果を見る</button>
-
-  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="結果一覧" aria-hidden="true">
-    <div class="modal-inner">
-      <div class="modal-grid" id="modalGrid"></div>
-      <button class="mini-btn" id="closeBtn">とじる</button>
+<div class="modal-backdrop" id="resetModal" role="dialog" aria-modal="true" aria-labelledby="resetTitle" hidden>
+  <div class="modal-box small">
+    <div class="modal-head"><h2 id="resetTitle">リセット</h2><button class="close-x" id="closeResetBtn" aria-label="閉じる">×</button></div>
+    <div class="reset-options">
+      <button class="reset-option" id="restartRouletteBtn">
+        <span class="reset-option-title">ルーレットをやり直す</span>
+        <span class="reset-option-text">画像と名前を残したまま、ルーレットをやり直します。</span>
+      </button>
+      <button class="reset-option" id="editParticipantsBtn">
+        <span class="reset-option-title">参加者を編集する</span>
+        <span class="reset-option-text">ルーレットの結果を消して、参加者の編集画面に戻ります。</span>
+      </button>
+      <button class="reset-option destructive" id="returnToStartBtn">
+        <span class="reset-option-title">はじめに戻る</span>
+        <span class="reset-option-text">登録した参加者を消して、はじめの画面に戻ります。</span>
+      </button>
     </div>
   </div>
+</div>
 
-  <div class="confirm" id="confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-hidden="true">
-    <div class="confirm-box">
-      <p id="confirmTitle">リセットしますか？</p>
-      <div class="confirm-btns">
-        <button id="confirmYes">はい</button>
-        <button id="confirmNo">いいえ</button>
-      </div>
-    </div>
+<div class="modal-backdrop" id="confirmModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+  <div class="modal-box small">
+    <div class="modal-head"><h2 id="confirmTitle">確認</h2></div>
+    <div class="confirm-text" id="confirmText"></div>
+    <div class="modal-actions"><button class="button ghost" id="confirmCancelBtn">キャンセル</button><button class="button primary" id="confirmOkBtn">実行する</button></div>
   </div>
+</div>
+
+<div class="modal-backdrop" id="imageErrorModal" role="dialog" aria-modal="true" aria-labelledby="imageErrorTitle" hidden>
+  <div class="modal-box small">
+    <div class="modal-head"><h2 id="imageErrorTitle">読み込めなかった画像</h2><button class="close-x" id="closeImageErrorBtn" aria-label="閉じる">×</button></div>
+    <p class="image-error-summary" id="imageErrorSummary"></p>
+    <ul class="image-error-list" id="imageErrorList"></ul>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
 
 <script>
-  const defaultFaces = ["🍎","🐶","🐱","🚗","🌸","🌳","⭐","🐟","☂️","🍇"];
-  const MAX_FILES = 30;
+(() => {
+  "use strict";
+
+  const MAX_PARTICIPANTS = 30;
   const MAX_IMAGE_EDGE = 1600;
-  let items = defaultFaces.map(e => ({ type: "emoji", value: e }));
+  const SETTINGS_STORAGE_KEY = "sui-order-roulette-settings-v1";
+  const DEFAULT_SETTINGS = Object.freeze({
+    speed: "standard",
+    stopLength: "standard",
+    oneTouch: false,
+    hideSelectedDuringSpin: false,
+    reduceEffects: false,
+    soundOn: true
+  });
+  const sampleParticipants = Object.freeze([
+    { value: "🍎", name: "りんご" }, { value: "🍊", name: "みかん" }, { value: "🍦", name: "アイス" },
+    { value: "🍇", name: "ぶどう" }, { value: "🎁", name: "プレゼント" }, { value: "🍓", name: "いちご" },
+    { value: "🐶", name: "いぬ" }, { value: "🐱", name: "ねこ" }, { value: "🐰", name: "うさぎ" },
+    { value: "🐼", name: "パンダ" }, { value: "🦁", name: "ライオン" }, { value: "🐸", name: "かえる" },
+    { value: "🐘", name: "ぞう" }, { value: "🐟", name: "さかな" }, { value: "🐢", name: "かめ" },
+    { value: "🦋", name: "ちょう" }, { value: "🌸", name: "さくら" }, { value: "🌻", name: "ひまわり" },
+    { value: "🌳", name: "き" }, { value: "☀️", name: "たいよう" }, { value: "⭐", name: "ほし" },
+    { value: "🌙", name: "つき" }, { value: "🌈", name: "にじ" }, { value: "☂️", name: "かさ" },
+    { value: "🎈", name: "ふうせん" }, { value: "🍄", name: "きのこ" }, { value: "🚗", name: "くるま" },
+    { value: "🚌", name: "バス" }, { value: "🚲", name: "じてんしゃ" }, { value: "✏️", name: "えんぴつ" }
+  ]);
+  const emojiPool = Object.freeze(sampleParticipants.map(participant => participant.value));
+  const Phase = Object.freeze({ SETUP: "setup", READY: "ready", SPINNING: "spinning", STOPPING: "stopping", RESULT: "result", COMPLETE: "complete", LOADING: "loading" });
+  const speedMap = Object.freeze({ slow: 115, standard: 60, fast: 40 });
+  const stopMap = Object.freeze({ short: { minSteps: 12, extraCycles: 0, maxDelay: 260 }, standard: { minSteps: 18, extraCycles: 1, maxDelay: 360 }, long: { minSteps: 24, extraCycles: 2, maxDelay: 430 } });
 
-  const cell = document.getElementById("cell");
-  const windowEl = document.getElementById("window");
-  const spinBtn = document.getElementById("spinBtn");
-  const pickBtn = document.getElementById("pickBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const fileInput = document.getElementById("fileInput");
-  const soundBtn = document.getElementById("soundBtn");
-  const fullBtn = document.getElementById("fullBtn");
-  const historyEl = document.getElementById("history");
-  const resultBtn = document.getElementById("resultBtn");
-  const modal = document.getElementById("modal");
-  const modalGrid = document.getElementById("modalGrid");
-  const closeBtn = document.getElementById("closeBtn");
-  const confirmEl = document.getElementById("confirm");
-  const confirmYes = document.getElementById("confirmYes");
-  const confirmNo = document.getElementById("confirmNo");
-  const controlsEl = document.querySelector(".controls");
-  const mainColEl = document.querySelector(".main-col");
-  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const state = {
+    participants: [],
+    order: [],
+    selectedIds: new Set(),
+    phase: Phase.SETUP,
+    currentId: null,
+    spinPool: [],
+    poolPosition: 0,
+    spinTimer: null,
+    stopTimer: null,
+    autoStopTimer: null,
+    soundOn: DEFAULT_SETTINGS.soundOn,
+    settings: {
+      speed: DEFAULT_SETTINGS.speed,
+      stopLength: DEFAULT_SETTINGS.stopLength,
+      oneTouch: DEFAULT_SETTINGS.oneTouch,
+      hideSelectedDuringSpin: DEFAULT_SETTINGS.hideSelectedDuringSpin,
+      reduceEffects: DEFAULT_SETTINGS.reduceEffects
+    },
+    modalReturnFocus: null,
+    confirmAction: null,
+    settingsDraftSoundOn: DEFAULT_SETTINGS.soundOn
+  };
 
-  let spinning = false;
-  let stopping = false;
-  let loading = false;
-  let soundOn = true;
-  let finished = false;
-  let used = [];
-  let currentIndex = 0;
-  let spinInterval = null;
-  let tickTimer = null;
-  let resultReturnFocus = null;
-  let confirmReturnFocus = null;
+  const $ = id => document.getElementById(id);
+  const setupView = $("setupView");
+  const rouletteView = $("rouletteView");
+  const introSection = $("introSection");
+  const editorSection = $("editorSection");
+  const participantGrid = $("participantGrid");
+  const participantCount = $("participantCount");
+  const imageInput = $("imageInput");
+  const loadingLine = $("loadingLine");
+  const beginBtn = $("beginBtn");
+  const stageVisual = $("stageVisual");
+  const rouletteCard = $("rouletteCard");
+  const rouletteFace = $("rouletteFace");
+  const currentName = $("currentName");
+  const orderStatus = $("orderStatus");
+  const remainingStatus = $("remainingStatus");
+  const mainButton = $("mainButton");
+  const historyList = $("historyList");
+  const historyCount = $("historyCount");
+  const showResultsBtn = $("showResultsBtn");
+  const playLayout = document.querySelector(".play-layout");
+  const resultsModal = $("resultsModal");
+  const menuPopover = $("menuPopover");
+  const settingsModal = $("settingsModal");
+  const resetModal = $("resetModal");
+  const confirmModal = $("confirmModal");
+  const imageErrorModal = $("imageErrorModal");
+  const resultGrid = $("resultGrid");
+  const toast = $("toast");
 
-  function prefersReducedMotion() {
-    return motionQuery.matches;
+  function uid(prefix = "p") {
+    return crypto.randomUUID?.() || `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 
-  function faceHTML(item) {
-    if (item.type === "emoji") return document.createTextNode(item.value);
-    const img = document.createElement("img");
-    img.src = item.value;
-    img.alt = "";
-    return img;
+  function loadSavedSettings() {
+    try {
+      const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (["slow", "standard", "fast"].includes(saved.speed)) state.settings.speed = saved.speed;
+      if (["short", "standard", "long"].includes(saved.stopLength)) state.settings.stopLength = saved.stopLength;
+      ["oneTouch", "hideSelectedDuringSpin", "reduceEffects"].forEach(key => {
+        if (typeof saved[key] === "boolean") state.settings[key] = saved[key];
+      });
+      if (typeof saved.soundOn === "boolean") state.soundOn = saved.soundOn;
+    } catch (error) {
+      console.warn("設定を読み込めませんでした。", error);
+    }
   }
 
-  function showCell(item) {
-    cell.innerHTML = "";
-    if (item) cell.appendChild(faceHTML(item));
+  function saveSettingsToStorage() {
+    try {
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ ...state.settings, soundOn: state.soundOn }));
+    } catch (error) {
+      console.warn("設定を保存できませんでした。", error);
+    }
   }
 
-  function stopAllTimers() {
-    clearInterval(spinInterval);
-    clearTimeout(tickTimer);
-    spinInterval = null;
-    tickTimer = null;
+  function escapeNameFromFile(fileName) {
+    return fileName.replace(/\.[^.]+$/, "").trim() || "名前なし";
   }
 
-  function updateControls() {
-    spinBtn.disabled = stopping || loading || items.length === 0;
-    pickBtn.disabled = spinning || stopping || loading;
-    resetBtn.disabled = spinning || stopping || loading;
+  function createParticipant({ type = "emoji", value = "🙂", name = "", defaultName = name, sampleKey = null } = {}) {
+    return { id: uid(), type, value, name, defaultName: defaultName || name, sampleKey };
   }
 
-  function releaseItemUrls(itemList) {
-    itemList.forEach(item => {
-      if (item.type === "image" && typeof item.value === "string" && item.value.startsWith("blob:")) {
-        URL.revokeObjectURL(item.value);
+  function createFaceNode(participant, className = "") {
+    const wrapper = document.createElement("div");
+    wrapper.className = [className, "media-box"].filter(Boolean).join(" ");
+    if (!participant) return wrapper;
+    if (participant.type === "image") {
+      const img = document.createElement("img");
+      img.src = participant.value;
+      img.alt = "";
+      img.decoding = "async";
+      wrapper.appendChild(img);
+    } else {
+      const emoji = document.createElement("span");
+      emoji.className = "emoji-content";
+      emoji.textContent = participant.value;
+      wrapper.appendChild(emoji);
+    }
+    return wrapper;
+  }
+
+  function applyNameClass(element, name) {
+    const length = Array.from(name || "").length;
+    element.classList.toggle("name-medium", length > 10 && length <= 18);
+    element.classList.toggle("name-long", length > 18);
+  }
+
+  function releaseParticipant(participant) {
+    if (participant?.type === "image" && participant.value?.startsWith("blob:")) URL.revokeObjectURL(participant.value);
+  }
+
+  function releaseAllParticipants() {
+    state.participants.forEach(releaseParticipant);
+  }
+
+  function showToast(message, duration = 3200) {
+    toast.textContent = message;
+    toast.hidden = false;
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => { toast.hidden = true; }, duration);
+  }
+
+  function updateEditorVisibility() {
+    const count = state.participants.length;
+    const hasParticipants = count > 0;
+    introSection.hidden = hasParticipants;
+    editorSection.hidden = !hasParticipants;
+    participantCount.textContent = `${count}人`;
+    const tooFew = count < 2;
+    beginBtn.disabled = state.phase === Phase.LOADING;
+    beginBtn.classList.toggle("pseudo-disabled", tooFew && state.phase !== Phase.LOADING);
+    beginBtn.setAttribute("aria-disabled", String(tooFew || state.phase === Phase.LOADING));
+  }
+
+  function renderEditor() {
+    participantGrid.replaceChildren();
+    state.participants.forEach((participant, index) => {
+      const card = document.createElement("article");
+      card.className = "participant-card";
+      card.dataset.id = participant.id;
+
+      const media = createFaceNode(participant, "participant-media");
+      const input = document.createElement("input");
+      input.className = "name-input";
+      input.type = "text";
+      input.value = participant.name;
+      input.maxLength = 40;
+      input.setAttribute("aria-label", `${index + 1}人目の名前`);
+      input.addEventListener("input", () => { participant.name = input.value; });
+
+      const actions = document.createElement("div");
+      actions.className = "card-actions";
+      const remove = document.createElement("button");
+      remove.className = "icon-button remove";
+      remove.textContent = "削除";
+      remove.addEventListener("click", () => removeParticipant(participant.id));
+      actions.append(remove);
+      card.append(media, input, actions);
+      participantGrid.appendChild(card);
+    });
+    updateEditorVisibility();
+  }
+
+
+  function removeParticipant(id) {
+    const index = state.participants.findIndex(participant => participant.id === id);
+    if (index < 0) return;
+    releaseParticipant(state.participants[index]);
+    state.participants.splice(index, 1);
+    renderEditor();
+  }
+
+  function shuffled(items) {
+    const copy = [...items];
+    for (let index = copy.length - 1; index > 0; index -= 1) {
+      const swapIndex = randomInt(index + 1);
+      [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+    }
+    return copy;
+  }
+
+  function unusedSamples() {
+    const used = new Set(state.participants.map(participant => participant.sampleKey).filter(Boolean));
+    return sampleParticipants.filter(sample => !used.has(sample.value));
+  }
+
+  function participantFromSample(sample) {
+    return createParticipant({
+      type: "emoji",
+      value: sample.value,
+      name: sample.name,
+      defaultName: sample.name,
+      sampleKey: sample.value
+    });
+  }
+
+  function addNameParticipant({ fixedApple = false } = {}) {
+    if (state.participants.length >= MAX_PARTICIPANTS) {
+      showToast("参加者は最大30人です");
+      return;
+    }
+    const available = unusedSamples();
+    if (!available.length) return;
+    const apple = sampleParticipants.find(sample => sample.value === "🍎");
+    const sample = fixedApple && apple && available.includes(apple)
+      ? apple
+      : available[randomInt(available.length)];
+    state.participants.push(participantFromSample(sample));
+    renderEditor();
+    requestAnimationFrame(() => participantGrid.lastElementChild?.querySelector("input")?.select());
+  }
+
+  function startNameOnly() {
+    releaseAllParticipants();
+    state.participants = [];
+    addNameParticipant({ fixedApple: true });
+  }
+
+  function loadSample() {
+    releaseAllParticipants();
+    state.participants = shuffled(sampleParticipants).slice(0, 8).map(participantFromSample);
+    renderEditor();
+  }
+
+  async function decodeImage(file) {
+    if (window.createImageBitmap) {
+      try {
+        return await createImageBitmap(file, { imageOrientation: "from-image" });
+      } catch (error) {
+        console.warn("createImageBitmapでの読込に失敗しました。", error);
+      }
+    }
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const image = new Image();
+      image.onload = () => { URL.revokeObjectURL(url); resolve(image); };
+      image.onerror = () => { URL.revokeObjectURL(url); reject(new Error(`${file.name}を読み込めませんでした。`)); };
+      image.src = url;
+    });
+  }
+
+  async function resizeImage(file) {
+    const source = await decodeImage(file);
+    try {
+      const sourceWidth = source.width || source.naturalWidth;
+      const sourceHeight = source.height || source.naturalHeight;
+      const longest = Math.max(sourceWidth, sourceHeight);
+      if (!longest) throw new Error("画像サイズを取得できませんでした。");
+      const scale = Math.min(1, MAX_IMAGE_EDGE / longest);
+      const width = Math.max(1, Math.round(sourceWidth * scale));
+      const height = Math.max(1, Math.round(sourceHeight * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d", { alpha: true });
+      if (!context) throw new Error("画像処理を開始できませんでした。");
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      context.drawImage(source, 0, 0, width, height);
+      const type = file.type === "image/png" ? "image/png" : "image/jpeg";
+      const blob = await new Promise((resolve, reject) => canvas.toBlob(result => result ? resolve(result) : reject(new Error("画像の縮小に失敗しました。")), type, .9));
+      const defaultName = escapeNameFromFile(file.name);
+      return createParticipant({ type: "image", value: URL.createObjectURL(blob), name: defaultName, defaultName });
+    } finally {
+      if (typeof source.close === "function") source.close();
+    }
+  }
+
+  async function handleImageFiles(fileList) {
+    const available = MAX_PARTICIPANTS - state.participants.length;
+    if (available <= 0) {
+      showToast("参加者は最大30人です");
+      return;
+    }
+    const selected = Array.from(fileList || []);
+    if (!selected.length) return;
+    if (selected.length > available) {
+      alert(`画像は最大30枚です。選択された画像のうち${available}枚を読み込みます。`);
+    }
+    const files = selected.slice(0, available);
+    state.phase = Phase.LOADING;
+    loadingLine.hidden = false;
+    loadingLine.textContent = `画像を読み込み中… 0/${files.length}`;
+    const firstImageBtn = $("firstImageBtn");
+    const addImageBtn = $("addImageBtn");
+    firstImageBtn.disabled = true;
+    addImageBtn.disabled = true;
+    firstImageBtn.textContent = `読み込み中… 0/${files.length}`;
+    addImageBtn.textContent = `読み込み中… 0/${files.length}`;
+    updateEditorVisibility();
+    const failedFiles = [];
+    for (let index = 0; index < files.length; index += 1) {
+      try {
+        state.participants.push(await resizeImage(files[index]));
+      } catch (error) {
+        console.error(error);
+        failedFiles.push(files[index].name || `画像${index + 1}`);
+      }
+      const progressText = `読み込み中… ${index + 1}/${files.length}`;
+      loadingLine.textContent = `画像を${progressText}`;
+      firstImageBtn.textContent = progressText;
+      addImageBtn.textContent = progressText;
+    }
+    state.phase = Phase.SETUP;
+    loadingLine.hidden = true;
+    firstImageBtn.disabled = false;
+    addImageBtn.disabled = false;
+    firstImageBtn.textContent = "画像を選ぶ";
+    addImageBtn.textContent = "画像を追加";
+    imageInput.value = "";
+    renderEditor();
+    if (failedFiles.length) showImageErrors(files.length, failedFiles);
+  }
+
+  function showImageErrors(total, failedFiles) {
+    const success = total - failedFiles.length;
+    $("imageErrorSummary").textContent = `${total}枚中${success}枚を読み込みました。${failedFiles.length}枚は読み込めませんでした。`;
+    const list = $("imageErrorList");
+    list.replaceChildren();
+    failedFiles.forEach(fileName => {
+      const item = document.createElement("li");
+      item.textContent = fileName;
+      list.appendChild(item);
+    });
+    openModal(imageErrorModal, $("closeImageErrorBtn"));
+  }
+
+  function validateNames() {
+    let changed = false;
+    state.participants.forEach(participant => {
+      if (!participant.name.trim()) {
+        participant.name = participant.defaultName || "名前なし";
+        changed = true;
+      } else {
+        participant.name = participant.name.trim();
       }
     });
+    if (changed) renderEditor();
   }
 
-  let audioCtx = null;
+  function enterRoulette() {
+    if (state.participants.length < 2) {
+      showToast("2人以上の参加者を登録してください");
+      return;
+    }
+    validateNames();
+    resetOrder(false);
+    state.phase = Phase.READY;
+    setupView.hidden = true;
+    rouletteView.hidden = false;
+    updatePlayLayout();
+    renderPlayState();
+    requestAnimationFrame(() => {
+      updatePlayLayout();
+      updateRouletteSize();
+      (state.settings.oneTouch ? rouletteCard : mainButton).focus();
+    });
+  }
+
+  function returnToEditor() {
+    stopTimers();
+    state.phase = Phase.SETUP;
+    rouletteView.hidden = true;
+    setupView.hidden = false;
+    renderEditor();
+    window.scrollTo({ top: 0, behavior: state.settings.reduceEffects ? "auto" : "smooth" });
+  }
+
+  function returnToStart() {
+    stopTimers();
+    releaseAllParticipants();
+    state.participants = [];
+    state.order = [];
+    state.selectedIds = new Set();
+    state.currentId = null;
+    state.spinPool = [];
+    state.poolPosition = 0;
+    state.phase = Phase.SETUP;
+    rouletteView.hidden = true;
+    setupView.hidden = false;
+    showParticipant(null, false);
+    rouletteCard.classList.remove("selected", "pop");
+    renderEditor();
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  function updatePlayLayout() {
+    if (rouletteView.hidden) return;
+    const rect = playLayout.getBoundingClientRect();
+    const side = rect.width >= 900 && rect.height >= 470 && rect.width / Math.max(1, rect.height) >= 1.15;
+    playLayout.classList.toggle("side", side);
+    playLayout.classList.toggle("stacked", !side);
+  }
+
+  function updateRouletteSize() {
+    if (rouletteView.hidden) return;
+    const rect = stageVisual.getBoundingClientRect();
+    const size = Math.max(96, Math.floor(Math.min(rect.width, rect.height, 720)));
+    rouletteCard.style.setProperty("--roulette-size", `${size}px`);
+  }
+
+  function openReset() {
+    openModal(resetModal, $("restartRouletteBtn"));
+  }
+
+  function stopTimers() {
+    clearInterval(state.spinTimer);
+    clearTimeout(state.stopTimer);
+    clearTimeout(state.autoStopTimer);
+    state.spinTimer = null;
+    state.stopTimer = null;
+    state.autoStopTimer = null;
+  }
+
+  function randomInt(maxExclusive) {
+    if (!Number.isInteger(maxExclusive) || maxExclusive <= 0) return 0;
+    if (!crypto.getRandomValues) return Math.floor(Math.random() * maxExclusive);
+    const limit = Math.floor(0x100000000 / maxExclusive) * maxExclusive;
+    const array = new Uint32Array(1);
+    do { crypto.getRandomValues(array); } while (array[0] >= limit);
+    return array[0] % maxExclusive;
+  }
+
+  function participantById(id) {
+    return state.participants.find(participant => participant.id === id) || null;
+  }
+
+  function getUnselected() {
+    return state.participants.filter(participant => !state.selectedIds.has(participant.id));
+  }
+
+  function buildSpinPool() {
+    const unselected = getUnselected();
+    return state.settings.hideSelectedDuringSpin ? unselected : [...state.participants];
+  }
+
+  function showParticipant(participant, selected = false) {
+    rouletteFace.replaceChildren();
+    if (participant?.type === "image") {
+      const img = document.createElement("img");
+      img.src = participant.value;
+      img.alt = "";
+      img.decoding = "async";
+      rouletteFace.appendChild(img);
+    } else if (participant) {
+      const emoji = document.createElement("span");
+      emoji.className = "emoji-content";
+      emoji.textContent = participant.value;
+      rouletteFace.appendChild(emoji);
+    }
+    currentName.textContent = participant?.name || "";
+    applyNameClass(currentName, participant?.name || "");
+    rouletteCard.classList.toggle("selected", selected);
+  }
+
+  function updateRouletteInteraction() {
+    const enabled = state.settings.oneTouch;
+    mainButton.hidden = enabled || state.phase === Phase.COMPLETE;
+    $("mainButtonSlot").hidden = mainButton.hidden;
+    rouletteCard.classList.toggle("one-touch", enabled);
+    rouletteCard.classList.toggle("busy", enabled && (state.phase === Phase.SPINNING || state.phase === Phase.STOPPING));
+    if (enabled) {
+      rouletteCard.setAttribute("role", "button");
+      rouletteCard.tabIndex = 0;
+      const label = state.phase === Phase.SPINNING || state.phase === Phase.STOPPING
+        ? "ルーレットを処理中"
+        : state.phase === Phase.COMPLETE
+          ? "全員の順番が決まりました"
+          : "ルーレットをスタート";
+      rouletteCard.setAttribute("aria-label", label);
+      rouletteCard.setAttribute("aria-disabled", String(state.phase === Phase.SPINNING || state.phase === Phase.STOPPING || state.phase === Phase.COMPLETE));
+    } else {
+      rouletteCard.removeAttribute("role");
+      rouletteCard.removeAttribute("tabindex");
+      rouletteCard.removeAttribute("aria-label");
+      rouletteCard.removeAttribute("aria-disabled");
+    }
+  }
+
+  function closeMenuPopover({ restoreFocus = false } = {}) {
+    if (menuPopover.hidden) return;
+    menuPopover.hidden = true;
+    $("menuBtn").setAttribute("aria-expanded", "false");
+    if (restoreFocus) $("menuBtn").focus();
+  }
+
+  function positionMenuPopover() {
+    if (menuPopover.hidden) return;
+    const buttonRect = $("menuBtn").getBoundingClientRect();
+    const gap = 7;
+    menuPopover.style.visibility = "hidden";
+    menuPopover.style.left = "0px";
+    menuPopover.style.top = "0px";
+    const popoverRect = menuPopover.getBoundingClientRect();
+    let left = buttonRect.right - popoverRect.width;
+    left = Math.max(8, Math.min(left, window.innerWidth - popoverRect.width - 8));
+    let top = buttonRect.bottom + gap;
+    if (top + popoverRect.height > window.innerHeight - 8) top = Math.max(8, buttonRect.top - popoverRect.height - gap);
+    menuPopover.style.left = `${Math.round(left)}px`;
+    menuPopover.style.top = `${Math.round(top)}px`;
+    menuPopover.style.visibility = "visible";
+  }
+
+  function openMenuPopover() {
+    if (state.phase === Phase.SPINNING || state.phase === Phase.STOPPING) return;
+    const opening = menuPopover.hidden;
+    closeMenuPopover();
+    if (!opening) return;
+    menuPopover.hidden = false;
+    $("menuBtn").setAttribute("aria-expanded", "true");
+    positionMenuPopover();
+    requestAnimationFrame(() => focusableElements(menuPopover)[0]?.focus());
+  }
+
+  function renderPlayState() {
+    const remaining = state.participants.length - state.order.length;
+    remainingStatus.textContent = `残り${remaining}人`;
+    historyCount.textContent = `${state.order.length}人`;
+    showResultsBtn.disabled = state.order.length === 0;
+    const busy = state.phase === Phase.SPINNING || state.phase === Phase.STOPPING;
+    const undoDisabled = busy || state.order.length === 0;
+    $("undoBtn").disabled = undoDisabled;
+    $("undoBtn").setAttribute("aria-disabled", String(undoDisabled));
+    $("menuBtn").disabled = busy;
+    $("menuBtn").setAttribute("aria-disabled", String(busy));
+    $("soundBtn").disabled = false;
+    $("fullscreenBtn").disabled = false;
+    if (busy) closeMenuPopover();
+
+    if (state.phase === Phase.COMPLETE) {
+      mainButton.textContent = "スタート";
+      mainButton.classList.remove("complete");
+      mainButton.disabled = true;
+      orderStatus.textContent = "全員の順番が決まりました";
+    } else if (state.phase === Phase.SPINNING) {
+      mainButton.textContent = "ストップ";
+      mainButton.classList.remove("complete");
+      mainButton.disabled = false;
+      orderStatus.textContent = "回転中";
+    } else if (state.phase === Phase.STOPPING) {
+      mainButton.textContent = "スタート";
+      mainButton.classList.remove("complete");
+      mainButton.disabled = true;
+      orderStatus.textContent = "決定中";
+    } else {
+      mainButton.textContent = "スタート";
+      mainButton.classList.remove("complete");
+      mainButton.disabled = false;
+      orderStatus.textContent = state.order.length ? `${state.order.length}番まで決定` : "まだ選ばれていません";
+    }
+    updateRouletteInteraction();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    historyList.replaceChildren();
+    if (!state.order.length) return;
+    state.order.forEach((id, index) => {
+      const participant = participantById(id);
+      const item = document.createElement("div");
+      item.className = "history-item";
+      const order = document.createElement("div");
+      order.className = "history-order";
+      order.textContent = String(index + 1);
+      const media = createFaceNode(participant, "history-media");
+      const name = document.createElement("div");
+      name.className = "history-name";
+      name.textContent = participant.name;
+      applyNameClass(name, participant.name);
+      item.append(order, media, name);
+      historyList.appendChild(item);
+    });
+    if (!state.settings.reduceEffects) {
+      historyList.scrollTo({ left: historyList.scrollWidth, top: historyList.scrollHeight, behavior: "smooth" });
+    }
+  }
+
+  let audioContext = null;
   function ensureAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === "suspended") audioCtx.resume();
+    if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
   }
   function playTick() {
-    if (!soundOn || !audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.type = "square"; o.frequency.value = 660;
-    g.gain.setValueAtTime(0.07, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime + 0.05);
+    if (!state.soundOn || !audioContext) return;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    oscillator.type = "square";
+    oscillator.frequency.value = 650;
+    gain.gain.setValueAtTime(.055, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + .045);
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + .05);
   }
   function playStop() {
-    if (!soundOn || !audioCtx) return;
-    const notes = [523, 659, 784];
-    notes.forEach((f, i) => {
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = "triangle"; o.frequency.value = f;
-      const t = audioCtx.currentTime + i * 0.09;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.18, t + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
-      o.connect(g); g.connect(audioCtx.destination);
-      o.start(t); o.stop(t + 0.35);
+    if (!state.soundOn || !audioContext) return;
+    [523, 659, 784].forEach((frequency, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const time = audioContext.currentTime + index * .085;
+      oscillator.type = "triangle";
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(.0001, time);
+      gain.gain.exponentialRampToValueAtTime(.15, time + .02);
+      gain.gain.exponentialRampToValueAtTime(.0001, time + .32);
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start(time);
+      oscillator.stop(time + .34);
     });
-  }
-
-  function addHistory(index) {
-    const box = document.createElement("div");
-    box.className = "hist-item";
-    box.appendChild(faceHTML(items[index]));
-    const num = document.createElement("span");
-    num.className = "num";
-    num.textContent = used.length;
-    box.appendChild(num);
-    historyEl.appendChild(box);
-    historyEl.scrollTo({
-      left: historyEl.scrollWidth,
-      top: historyEl.scrollHeight,
-      behavior: prefersReducedMotion() ? "auto" : "smooth"
-    });
-  }
-  function clearHistory() { historyEl.innerHTML = ""; }
-
-  function pickTarget() {
-    const candidates = [];
-    for (let i = 0; i < items.length; i++) {
-      if (!used.includes(i)) candidates.push(i);
-    }
-    return candidates[Math.floor(Math.random() * candidates.length)];
-  }
-
-  function buildStopPlan(target) {
-    const n = items.length;
-    const forward = (target - currentIndex + n) % n;
-
-    if (prefersReducedMotion()) {
-      const backward = (currentIndex - target + n) % n;
-      if (forward === 0) return { direction: 1, steps: 0 };
-      return backward < forward
-        ? { direction: -1, steps: backward }
-        : { direction: 1, steps: forward };
-    }
-
-    let steps = forward;
-    const minimumSteps = Math.max(n + forward, 12);
-    while (steps < minimumSteps) steps += n;
-    return { direction: 1, steps };
-  }
-
-  function getStopDelay(completedSteps, totalSteps) {
-    if (prefersReducedMotion()) {
-      const progress = totalSteps ? completedSteps / totalSteps : 1;
-      return Math.round(240 + 140 * progress * progress);
-    }
-
-    const tailLength = Math.min(8, totalSteps);
-    const tailStart = totalSteps - tailLength;
-    if (completedSteps <= tailStart) return 60;
-    const progress = (completedSteps - tailStart) / Math.max(1, tailLength);
-    return Math.round(80 + 300 * progress * progress);
-  }
-
-  function finishSelection(target) {
-    currentIndex = target;
-    showCell(items[target]);
-    used.push(target);
-    addHistory(target);
-    spinning = false;
-    stopping = false;
-    windowEl.classList.add("stopped");
-    playStop();
-
-    if (used.length >= items.length) {
-      finished = true;
-      spinBtn.textContent = "リセット";
-      spinBtn.classList.add("reset");
-      resultBtn.classList.add("show");
-    } else {
-      spinBtn.textContent = "スタート";
-    }
-    updateControls();
   }
 
   function startSpin() {
-    if (items.length === 0) return;
-    stopAllTimers();
-    spinning = true;
-    stopping = false;
-    windowEl.classList.remove("stopped");
-    spinBtn.textContent = "ストップ";
-    updateControls();
-
-    const interval = prefersReducedMotion() ? 240 : 60;
-    spinInterval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % items.length;
-      showCell(items[currentIndex]);
+    const pool = buildSpinPool();
+    if (!pool.length) return;
+    stopTimers();
+    state.spinPool = pool;
+    const currentPosition = pool.findIndex(participant => participant.id === state.currentId);
+    state.poolPosition = currentPosition >= 0 ? currentPosition : 0;
+    state.phase = Phase.SPINNING;
+    rouletteCard.classList.remove("selected", "pop");
+    renderPlayState();
+    const interval = speedMap[state.settings.speed];
+    state.spinTimer = setInterval(() => {
+      state.poolPosition = (state.poolPosition + 1) % state.spinPool.length;
+      const participant = state.spinPool[state.poolPosition];
+      state.currentId = participant.id;
+      showParticipant(participant, false);
       playTick();
     }, interval);
   }
 
-  function stopSpin() {
-    stopping = true;
-    spinBtn.textContent = "スタート";
-    stopAllTimers();
-    updateControls();
+  function easeInCubic(t) { return t * t * t; }
 
-    const target = pickTarget();
-    const plan = buildStopPlan(target);
+  function stopSpin() {
+    stopTimers();
+    const candidates = getUnselected();
+    if (!candidates.length) return;
+    const target = candidates[randomInt(candidates.length)];
+    const targetPosition = state.spinPool.findIndex(participant => participant.id === target.id);
+    const poolLength = state.spinPool.length;
+    const forward = (targetPosition - state.poolPosition + poolLength) % poolLength;
+    const config = stopMap[state.settings.stopLength];
+    let totalSteps = forward + config.extraCycles * poolLength;
+    while (totalSteps < config.minSteps) totalSteps += poolLength;
+    const easingSteps = Math.min(15, Math.max(8, Math.round(Math.sqrt(totalSteps) * 2.2)));
+    const easingStart = totalSteps - easingSteps;
+    const baseDelay = speedMap[state.settings.speed];
     let completed = 0;
 
-    if (plan.steps === 0) {
-      tickTimer = setTimeout(() => finishSelection(target), 300);
-      return;
-    }
+    state.phase = Phase.STOPPING;
+    renderPlayState();
 
-    const slowStep = () => {
-      currentIndex = (currentIndex + plan.direction + items.length) % items.length;
-      showCell(items[currentIndex]);
+    const nextDelay = () => {
+      if (completed < easingStart) return baseDelay;
+      const progress = Math.min(1, (completed - easingStart) / Math.max(1, easingSteps - 1));
+      return Math.round(baseDelay + (config.maxDelay - baseDelay) * easeInCubic(progress));
+    };
+
+    const advance = () => {
+      state.poolPosition = (state.poolPosition + 1) % poolLength;
+      const participant = state.spinPool[state.poolPosition];
+      state.currentId = participant.id;
+      showParticipant(participant, false);
       playTick();
       completed += 1;
-
-      if (completed < plan.steps) {
-        tickTimer = setTimeout(slowStep, getStopDelay(completed, plan.steps));
+      if (completed < totalSteps) {
+        state.stopTimer = setTimeout(advance, nextDelay());
       } else {
         finishSelection(target);
       }
     };
-
-    tickTimer = setTimeout(slowStep, getStopDelay(0, plan.steps));
+    state.stopTimer = setTimeout(advance, nextDelay());
   }
 
-  function doReset() {
-    stopAllTimers();
-    spinning = false;
-    stopping = false;
-    used = [];
-    finished = false;
-    currentIndex = 0;
-    clearHistory();
-    windowEl.classList.remove("stopped");
-    spinBtn.classList.remove("reset");
-    spinBtn.textContent = "スタート";
-    resultBtn.classList.remove("show");
-    cell.innerHTML = "";
-    updateControls();
-  }
-
-  function setBackgroundInert(isInert) {
-    [controlsEl, mainColEl, historyEl, resultBtn].forEach(el => {
-      if (el) el.inert = isInert;
+  function playSelectionOverlay() {
+    if (state.settings.reduceEffects) return;
+    const rect = rouletteCard.getBoundingClientRect();
+    const clone = rouletteCard.cloneNode(true);
+    clone.removeAttribute("id");
+    clone.querySelectorAll("[id]").forEach(element => element.removeAttribute("id"));
+    clone.classList.remove("pop", "one-touch", "busy");
+    clone.classList.add("selection-overlay-card");
+    Object.assign(clone.style, {
+      left: `${rect.left}px`,
+      top: `${rect.top}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`
     });
+    document.body.appendChild(clone);
+    clone.addEventListener("animationend", () => clone.remove(), { once: true });
+    setTimeout(() => clone.remove(), 700);
   }
 
-  function getFocusableElements(container) {
-    return Array.from(container.querySelectorAll(
-      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    )).filter(el => !el.hidden && el.offsetParent !== null);
+  function finishSelection(target) {
+    state.currentId = target.id;
+    state.order.push(target.id);
+    state.selectedIds.add(target.id);
+    state.phase = state.order.length === state.participants.length ? Phase.COMPLETE : Phase.RESULT;
+    showParticipant(target, true);
+    rouletteCard.classList.remove("pop");
+    playSelectionOverlay();
+    playStop();
+    renderPlayState();
   }
 
-  function trapFocus(event, container) {
+  function undoLastResult() {
+    if (!state.order.length || state.phase === Phase.SPINNING || state.phase === Phase.STOPPING) return;
+    const removedId = state.order.pop();
+    state.selectedIds.delete(removedId);
+    const previousId = state.order.at(-1) || null;
+    state.currentId = previousId;
+    state.phase = state.order.length ? Phase.RESULT : Phase.READY;
+    const previous = participantById(previousId);
+    showParticipant(previous, Boolean(previous));
+    rouletteCard.classList.remove("pop");
+    renderPlayState();
+    showToast("直前の結果を取り消しました。", 2200);
+  }
+
+  function resetOrder(render = true) {
+    stopTimers();
+    state.order = [];
+    state.selectedIds = new Set();
+    state.currentId = null;
+    state.spinPool = [];
+    state.poolPosition = 0;
+    state.phase = rouletteView.hidden ? Phase.SETUP : Phase.READY;
+    showParticipant(null, false);
+    rouletteCard.classList.remove("selected", "pop");
+    if (render) renderPlayState();
+  }
+
+  function openResults() {
+    state.modalReturnFocus = document.activeElement;
+    resultGrid.replaceChildren();
+    state.order.forEach((id, index) => {
+      const participant = participantById(id);
+      const card = document.createElement("article");
+      card.className = "result-card";
+      const number = document.createElement("div");
+      number.className = "result-num";
+      number.textContent = String(index + 1);
+      const media = createFaceNode(participant, "result-media");
+      const name = document.createElement("div");
+      name.className = "result-name";
+      name.textContent = participant.name;
+      applyNameClass(name, participant.name);
+      card.append(number, media, name);
+      resultGrid.appendChild(card);
+    });
+    openModal(resultsModal, $("closeResultsBtn"));
+  }
+
+  function setStepSelector(selector, value, focus = false) {
+    const options = Array.from(selector.querySelectorAll(".step-option"));
+    const index = Math.max(0, options.findIndex(option => option.dataset.value === value));
+    selector.dataset.value = options[index].dataset.value;
+    selector.style.setProperty("--step-progress", `${index * 50}%`);
+    options.forEach((option, optionIndex) => {
+      const selected = optionIndex === index;
+      option.setAttribute("aria-checked", String(selected));
+      option.tabIndex = selected ? 0 : -1;
+      option.classList.toggle("is-reached", optionIndex <= index);
+    });
+    if (focus) options[index].focus();
+  }
+
+  function setupStepSelector(selector) {
+    const options = Array.from(selector.querySelectorAll(".step-option"));
+    options.forEach((option, index) => {
+      option.addEventListener("click", () => setStepSelector(selector, option.dataset.value));
+      option.addEventListener("keydown", event => {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        let nextIndex = index;
+        if (event.key === "ArrowLeft") nextIndex = Math.max(0, index - 1);
+        if (event.key === "ArrowRight") nextIndex = Math.min(options.length - 1, index + 1);
+        if (event.key === "Home") nextIndex = 0;
+        if (event.key === "End") nextIndex = options.length - 1;
+        setStepSelector(selector, options[nextIndex].dataset.value, true);
+      });
+    });
+    setStepSelector(selector, selector.dataset.value || options[0].dataset.value);
+  }
+
+  function populateSettingsControls(settings = state.settings) {
+    setStepSelector($("speedSelector"), settings.speed);
+    setStepSelector($("stopSelector"), settings.stopLength);
+    $("oneTouchToggle").checked = settings.oneTouch;
+    $("hideSelectedToggle").checked = settings.hideSelectedDuringSpin;
+    $("reduceEffectsToggle").checked = settings.reduceEffects;
+  }
+
+  function openSettings() {
+    state.settingsDraftSoundOn = state.soundOn;
+    populateSettingsControls();
+    $("motionNote").textContent = "演出を少なくします。ルーレットの回転速度は変わりません。";
+    openModal(settingsModal, $("speedSelector").querySelector('[aria-checked="true"]'));
+  }
+
+  function saveSettings() {
+    state.settings.speed = $("speedSelector").dataset.value;
+    state.settings.stopLength = $("stopSelector").dataset.value;
+    state.settings.oneTouch = $("oneTouchToggle").checked;
+    state.settings.hideSelectedDuringSpin = $("hideSelectedToggle").checked;
+    state.settings.reduceEffects = $("reduceEffectsToggle").checked;
+    state.soundOn = state.settingsDraftSoundOn;
+    $("soundBtn").setAttribute("aria-pressed", String(state.soundOn));
+    setIconButton($("soundBtn"), state.soundOn ? iconMarkup.soundOn : iconMarkup.soundOff, state.soundOn ? "音を消す" : "音を出す");
+    saveSettingsToStorage();
+    closeModal(settingsModal);
+    renderPlayState();
+    requestAnimationFrame(updateRouletteSize);
+  }
+
+  function openConfirm(message, action, okLabel = "実行する") {
+    state.confirmAction = action;
+    $("confirmText").textContent = message;
+    $("confirmOkBtn").textContent = okLabel;
+    openModal(confirmModal, $("confirmCancelBtn"));
+  }
+
+  function openModal(modal, initialFocus) {
+    state.modalReturnFocus = document.activeElement;
+    modal.hidden = false;
+    rouletteView.inert = !rouletteView.hidden;
+    setupView.inert = !setupView.hidden;
+    requestAnimationFrame(() => initialFocus?.focus());
+  }
+
+  function closeModal(modal, restoreFocus = true) {
+    modal.hidden = true;
+    rouletteView.inert = false;
+    setupView.inert = false;
+    if (restoreFocus && state.modalReturnFocus?.isConnected) state.modalReturnFocus.focus();
+    state.modalReturnFocus = null;
+  }
+
+  function focusableElements(container) {
+    return Array.from(container.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')).filter(element => !element.hidden && element.offsetParent !== null);
+  }
+
+  function handleModalKeys(event, modal, closeAllowed = true) {
+    if (event.key === "Escape" && closeAllowed) {
+      event.preventDefault();
+      closeModal(modal);
+      return;
+    }
     if (event.key !== "Tab") return;
-    const focusable = getFocusableElements(container);
-    if (focusable.length === 0) {
-      event.preventDefault();
-      container.focus();
-      return;
-    }
+    const focusable = focusableElements(modal);
+    if (!focusable.length) return;
     const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
+    const last = focusable.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   }
 
-  function openConfirm(trigger) {
-    confirmReturnFocus = trigger || document.activeElement;
-    confirmEl.classList.add("show");
-    confirmEl.setAttribute("aria-hidden", "false");
-    setBackgroundInert(true);
-    confirmNo.focus();
-  }
-
-  function closeConfirm(restoreFocus = true) {
-    confirmEl.classList.remove("show");
-    confirmEl.setAttribute("aria-hidden", "true");
-    setBackgroundInert(false);
-    if (restoreFocus && confirmReturnFocus?.isConnected) confirmReturnFocus.focus();
-    confirmReturnFocus = null;
-  }
-
-  spinBtn.addEventListener("click", () => {
-    ensureAudio();
-    if (finished) {
-      openConfirm(spinBtn);
-      return;
-    }
-    if (!spinning) startSpin();
-    else if (!stopping) stopSpin();
-  });
-
-  resetBtn.addEventListener("click", () => openConfirm(resetBtn));
-
-  function resizeImageFile(file) {
-    return new Promise((resolve, reject) => {
-      const sourceUrl = URL.createObjectURL(file);
-      const img = new Image();
-
-      img.onload = () => {
-        try {
-          const longestEdge = Math.max(img.naturalWidth, img.naturalHeight);
-          if (!longestEdge) throw new Error("画像サイズを取得できませんでした。");
-
-          const scale = Math.min(1, MAX_IMAGE_EDGE / longestEdge);
-          const width = Math.max(1, Math.round(img.naturalWidth * scale));
-          const height = Math.max(1, Math.round(img.naturalHeight * scale));
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const context = canvas.getContext("2d", { alpha: true });
-          if (!context) throw new Error("画像処理を開始できませんでした。");
-          context.drawImage(img, 0, 0, width, height);
-
-          const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
-          canvas.toBlob(blob => {
-            URL.revokeObjectURL(sourceUrl);
-            if (!blob) {
-              reject(new Error("画像の縮小に失敗しました。"));
-              return;
-            }
-            resolve({ type: "image", value: URL.createObjectURL(blob) });
-          }, outputType, 0.9);
-        } catch (error) {
-          URL.revokeObjectURL(sourceUrl);
-          reject(error);
-        }
-      };
-
-      img.onerror = () => {
-        URL.revokeObjectURL(sourceUrl);
-        reject(new Error(`${file.name}を読み込めませんでした。`));
-      };
-      img.src = sourceUrl;
-    });
-  }
-
-  pickBtn.addEventListener("click", () => {
-    fileInput.value = "";
-    fileInput.click();
-  });
-
-  fileInput.addEventListener("change", async event => {
-    const selectedFiles = Array.from(event.target.files || []);
-    if (selectedFiles.length === 0) return;
-    if (selectedFiles.length > MAX_FILES) {
-      alert("写真は最大30枚です。先頭30枚を読み込みました。");
-    }
-
-    const files = selectedFiles.slice(0, MAX_FILES);
-    const loadedItems = [];
-    let failedCount = 0;
-    loading = true;
-    pickBtn.textContent = "読み込み中…";
-    updateControls();
-
-    for (const file of files) {
-      try {
-        loadedItems.push(await resizeImageFile(file));
-      } catch (error) {
-        console.error(error);
-        failedCount += 1;
-      }
-    }
-
-    if (loadedItems.length > 0) {
-      releaseItemUrls(items);
-      items = loadedItems;
-      doReset();
-    }
-
-    loading = false;
-    pickBtn.textContent = "写真を選ぶ";
-    fileInput.value = "";
-    updateControls();
-
-    if (loadedItems.length === 0) {
-      alert("写真を読み込めませんでした。対応している画像形式か確認してください。");
-    } else if (failedCount > 0) {
-      alert(`${failedCount}枚の写真を読み込めませんでした。対応している画像形式か確認してください。`);
-    }
-  });
-
-  soundBtn.addEventListener("click", () => {
-    soundOn = !soundOn;
-    soundBtn.textContent = soundOn ? "🔊" : "🔇";
-    soundBtn.setAttribute("aria-pressed", String(soundOn));
-    if (soundOn) ensureAudio();
-  });
-
-  function isFullscreen() {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement);
-  }
-
+  function isFullscreen() { return Boolean(document.fullscreenElement || document.webkitFullscreenElement); }
   async function toggleFullscreen() {
     try {
       if (!isFullscreen()) {
-        const el = document.documentElement;
-        const request = el.requestFullscreen || el.webkitRequestFullscreen;
-        if (!request) throw new Error("Fullscreen API is unavailable.");
-        await Promise.resolve(request.call(el));
+        const request = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+        if (!request) throw new Error("Fullscreen API unavailable");
+        await Promise.resolve(request.call(document.documentElement));
       } else {
         const exit = document.exitFullscreen || document.webkitExitFullscreen;
-        if (!exit) throw new Error("Fullscreen API is unavailable.");
+        if (!exit) throw new Error("Fullscreen API unavailable");
         await Promise.resolve(exit.call(document));
       }
     } catch (error) {
       console.error(error);
-      alert("全画面表示を切り替えられませんでした。ブラウザーの設定をご確認ください。");
+      showToast("全画面表示を切り替えられませんでした。");
     }
   }
 
-  function handleFullscreenChange() {
-    fullBtn.textContent = isFullscreen() ? "戻す" : "全画面";
-    if (isFullscreen()) controlsEl.classList.add("hidden");
-    else controlsEl.classList.remove("hidden");
+  $("firstImageBtn").addEventListener("click", () => { imageInput.value = ""; imageInput.click(); });
+  $("addImageBtn").addEventListener("click", () => { imageInput.value = ""; imageInput.click(); });
+  $("firstNameBtn").addEventListener("click", startNameOnly);
+  $("addNameBtn").addEventListener("click", () => addNameParticipant());
+  $("sampleBtn").addEventListener("click", loadSample);
+  imageInput.addEventListener("change", event => handleImageFiles(event.target.files));
+  $("backToIntroBtn").addEventListener("click", () => openConfirm(
+    "登録した参加者を消して、はじめの画面に戻ります。",
+    () => { closeModal(confirmModal); returnToStart(); },
+    "はじめに戻る"
+  ));
+  beginBtn.addEventListener("click", enterRoulette);
+
+  mainButton.addEventListener("click", () => {
+    ensureAudio();
+    if (state.phase === Phase.SPINNING) stopSpin();
+    else if (state.phase === Phase.READY || state.phase === Phase.RESULT) startSpin();
+  });
+
+  function activateOneTouch() {
+    if (!state.settings.oneTouch) return;
+    if (state.phase !== Phase.READY && state.phase !== Phase.RESULT) return;
+    ensureAudio();
+    startSpin();
+    state.autoStopTimer = setTimeout(() => {
+      state.autoStopTimer = null;
+      if (state.phase === Phase.SPINNING) stopSpin();
+    }, 1200);
   }
 
-  fullBtn.addEventListener("click", toggleFullscreen);
-  document.addEventListener("fullscreenchange", handleFullscreenChange);
-  document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+  rouletteCard.addEventListener("click", activateOneTouch);
+  rouletteCard.addEventListener("keydown", event => {
+    if (!state.settings.oneTouch || (event.key !== "Enter" && event.key !== " ")) return;
+    event.preventDefault();
+    activateOneTouch();
+  });
 
-  function layoutModal() {
-    const n = used.length;
-    if (n === 0) return;
-    const gap = Math.max(14, Math.min(window.innerWidth * 0.02, 30));
-    const availW = window.innerWidth * 0.96 - 40;
-    const availH = window.innerHeight * 0.92 - 40 - 90;
+  $("undoBtn").addEventListener("click", () => {
+    if ($("undoBtn").disabled) return;
+    openConfirm(
+      "直前の結果を取り消しますか？",
+      () => {
+        closeModal(confirmModal, false);
+        undoLastResult();
+        $("undoBtn").focus();
+      },
+      "取り消す"
+    );
+  });
 
-    let best = { size: 0, cols: 1 };
-    for (let cols = 1; cols <= n; cols++) {
-      const rows = Math.ceil(n / cols);
-      const sizeW = (availW - gap * (cols - 1)) / cols;
-      const sizeH = (availH - gap * (rows - 1)) / rows;
-      const size = Math.min(sizeW, sizeH);
-      if (size > best.size) best = { size, cols };
-    }
-    modalGrid.style.gridTemplateColumns = `repeat(${best.cols}, ${best.size}px)`;
-    modalGrid.querySelectorAll(".modal-item").forEach(el => {
-      el.style.fontSize = (best.size * 0.62) + "px";
-    });
+  $("menuBtn").setAttribute("aria-haspopup", "menu");
+  $("menuBtn").setAttribute("aria-expanded", "false");
+  $("menuBtn").addEventListener("click", event => {
+    event.stopPropagation();
+    openMenuPopover();
+  });
+  menuPopover.addEventListener("click", event => event.stopPropagation());
+  menuPopover.addEventListener("keydown", event => {
+    if (event.key === "Escape") { event.preventDefault(); closeMenuPopover({ restoreFocus: true }); return; }
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+    const items = focusableElements(menuPopover);
+    if (!items.length) return;
+    event.preventDefault();
+    const current = Math.max(0, items.indexOf(document.activeElement));
+    let next = current;
+    if (event.key === "ArrowDown") next = (current + 1) % items.length;
+    if (event.key === "ArrowUp") next = (current - 1 + items.length) % items.length;
+    if (event.key === "Home") next = 0;
+    if (event.key === "End") next = items.length - 1;
+    items[next].focus();
+  });
+  document.addEventListener("click", () => closeMenuPopover());
+  $("menuSettingsBtn").addEventListener("click", () => {
+    closeMenuPopover();
+    $("menuBtn").focus();
+    openSettings();
+  });
+  $("menuResetBtn").addEventListener("click", () => {
+    closeMenuPopover();
+    $("menuBtn").focus();
+    openReset();
+  });
+
+  $("closeResetBtn").addEventListener("click", () => closeModal(resetModal));
+  $("restartRouletteBtn").addEventListener("click", () => {
+    closeModal(resetModal);
+    resetOrder();
+    mainButton.focus();
+  });
+  $("editParticipantsBtn").addEventListener("click", () => {
+    closeModal(resetModal);
+    resetOrder(false);
+    returnToEditor();
+  });
+  $("returnToStartBtn").addEventListener("click", () => {
+    closeModal(resetModal);
+    returnToStart();
+  });
+  resetModal.addEventListener("keydown", event => handleModalKeys(event, resetModal));
+
+  setupStepSelector($("speedSelector"));
+  setupStepSelector($("stopSelector"));
+  $("resetSettingsBtn").addEventListener("click", () => {
+    populateSettingsControls(DEFAULT_SETTINGS);
+    state.settingsDraftSoundOn = DEFAULT_SETTINGS.soundOn;
+    showToast("音の設定を含めて初期状態に戻します。決定すると保存されます。", 3400);
+  });
+  $("saveSettingsBtn").addEventListener("click", saveSettings);
+  $("closeSettingsBtn").addEventListener("click", () => closeModal(settingsModal));
+  settingsModal.addEventListener("keydown", event => handleModalKeys(event, settingsModal));
+
+  const iconMarkup = Object.freeze({
+    undo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a6 6 0 1 1 0 12"/></svg>',
+    soundOn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16 8.5c1.2 1 1.8 2.1 1.8 3.5S17.2 14.5 16 15.5"/><path d="M18.6 6c2 1.7 3 3.7 3 6s-1 4.3-3 6"/></svg>',
+    soundOff: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 5 5M22 9l-5 5"/></svg>',
+    fullscreen: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>',
+    exitFullscreen: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8H3V3M16 8h5V3M8 16H3v5M16 16h5v5"/></svg>'
+  });
+
+  function setIconButton(button, markup, label) {
+    button.innerHTML = markup;
+    button.setAttribute("aria-label", label);
+    button.title = label;
   }
 
-  function openResult() {
-    resultReturnFocus = document.activeElement;
-    modalGrid.innerHTML = "";
-    used.forEach((idx, order) => {
-      const box = document.createElement("div");
-      box.className = "modal-item";
-      box.appendChild(faceHTML(items[idx]));
-      const num = document.createElement("span");
-      num.className = "num";
-      num.textContent = order + 1;
-      box.appendChild(num);
-      modalGrid.appendChild(box);
-    });
-    modal.classList.add("show");
-    modal.setAttribute("aria-hidden", "false");
-    setBackgroundInert(true);
-    layoutModal();
-    closeBtn.focus();
-  }
+  setIconButton($("undoBtn"), iconMarkup.undo, "直前の結果を取り消す");
 
-  function closeResult() {
-    modal.classList.remove("show");
-    modal.setAttribute("aria-hidden", "true");
-    setBackgroundInert(false);
-    if (resultReturnFocus?.isConnected) resultReturnFocus.focus();
-    resultReturnFocus = null;
-  }
+  $("soundBtn").addEventListener("click", () => {
+    state.soundOn = !state.soundOn;
+    $("soundBtn").setAttribute("aria-pressed", String(state.soundOn));
+    setIconButton($("soundBtn"), state.soundOn ? iconMarkup.soundOn : iconMarkup.soundOff, state.soundOn ? "音を消す" : "音を出す");
+    if (state.soundOn) ensureAudio();
+    saveSettingsToStorage();
+  });
+  $("fullscreenBtn").addEventListener("click", toggleFullscreen);
+  const updateFullscreenIcon = () => {
+    setIconButton($("fullscreenBtn"), isFullscreen() ? iconMarkup.exitFullscreen : iconMarkup.fullscreen, isFullscreen() ? "全画面表示を終了" : "全画面表示");
+  };
+  document.addEventListener("fullscreenchange", updateFullscreenIcon);
+  document.addEventListener("webkitfullscreenchange", updateFullscreenIcon);
 
-  resultBtn.addEventListener("click", openResult);
-  closeBtn.addEventListener("click", closeResult);
-  modal.addEventListener("click", event => {
-    if (event.target === modal) closeResult();
-  });
-  modal.addEventListener("keydown", event => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeResult();
-      return;
-    }
-    trapFocus(event, modal);
-  });
+  showResultsBtn.addEventListener("click", openResults);
+  $("closeResultsBtn").addEventListener("click", () => closeModal(resultsModal));
+  resultsModal.addEventListener("keydown", event => handleModalKeys(event, resultsModal));
 
-  confirmEl.addEventListener("keydown", event => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeConfirm();
-      return;
-    }
-    trapFocus(event, confirmEl);
-  });
+  $("closeImageErrorBtn").addEventListener("click", () => closeModal(imageErrorModal));
+  imageErrorModal.addEventListener("keydown", event => handleModalKeys(event, imageErrorModal));
 
-  window.addEventListener("resize", () => {
-    if (modal.classList.contains("show")) layoutModal();
-  });
+  $("confirmCancelBtn").addEventListener("click", () => closeModal(confirmModal));
+  $("confirmOkBtn").addEventListener("click", () => state.confirmAction?.());
+  confirmModal.addEventListener("keydown", event => handleModalKeys(event, confirmModal));
 
-  confirmYes.addEventListener("click", () => {
-    closeConfirm(false);
-    doReset();
-    spinBtn.focus();
+  const rouletteResizeObserver = new ResizeObserver(() => {
+    updatePlayLayout();
+    updateRouletteSize();
   });
-  confirmNo.addEventListener("click", () => closeConfirm());
-  confirmEl.addEventListener("click", event => {
-    if (event.target === confirmEl) closeConfirm();
+  rouletteResizeObserver.observe(playLayout);
+  rouletteResizeObserver.observe(stageVisual);
+  window.addEventListener("orientationchange", () => requestAnimationFrame(() => {
+    updatePlayLayout();
+    updateRouletteSize();
+    positionMenuPopover();
+  }));
+  window.addEventListener("resize", positionMenuPopover);
+  window.addEventListener("beforeunload", event => {
+    if (!state.participants.length) return;
+    event.preventDefault();
+    event.returnValue = "";
   });
-
-  document.addEventListener("click", event => {
-    if (!isFullscreen()) return;
-    if (event.target.closest("#spinBtn, #resultBtn, .modal, .confirm, .controls")) return;
-    controlsEl.classList.toggle("hidden");
+  window.addEventListener("pagehide", event => {
+    if (!event.persisted) releaseAllParticipants();
   });
-
-  window.addEventListener("beforeunload", () => releaseItemUrls(items));
-  updateControls();
+  loadSavedSettings();
+  setIconButton($("soundBtn"), state.soundOn ? iconMarkup.soundOn : iconMarkup.soundOff, state.soundOn ? "音を消す" : "音を出す");
+  $("soundBtn").setAttribute("aria-pressed", String(state.soundOn));
+  playLayout.classList.add("stacked");
+  updateEditorVisibility();
+})();
 </script>
 </body>
 </html>
