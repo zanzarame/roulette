@@ -1507,10 +1507,30 @@
   .roulette-card.final-solo-active::before {
     content: "";
     position: absolute;
-    inset: 18px;
+    inset: 0;
     z-index: 2;
-    border-radius: 12px;
-    box-shadow: 0 0 0 36px var(--cream);
+    border-radius: 17px;
+    background:
+      linear-gradient(to right,
+        rgba(255,250,240,1) 0%,
+        rgba(255,250,240,.92) 22%,
+        rgba(255,250,240,.48) 58%,
+        rgba(255,250,240,0) 100%) left / 27% 100% no-repeat,
+      linear-gradient(to left,
+        rgba(255,250,240,1) 0%,
+        rgba(255,250,240,.92) 22%,
+        rgba(255,250,240,.48) 58%,
+        rgba(255,250,240,0) 100%) right / 27% 100% no-repeat,
+      linear-gradient(to bottom,
+        rgba(255,250,240,1) 0%,
+        rgba(255,250,240,.92) 22%,
+        rgba(255,250,240,.48) 58%,
+        rgba(255,250,240,0) 100%) top / 100% 27% no-repeat,
+      linear-gradient(to top,
+        rgba(255,250,240,1) 0%,
+        rgba(255,250,240,.92) 22%,
+        rgba(255,250,240,.48) 58%,
+        rgba(255,250,240,0) 100%) bottom / 100% 27% no-repeat;
     pointer-events: none;
   }
   .roulette-card.final-solo-active .roulette-face {
@@ -2414,6 +2434,7 @@
     state.stopTimer = null;
     state.autoStopTimer = null;
     stopActiveTickSources();
+    stopActiveResultTones();
     if (!preserveFinalSolo) clearFinalSoloAnimation();
   }
 
@@ -2628,6 +2649,7 @@
   let tickOutputGain = null;
   let tickBuffer = null;
   const activeTickSources = new Set();
+  const activeResultOscillators = new Set();
 
   function createTickBuffer(context) {
     const duration = .016;
@@ -2668,7 +2690,7 @@
         effectCompressor.knee.value = 8;
         effectCompressor.ratio.value = 2.6;
         effectCompressor.attack.value = .002;
-        effectCompressor.release.value = .12;
+        effectCompressor.release.value = .08;
         effectMasterGain.connect(effectCompressor);
         effectCompressor.connect(audioContext.destination);
       } catch (error) {
@@ -2711,6 +2733,14 @@
     source.start(audioContext.currentTime);
   }
 
+  function stopActiveResultTones() {
+    activeResultOscillators.forEach(oscillator => {
+      try { oscillator.stop(); } catch (error) { /* Already stopped. */ }
+      try { oscillator.disconnect(); } catch (error) { /* Already disconnected. */ }
+    });
+    activeResultOscillators.clear();
+  }
+
   function scheduleResultTone(frequency, startTime, duration, level) {
     [
       { type: "sine", ratio: 1, gain: level },
@@ -2721,31 +2751,42 @@
       oscillator.type = voice.type;
       oscillator.frequency.setValueAtTime(frequency * voice.ratio, startTime);
       gain.gain.setValueAtTime(.0001, startTime);
-      gain.gain.exponentialRampToValueAtTime(voice.gain, startTime + .014);
-      gain.gain.setTargetAtTime(.0001, startTime + Math.max(.09, duration * .34), Math.max(.045, duration * .17));
+      gain.gain.exponentialRampToValueAtTime(voice.gain, startTime + .010);
+      gain.gain.setTargetAtTime(
+        .0001,
+        startTime + Math.max(.07, duration * .30),
+        Math.max(.025, duration * .11)
+      );
       oscillator.connect(gain);
       connectEffectAudio(gain);
+      activeResultOscillators.add(oscillator);
+      oscillator.addEventListener("ended", () => {
+        activeResultOscillators.delete(oscillator);
+        try { oscillator.disconnect(); } catch (error) { /* Already disconnected. */ }
+        try { gain.disconnect(); } catch (error) { /* Already disconnected. */ }
+      }, { once: true });
       oscillator.start(startTime);
-      oscillator.stop(startTime + duration + .12);
+      oscillator.stop(startTime + duration + .04);
     });
   }
 
   function playStop(isComplete = false) {
     if (!state.soundOn || !audioContext) return;
     stopActiveTickSources();
-    const start = audioContext.currentTime + .028;
+    stopActiveResultTones();
+    const start = audioContext.currentTime + .016;
     const notes = isComplete
       ? [
-          { frequency: 659.25, duration: .50, level: .48 },
-          { frequency: 880.00, duration: .52, level: .50 },
-          { frequency: 1108.73, duration: .78, level: .53 }
+          { frequency: 659.25, duration: .25, level: .47 },
+          { frequency: 880.00, duration: .28, level: .49 },
+          { frequency: 1108.73, duration: .40, level: .52 }
         ]
       : [
-          { frequency: 659.25, duration: .50, level: .48 },
-          { frequency: 880.00, duration: .56, level: .51 }
+          { frequency: 659.25, duration: .26, level: .47 },
+          { frequency: 880.00, duration: .32, level: .50 }
         ];
     notes.forEach((note, index) => {
-      scheduleResultTone(note.frequency, start + index * .12, note.duration, note.level);
+      scheduleResultTone(note.frequency, start + index * .10, note.duration, note.level);
     });
   }
 
@@ -2822,9 +2863,10 @@
 
     const advance = () => {
       state.lastSpinTickAt = performance.now();
-      playTick();
       completed += 1;
-      if (completed < totalSteps) {
+      const isFinalStep = completed >= totalSteps;
+      if (!isFinalStep) playTick();
+      if (!isFinalStep) {
         state.stopTimer = setTimeout(advance, stepDelays[completed]);
       } else {
         finishSelection(target);
@@ -2907,15 +2949,15 @@
     };
 
     const advance = () => {
-      const currentDelay = nextDelay();
       state.poolPosition = (state.poolPosition + 1) % poolLength;
       const participant = state.spinPool[state.poolPosition];
       state.currentId = participant.id;
       showParticipant(participant, false, false);
       state.lastSpinTickAt = performance.now();
-      playTick();
       completed += 1;
-      if (completed < totalSteps) {
+      const isFinalStep = completed >= totalSteps;
+      if (!isFinalStep) playTick();
+      if (!isFinalStep) {
         state.stopTimer = setTimeout(advance, nextDelay());
       } else {
         finishSelection(target);
@@ -3531,6 +3573,10 @@
     $("soundBtn").setAttribute("aria-pressed", String(state.soundOn));
     setIconButton($("soundBtn"), state.soundOn ? iconMarkup.soundOn : iconMarkup.soundOff, state.soundOn ? "音を消す" : "音を出す");
     if (state.soundOn) ensureAudio();
+    else {
+      stopActiveTickSources();
+      stopActiveResultTones();
+    }
     saveSettingsToStorage();
   });
   document.addEventListener("focusin", event => {
