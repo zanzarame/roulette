@@ -105,8 +105,9 @@
   .button:active { transform: translateY(2px); }
   .button:focus-visible { outline: 4px solid rgba(242,201,76,.9); outline-offset: 3px; }
   .button:disabled { opacity: .42; cursor: not-allowed; transform: none; filter: none; }
-  .primary { background: var(--accent); color: #fff; }
-  .secondary { background: var(--blue); color: #fff; }
+  .primary { background: var(--blue); color: #fff; }
+  .secondary { background: #e7f2f8; color: var(--blue-dark); border: 2px solid #a9cddd; }
+  .danger-solid { background: var(--danger); color: #fff; }
   .ghost { background: #edf3f6; color: var(--ink); }
   .danger { background: #f8e8e8; color: var(--danger); }
   .large { min-height: 54px; font-size: 18px; }
@@ -998,6 +999,87 @@
     .settings-actions .button { width: 100%; }
   }
 
+
+  /* v1.6 */
+  .note-lines span { display: block; }
+  .note-lines span + span { margin-top: 2px; }
+
+  .participant-media > img { padding: 8px; }
+  .history-media > img { padding: 5px; }
+  .result-media > img { padding: 7px; }
+  .roulette-card > .roulette-face > img { padding: 16px; }
+
+  .menu-popover {
+    width: max-content;
+    min-width: 148px;
+    max-width: min(172px, calc(100vw - 24px));
+    padding: 5px;
+    border-radius: 12px;
+  }
+  .menu-popover .menu-option {
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  .reset-options { gap: 8px; }
+  .reset-option {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    align-items: center;
+    gap: 11px;
+    min-height: 72px;
+    padding: 10px 12px;
+    border-width: 1px;
+    border-radius: 13px;
+  }
+  .reset-option-icon {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: #e7f2f8;
+    color: var(--blue-dark);
+  }
+  .reset-option-icon svg {
+    width: 23px;
+    height: 23px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .reset-option-copy { min-width: 0; }
+  .reset-option-title { font-size: 16px; }
+  .reset-option-text { margin-top: 3px; font-size: 13px; line-height: 1.45; }
+  .reset-option.destructive {
+    border-color: #eccaca;
+    background: #fff;
+  }
+  .reset-option.destructive .reset-option-icon { background: #f8e8e8; color: var(--danger); }
+  .reset-option.destructive .reset-option-title { color: var(--danger); }
+  .reset-actions { justify-content: center; margin-top: 16px; }
+  .reset-actions .button { min-width: 130px; }
+
+  .play-layout.stacked { grid-template-rows: minmax(0, 1fr) 126px; }
+  .play-layout.stacked .history-list { padding-bottom: 9px; }
+  .history-list { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.42) transparent; }
+  .history-list::-webkit-scrollbar { height: 7px; width: 7px; }
+  .history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.42); border-radius: 999px; }
+  .history-list::-webkit-scrollbar-track { background: transparent; }
+  @media (pointer: coarse) {
+    .history-list { scrollbar-width: none; }
+    .history-list::-webkit-scrollbar { display: none; }
+    .play-layout.stacked .history-list { padding-bottom: 2px; }
+  }
+
+  .button.primary { background: var(--blue); color: #fff; }
+  .button.secondary { background: #e7f2f8; color: var(--blue-dark); border-color: #a9cddd; }
+  .button.danger-solid { background: var(--danger); color: #fff; }
+
 </style>
 </head>
 <body>
@@ -1114,15 +1196,15 @@
       </div>
     </div>
       <div class="setting toggle-row">
-        <div class="toggle-copy"><label for="oneTouchToggle">ワンタッチでスタート&amp;ストップ</label><small>ルーレットの枠内を押すとスタートし、自動でストップします。</small></div>
+        <div class="toggle-copy"><label for="oneTouchToggle">ワンタッチでスタート&amp;ストップ</label><small>ルーレットの枠内を押すと回転し自動で停止します</small></div>
         <label class="switch-control" aria-label="ワンタッチでスタート&ストップ"><input class="toggle-input" type="checkbox" id="oneTouchToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
     </div>
       <div class="setting toggle-row">
-        <div class="toggle-copy"><label for="hideSelectedToggle">回転中に選出済みを表示しない</label><small>ルーレットの結果には影響しません。</small></div>
+        <div class="toggle-copy"><label for="hideSelectedToggle">回転中に選出済みを表示しない</label><small class="note-lines"><span>選出済みの参加者を回転中だけ表示しません</span><span>ルーレットの結果には影響しません</span></small></div>
         <label class="switch-control" aria-label="回転中に選出済みを表示しない"><input class="toggle-input" type="checkbox" id="hideSelectedToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
     </div>
       <div class="setting toggle-row">
-        <div class="toggle-copy"><label for="reduceEffectsToggle">演出を控えめにする</label><small id="motionNote">演出を少なくします。ルーレットの回転速度は変わりません。</small></div>
+        <div class="toggle-copy"><label for="reduceEffectsToggle">演出を控えめにする</label><small id="motionNote" class="note-lines"><span>動きを少なくして刺激を抑えます</span><span>ルーレットの回転速度は変わりません</span></small></div>
         <label class="switch-control" aria-label="演出を控えめにする"><input class="toggle-input" type="checkbox" id="reduceEffectsToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
     </div>
   </div>
@@ -1135,18 +1217,19 @@
     <div class="modal-head"><h2 id="resetTitle">リセット</h2><button class="close-x" id="closeResetBtn" aria-label="閉じる">×</button></div>
     <div class="reset-options">
       <button class="reset-option" id="restartRouletteBtn">
-        <span class="reset-option-title">ルーレットをやり直す</span>
-        <span class="reset-option-text">画像と名前を残したまま、ルーレットをやり直します。</span>
-    </button>
+        <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4v6h6"/><path d="M5.5 15a8 8 0 1 0 1.2-8.8L4 10"/></svg></span>
+        <span class="reset-option-copy"><span class="reset-option-title">ルーレットをやり直す</span><span class="reset-option-text">画像と名前を残したまま、ルーレットをやり直します。</span></span>
+      </button>
       <button class="reset-option" id="editParticipantsBtn">
-        <span class="reset-option-title">参加者を編集する</span>
-        <span class="reset-option-text">ルーレットの結果を消して、参加者の編集画面に戻ります。</span>
-    </button>
+        <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 16-.8 4.8L8 20l10.8-10.8-4-4L4 16Z"/><path d="m13.8 6.2 4 4"/></svg></span>
+        <span class="reset-option-copy"><span class="reset-option-title">参加者を編集する</span><span class="reset-option-text">ルーレットの結果を消して、参加者の編集画面に戻ります。</span></span>
+      </button>
       <button class="reset-option destructive" id="returnToStartBtn">
-        <span class="reset-option-title">はじめに戻る</span>
-        <span class="reset-option-text">登録した参加者を消して、はじめの画面に戻ります。</span>
-    </button>
-  </div>
+        <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span>
+        <span class="reset-option-copy"><span class="reset-option-title">はじめに戻る</span><span class="reset-option-text">登録した参加者を消して、はじめの画面に戻ります。</span></span>
+      </button>
+    </div>
+    <div class="modal-actions reset-actions"><button class="button ghost" id="cancelResetBtn">キャンセル</button></div>
 </div>
 </div>
 
@@ -1221,7 +1304,8 @@
     },
     modalReturnFocus: null,
     confirmAction: null,
-    settingsDraftSoundOn: DEFAULT_SETTINGS.soundOn
+    settingsDraftSoundOn: DEFAULT_SETTINGS.soundOn,
+    settingsSnapshot: null
   };
 
   const $ = id => document.getElementById(id);
@@ -1324,7 +1408,7 @@
   }
 
   function showToast(message, duration = 3200) {
-    toast.textContent = message;
+    toast.textContent = String(message).trim().replace(/[。、！？!?]+$/u, "");
     toast.hidden = false;
     clearTimeout(showToast.timer);
     showToast.timer = setTimeout(() => { toast.hidden = true; }, duration);
@@ -1665,7 +1749,7 @@
 
   function updateRouletteInteraction() {
     const enabled = state.settings.oneTouch;
-    mainButton.hidden = enabled || state.phase === Phase.COMPLETE;
+    mainButton.hidden = enabled && state.phase !== Phase.COMPLETE;
     $("mainButtonSlot").hidden = mainButton.hidden;
     rouletteCard.classList.toggle("one-touch", enabled);
     rouletteCard.classList.toggle("busy", enabled && (state.phase === Phase.SPINNING || state.phase === Phase.STOPPING));
@@ -1738,9 +1822,9 @@
     if (busy) closeMenuPopover();
 
     if (state.phase === Phase.COMPLETE) {
-      mainButton.textContent = "スタート";
-      mainButton.classList.remove("complete");
-      mainButton.disabled = true;
+      mainButton.textContent = "リセット";
+      mainButton.classList.add("complete");
+      mainButton.disabled = false;
       orderStatus.textContent = "全員の順番が決まりました";
     } else if (state.phase === Phase.SPINNING) {
       mainButton.textContent = "ストップ";
@@ -1926,7 +2010,7 @@
     showParticipant(previous, Boolean(previous));
     rouletteCard.classList.remove("pop");
     renderPlayState();
-    showToast("直前の結果を取り消しました。", 2200);
+    showToast("直前の結果を取り消しました", 2200);
   }
 
   function resetOrder(render = true) {
@@ -2003,20 +2087,61 @@
     $("reduceEffectsToggle").checked = settings.reduceEffects;
   }
 
+  function getSettingsDraft() {
+    return {
+      speed: $("speedSelector").dataset.value,
+      stopLength: $("stopSelector").dataset.value,
+      oneTouch: $("oneTouchToggle").checked,
+      hideSelectedDuringSpin: $("hideSelectedToggle").checked,
+      reduceEffects: $("reduceEffectsToggle").checked,
+      soundOn: state.settingsDraftSoundOn
+    };
+  }
+
+  function settingsDraftSignature() {
+    return JSON.stringify(getSettingsDraft());
+  }
+
   function openSettings() {
     state.settingsDraftSoundOn = state.soundOn;
     populateSettingsControls();
-    $("motionNote").textContent = "演出を少なくします。ルーレットの回転速度は変わりません。";
+    state.settingsSnapshot = settingsDraftSignature();
     openModal(settingsModal, $("speedSelector").querySelector('[aria-checked="true"]'));
   }
 
+  function forceCloseSettings() {
+    confirmModal.hidden = true;
+    settingsModal.hidden = true;
+    rouletteView.inert = false;
+    setupView.inert = false;
+    state.settingsSnapshot = null;
+    state.modalReturnFocus = null;
+    requestAnimationFrame(() => $("menuBtn").focus());
+  }
+
+  function requestCloseSettings() {
+    if (state.settingsSnapshot === settingsDraftSignature()) {
+      state.settingsSnapshot = null;
+      closeModal(settingsModal);
+      return;
+    }
+    openConfirm(
+      "設定は保存されません。よろしいですか？",
+      forceCloseSettings,
+      "保存せず閉じる",
+      "danger"
+    );
+  }
+
   function saveSettings() {
-    state.settings.speed = $("speedSelector").dataset.value;
-    state.settings.stopLength = $("stopSelector").dataset.value;
-    state.settings.oneTouch = $("oneTouchToggle").checked;
-    state.settings.hideSelectedDuringSpin = $("hideSelectedToggle").checked;
-    state.settings.reduceEffects = $("reduceEffectsToggle").checked;
-    state.soundOn = state.settingsDraftSoundOn;
+    const draft = getSettingsDraft();
+    state.settings.speed = draft.speed;
+    state.settings.stopLength = draft.stopLength;
+    state.settings.oneTouch = draft.oneTouch;
+    state.settings.hideSelectedDuringSpin = draft.hideSelectedDuringSpin;
+    state.settings.reduceEffects = draft.reduceEffects;
+    state.soundOn = draft.soundOn;
+    state.settingsSnapshot = null;
     $("soundBtn").setAttribute("aria-pressed", String(state.soundOn));
     setIconButton($("soundBtn"), state.soundOn ? iconMarkup.soundOn : iconMarkup.soundOff, state.soundOn ? "音を消す" : "音を出す");
     saveSettingsToStorage();
@@ -2025,10 +2150,11 @@
     requestAnimationFrame(updateRouletteSize);
   }
 
-  function openConfirm(message, action, okLabel = "実行する") {
+  function openConfirm(message, action, okLabel = "実行する", tone = "primary") {
     state.confirmAction = action;
     $("confirmText").textContent = message;
     $("confirmOkBtn").textContent = okLabel;
+    $("confirmOkBtn").className = `button ${tone === "danger" ? "danger-solid" : "primary"}`;
     openModal(confirmModal, $("confirmCancelBtn"));
   }
 
@@ -2081,7 +2207,7 @@
       }
     } catch (error) {
       console.error(error);
-      showToast("全画面表示を切り替えられませんでした。");
+      showToast("全画面表示を切り替えられませんでした");
     }
   }
 
@@ -2094,11 +2220,13 @@
   $("backToIntroBtn").addEventListener("click", () => openConfirm(
     "登録した参加者を消して、はじめの画面に戻ります。",
     () => { closeModal(confirmModal); returnToStart(); },
-    "はじめに戻る"
+    "はじめに戻る",
+    "danger"
   ));
   beginBtn.addEventListener("click", enterRoulette);
 
   mainButton.addEventListener("click", () => {
+    if (state.phase === Phase.COMPLETE) { openReset(); return; }
     ensureAudio();
     if (state.phase === Phase.SPINNING) stopSpin();
     else if (state.phase === Phase.READY || state.phase === Phase.RESULT) startSpin();
@@ -2169,6 +2297,7 @@
   });
 
   $("closeResetBtn").addEventListener("click", () => closeModal(resetModal));
+  $("cancelResetBtn").addEventListener("click", () => closeModal(resetModal));
   $("restartRouletteBtn").addEventListener("click", () => {
     closeModal(resetModal);
     resetOrder();
@@ -2190,11 +2319,18 @@
   $("resetSettingsBtn").addEventListener("click", () => {
     populateSettingsControls(DEFAULT_SETTINGS);
     state.settingsDraftSoundOn = DEFAULT_SETTINGS.soundOn;
-    showToast("音の設定を含めて初期状態に戻します。決定すると保存されます。", 3400);
+    showToast("初期設定に戻しました", 2400);
   });
   $("saveSettingsBtn").addEventListener("click", saveSettings);
-  $("closeSettingsBtn").addEventListener("click", () => closeModal(settingsModal));
-  settingsModal.addEventListener("keydown", event => handleModalKeys(event, settingsModal));
+  $("closeSettingsBtn").addEventListener("click", requestCloseSettings);
+  settingsModal.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      requestCloseSettings();
+      return;
+    }
+    handleModalKeys(event, settingsModal, false);
+  });
 
   const iconMarkup = Object.freeze({
     undo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a6 6 0 1 1 0 12"/></svg>',
