@@ -2766,7 +2766,9 @@
     const remaining = total - decided;
     const busy = isRouletteBusy();
     remainingStatus.textContent = `残り${remaining}人`;
-    showResultsBtn.disabled = decided === 0;
+    const resultsDisabled = busy || decided === 0;
+    showResultsBtn.disabled = resultsDisabled;
+    showResultsBtn.setAttribute("aria-disabled", String(resultsDisabled));
     progressTrack.setAttribute("aria-valuemax", String(total));
     progressTrack.setAttribute("aria-valuenow", String(decided));
     progressTrack.setAttribute("aria-valuetext", `${total}人中${decided}人の順番が決定`);
@@ -3243,6 +3245,7 @@
   }
 
   function openResults() {
+    if (isRouletteBusy() || state.order.length === 0) return;
     resultGrid.classList.toggle("names-hidden", !state.showNames);
     resultGrid.replaceChildren();
     state.order.forEach((id, index) => {
