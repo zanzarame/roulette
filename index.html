@@ -251,8 +251,6 @@
     border-radius: 18px;
     pointer-events: none;
   }
-  .roulette-card.pop { animation: pop .38s ease-out; }
-  @keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.035); } 100% { transform: scale(1); } }
 
   .current-name {
     min-height: 1.35em;
@@ -1052,12 +1050,6 @@
     overflow: visible;
     padding: clamp(26px, 5vw, 36px);
   }
-  .confirm-close {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 1;
-  }
   .confirm-content {
     display: grid;
     justify-items: center;
@@ -1139,7 +1131,6 @@
   }
   @media (max-width: 360px) {
     .confirm-modal-box { padding: 24px 18px 20px; }
-    .confirm-close { top: 10px; right: 10px; }
     .confirm-content { gap: 12px; }
     .confirm-icon { width: 58px; height: 58px; border-radius: 18px; }
     .confirm-icon svg { width: 30px; height: 30px; }
@@ -1868,6 +1859,10 @@
 
   const MAX_PARTICIPANTS = 30;
   const MAX_IMAGE_EDGE = 1600;
+  const SIDE_LAYOUT_MIN_WIDTH = 900;
+  const SIDE_LAYOUT_MIN_HEIGHT = 470;
+  const SIDE_LAYOUT_MIN_RATIO = 1.15;
+  const SCROLL_LAYOUT_MAX_HEIGHT = 520;
   const SETTINGS_STORAGE_KEY = "sui-order-roulette-settings-v1";
   const DEFAULT_SETTINGS = Object.freeze({
     speed: "standard",
@@ -1943,9 +1938,11 @@
   const progressTrack = $("progressTrack");
   const progressFill = $("progressFill");
   const mainButton = $("mainButton");
+  const mainButtonSlot = $("mainButtonSlot");
   const historyList = $("historyList");
   const historyListWrap = $("historyListWrap");
   const showResultsBtn = $("showResultsBtn");
+  const playTopbar = document.querySelector(".play-topbar");
   const playLayout = document.querySelector(".play-layout");
   const resultsModal = $("resultsModal");
   const menuPopover = $("menuPopover");
@@ -1979,7 +1976,8 @@
   }
 
   function uid(prefix = "p") {
-    return crypto.randomUUID?.() || `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const generated = globalThis.crypto?.randomUUID?.();
+    return generated || `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 
   function loadSavedSettings() {
@@ -2344,19 +2342,39 @@
     rouletteView.hidden = true;
     setupView.hidden = false;
     showParticipant(null, false);
-    rouletteCard.classList.remove("selected", "pop");
+    rouletteCard.classList.remove("selected");
     renderEditor();
     window.scrollTo({ top: 0, behavior: "auto" });
   }
 
+  // Use viewport metrics rather than the layout element itself to avoid resize feedback loops.
+  function getViewportSize() {
+    const viewport = window.visualViewport;
+    return {
+      width: Math.max(1, viewport?.width || document.documentElement.clientWidth || window.innerWidth),
+      height: Math.max(1, viewport?.height || document.documentElement.clientHeight || window.innerHeight)
+    };
+  }
+
+  function getAvailablePlayArea() {
+    const viewport = getViewportSize();
+    const topbarHeight = playTopbar?.getBoundingClientRect().height || 0;
+    return {
+      width: viewport.width,
+      height: Math.max(0, viewport.height - topbarHeight)
+    };
+  }
+
   function updatePlayLayout() {
     if (rouletteView.hidden) return;
-    const rect = playLayout.getBoundingClientRect();
-    const side = rect.width >= 900 && rect.height >= 470 && rect.width / Math.max(1, rect.height) >= 1.15;
-    const scrollMode = !side && rect.height < 520;
+    const area = getAvailablePlayArea();
+    const side = area.width >= SIDE_LAYOUT_MIN_WIDTH
+      && area.height >= SIDE_LAYOUT_MIN_HEIGHT
+      && area.width / Math.max(1, area.height) >= SIDE_LAYOUT_MIN_RATIO;
+    const scrollMode = !side && area.height < SCROLL_LAYOUT_MAX_HEIGHT;
+
     playLayout.classList.toggle("side", side);
     playLayout.classList.toggle("stacked", !side);
-    playLayout.classList.toggle("scroll-mode", scrollMode);
     rouletteView.classList.toggle("scroll-mode", scrollMode);
     requestAnimationFrame(updateHistoryScrollHint);
   }
@@ -2368,7 +2386,7 @@
     let size;
     if (scrollMode) {
       const availableWidth = Math.max(160, rect.width);
-      const preferred = Math.min(360, window.innerHeight * .48);
+      const preferred = Math.min(360, getViewportSize().height * .48);
       size = Math.max(170, Math.floor(Math.min(availableWidth, preferred)));
       const nextHeight = `${size}px`;
       if (stageVisual.style.height !== nextHeight) stageVisual.style.height = nextHeight;
@@ -2388,7 +2406,7 @@
   }
 
   function stopTimers({ preserveFinalSolo = false } = {}) {
-    clearInterval(state.spinTimer);
+    clearTimeout(state.spinTimer);
     clearTimeout(state.stopTimer);
     clearTimeout(state.autoStopTimer);
     state.spinTimer = null;
@@ -2401,10 +2419,11 @@
 
   function randomInt(maxExclusive) {
     if (!Number.isInteger(maxExclusive) || maxExclusive <= 0) return 0;
-    if (!crypto.getRandomValues) return Math.floor(Math.random() * maxExclusive);
+    const secureRandom = globalThis.crypto?.getRandomValues?.bind(globalThis.crypto);
+    if (!secureRandom) return Math.floor(Math.random() * maxExclusive);
     const limit = Math.floor(0x100000000 / maxExclusive) * maxExclusive;
     const array = new Uint32Array(1);
-    do { crypto.getRandomValues(array); } while (array[0] >= limit);
+    do { secureRandom(array); } while (array[0] >= limit);
     return array[0] % maxExclusive;
   }
 
@@ -2414,6 +2433,10 @@
 
   function getUnselected() {
     return state.participants.filter(participant => !state.selectedIds.has(participant.id));
+  }
+
+  function isRouletteBusy() {
+    return state.phase === Phase.SPINNING || state.phase === Phase.STOPPING;
   }
 
   function buildSpinPool() {
@@ -2448,9 +2471,9 @@
 
   function updateRouletteInteraction() {
     const enabled = state.settings.oneTouch;
-    const busy = state.phase === Phase.SPINNING || state.phase === Phase.STOPPING;
+    const busy = isRouletteBusy();
     mainButton.hidden = enabled;
-    $("mainButtonSlot").hidden = enabled;
+    mainButtonSlot.hidden = enabled;
     rouletteCard.classList.toggle("one-touch", enabled);
     rouletteCard.classList.toggle("busy", enabled && busy);
     rouletteCard.classList.toggle("complete-action", enabled && state.phase === Phase.COMPLETE);
@@ -2483,22 +2506,32 @@
   function positionMenuPopover() {
     if (menuPopover.hidden) return;
     const buttonRect = $("menuBtn").getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const viewportLeft = viewport?.offsetLeft || 0;
+    const viewportTop = viewport?.offsetTop || 0;
+    const viewportWidth = viewport?.width || window.innerWidth;
+    const viewportHeight = viewport?.height || window.innerHeight;
     const gap = 7;
+    const edge = 8;
+
     menuPopover.style.visibility = "hidden";
     menuPopover.style.left = "0px";
     menuPopover.style.top = "0px";
     const popoverRect = menuPopover.getBoundingClientRect();
-    let left = buttonRect.right - popoverRect.width;
-    left = Math.max(8, Math.min(left, window.innerWidth - popoverRect.width - 8));
+    const rightLimit = viewportLeft + viewportWidth - popoverRect.width - edge;
+    let left = Math.max(viewportLeft + edge, Math.min(buttonRect.right - popoverRect.width, rightLimit));
     let top = buttonRect.bottom + gap;
-    if (top + popoverRect.height > window.innerHeight - 8) top = Math.max(8, buttonRect.top - popoverRect.height - gap);
+    const bottomLimit = viewportTop + viewportHeight - edge;
+    if (top + popoverRect.height > bottomLimit) {
+      top = Math.max(viewportTop + edge, buttonRect.top - popoverRect.height - gap);
+    }
     menuPopover.style.left = `${Math.round(left)}px`;
     menuPopover.style.top = `${Math.round(top)}px`;
     menuPopover.style.visibility = "visible";
   }
 
   function openMenuPopover() {
-    if (state.phase === Phase.SPINNING || state.phase === Phase.STOPPING) return;
+    if (isRouletteBusy()) return;
     const opening = menuPopover.hidden;
     closeMenuPopover();
     if (!opening) return;
@@ -2512,7 +2545,7 @@
     const total = state.participants.length;
     const decided = state.order.length;
     const remaining = total - decided;
-    const busy = state.phase === Phase.SPINNING || state.phase === Phase.STOPPING;
+    const busy = isRouletteBusy();
     remainingStatus.textContent = `残り${remaining}人`;
     showResultsBtn.disabled = decided === 0;
     progressTrack.setAttribute("aria-valuemax", String(total));
@@ -2520,7 +2553,6 @@
     progressTrack.setAttribute("aria-valuetext", `${total}人中${decided}人の順番が決定`);
     progressFill.style.width = `${total ? (decided / total) * 100 : 0}%`;
     progressFill.style.transitionDuration = state.settings.reduceEffects ? "0s" : ".36s";
-    progressPanel.classList.toggle("is-busy", busy);
     progressPanel.classList.toggle("is-complete", state.phase === Phase.COMPLETE);
 
     const undoDisabled = busy || decided === 0;
@@ -2619,25 +2651,38 @@
 
   function ensureAudio() {
     if (!audioContext) {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return false;
+      try {
+        audioContext = new AudioContextClass();
 
-      tickOutputGain = audioContext.createGain();
-      tickOutputGain.gain.value = .92;
-      tickOutputGain.connect(audioContext.destination);
-      tickBuffer = createTickBuffer(audioContext);
+        tickOutputGain = audioContext.createGain();
+        tickOutputGain.gain.value = .92;
+        tickOutputGain.connect(audioContext.destination);
+        tickBuffer = createTickBuffer(audioContext);
 
-      effectMasterGain = audioContext.createGain();
-      effectMasterGain.gain.value = .92;
-      effectCompressor = audioContext.createDynamicsCompressor();
-      effectCompressor.threshold.value = -7;
-      effectCompressor.knee.value = 8;
-      effectCompressor.ratio.value = 2.6;
-      effectCompressor.attack.value = .002;
-      effectCompressor.release.value = .12;
-      effectMasterGain.connect(effectCompressor);
-      effectCompressor.connect(audioContext.destination);
+        effectMasterGain = audioContext.createGain();
+        effectMasterGain.gain.value = .92;
+        effectCompressor = audioContext.createDynamicsCompressor();
+        effectCompressor.threshold.value = -7;
+        effectCompressor.knee.value = 8;
+        effectCompressor.ratio.value = 2.6;
+        effectCompressor.attack.value = .002;
+        effectCompressor.release.value = .12;
+        effectMasterGain.connect(effectCompressor);
+        effectCompressor.connect(audioContext.destination);
+      } catch (error) {
+        console.warn("音声機能を初期化できませんでした。", error);
+        audioContext = null;
+        effectMasterGain = null;
+        effectCompressor = null;
+        tickOutputGain = null;
+        tickBuffer = null;
+        return false;
+      }
     }
     if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+    return true;
   }
 
   function connectEffectAudio(node) {
@@ -2805,7 +2850,7 @@
     const currentPosition = pool.findIndex(participant => participant.id === state.currentId);
     state.poolPosition = currentPosition >= 0 ? currentPosition : 0;
     state.phase = Phase.SPINNING;
-    rouletteCard.classList.remove("selected", "pop");
+    rouletteCard.classList.remove("selected");
     currentName.classList.remove("result-reveal");
     currentName.textContent = "";
     applyNameClass(currentName, "");
@@ -2886,7 +2931,7 @@
     const clone = rouletteCard.cloneNode(true);
     clone.removeAttribute("id");
     clone.querySelectorAll("[id]").forEach(element => element.removeAttribute("id"));
-    clone.classList.remove("pop", "one-touch", "busy");
+    clone.classList.remove("one-touch", "busy");
     clone.classList.add("selection-overlay-card");
     Object.assign(clone.style, {
       left: `${rect.left}px`,
@@ -2907,22 +2952,20 @@
     const isComplete = state.order.length === state.participants.length;
     state.phase = isComplete ? Phase.COMPLETE : Phase.RESULT;
     showParticipant(target, true, true);
-    rouletteCard.classList.remove("pop");
     playSelectionOverlay();
     playStop(isComplete);
     renderPlayState();
   }
 
   function undoLastResult() {
-    if (!state.order.length || state.phase === Phase.SPINNING || state.phase === Phase.STOPPING) return;
+    if (!state.order.length || isRouletteBusy()) return;
     const removedId = state.order.pop();
     state.selectedIds.delete(removedId);
-    const previousId = state.order.at(-1) || null;
+    const previousId = state.order[state.order.length - 1] || null;
     state.currentId = previousId;
     state.phase = state.order.length ? Phase.RESULT : Phase.READY;
     const previous = participantById(previousId);
     showParticipant(previous, Boolean(previous), true);
-    rouletteCard.classList.remove("pop");
     renderPlayState();
     showToast("直前の結果を取り消しました", 2200);
   }
@@ -2936,7 +2979,7 @@
     state.poolPosition = 0;
     state.phase = rouletteView.hidden ? Phase.SETUP : Phase.READY;
     showParticipant(null, false);
-    rouletteCard.classList.remove("selected", "pop");
+    rouletteCard.classList.remove("selected");
     clearFinalSoloAnimation();
     if (render) renderPlayState();
   }
@@ -3195,7 +3238,7 @@
 
   function openModal(modal, initialFocus) {
     if (state.modalStack.some(entry => entry.modal === modal)) return;
-    const previous = state.modalStack.at(-1);
+    const previous = state.modalStack[state.modalStack.length - 1];
     if (previous) previous.modal.inert = true;
     const returnFocus = document.activeElement;
     modal.hidden = false;
@@ -3206,7 +3249,13 @@
   }
 
   function closeModal(modal, restoreFocus = true) {
-    const index = state.modalStack.findLastIndex(entry => entry.modal === modal);
+    let index = -1;
+    for (let currentIndex = state.modalStack.length - 1; currentIndex >= 0; currentIndex -= 1) {
+      if (state.modalStack[currentIndex].modal === modal) {
+        index = currentIndex;
+        break;
+      }
+    }
     if (index < 0) {
       modal.hidden = true;
       modal.inert = false;
@@ -3216,7 +3265,7 @@
     const [entry] = state.modalStack.splice(index, 1);
     modal.hidden = true;
     modal.inert = false;
-    const current = state.modalStack.at(-1);
+    const current = state.modalStack[state.modalStack.length - 1];
     if (current) current.modal.inert = false;
     syncModalState();
     if (!restoreFocus) return;
@@ -3242,7 +3291,7 @@
     const focusable = focusableElements(modal);
     if (!focusable.length) return;
     const first = focusable[0];
-    const last = focusable.at(-1);
+    const last = focusable[focusable.length - 1];
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   }
@@ -3499,8 +3548,12 @@
   };
   document.addEventListener("fullscreenchange", updateFullscreenIcon);
   document.addEventListener("webkitfullscreenchange", updateFullscreenIcon);
-  window.visualViewport?.addEventListener("resize", updateFullscreenSafeArea, { passive: true });
-  window.visualViewport?.addEventListener("scroll", updateFullscreenSafeArea, { passive: true });
+  const handleVisualViewportChange = () => {
+    updateFullscreenSafeArea();
+    positionMenuPopover();
+  };
+  window.visualViewport?.addEventListener("resize", handleVisualViewportChange, { passive: true });
+  window.visualViewport?.addEventListener("scroll", handleVisualViewportChange, { passive: true });
 
   showResultsBtn.addEventListener("click", openResults);
   $("closeResultsBtn").addEventListener("click", () => closeModal(resultsModal));
@@ -3533,14 +3586,25 @@
     });
   }
 
-  const rouletteResizeObserver = new ResizeObserver(scheduleLayoutUpdate);
-  rouletteResizeObserver.observe(playLayout);
-  rouletteResizeObserver.observe(stageVisual);
-  window.addEventListener("orientationchange", () => requestAnimationFrame(() => {
+  if (typeof ResizeObserver === "function") {
+    const rouletteResizeObserver = new ResizeObserver(scheduleLayoutUpdate);
+    rouletteResizeObserver.observe(playLayout);
+    rouletteResizeObserver.observe(stageVisual);
+  }
+
+  window.addEventListener("orientationchange", () => {
+    requestAnimationFrame(() => {
+      scheduleLayoutUpdate();
+      positionMenuPopover();
+    });
+    // Mobile browser chrome can settle after the first orientation frame.
+    setTimeout(scheduleLayoutUpdate, 180);
+  });
+  window.addEventListener("resize", () => {
     scheduleLayoutUpdate();
     positionMenuPopover();
-  }));
-  window.addEventListener("resize", () => { positionMenuPopover(); updateHistoryScrollHint(); });
+    updateHistoryScrollHint();
+  });
   window.addEventListener("beforeunload", event => {
     if (!state.participants.length) return;
     event.preventDefault();
