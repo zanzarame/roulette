@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>順番ルーレット Sui Edition</title>
+<title>順番ルーレット</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
 <style>
   :root {
@@ -388,7 +388,7 @@
 
 
 
-  /* Sui Edition v1.1 */
+  /*  v1.1 */
   body {
     font-family:
       "BIZ UDPGothic",
@@ -590,7 +590,7 @@
 
 
 
-  /* Sui Edition v1.2 */
+  /*  v1.2 */
   .setup-shell { width: min(980px, 100%); }
   .title-panel { padding: clamp(26px, 5vw, 54px); }
   .intro { grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); }
@@ -784,7 +784,7 @@
 
 
 
-  /* Sui Edition v1.4 */
+  /*  v1.4 */
   .title-screen {
     min-height: calc(var(--vh) - clamp(36px, 7vw, 72px));
     display: grid;
@@ -1007,38 +1007,38 @@
       <header class="title-hero">
         <h1>順番ルーレット</h1>
         <p class="title-lead">参加者を登録して、順番をランダムに決めます。</p>
-      </header>
+    </header>
       <div class="panel start-card">
         <div class="intro-actions">
           <button class="button primary large" id="firstImageBtn">画像を選ぶ</button>
           <button class="button secondary large" id="firstNameBtn">名前だけで使う</button>
           <button class="button ghost" id="sampleBtn">サンプルで試す</button>
-        </div>
-        <p class="privacy-note">選んだ画像はこの端末内で処理され、外部には送信されません。</p>
       </div>
-    </section>
+        <p class="privacy-note">選んだ画像はこの端末内で処理され、外部には送信されません。</p>
+    </div>
+  </section>
 
     <main class="panel" id="editorSection" hidden>
         <div class="editor-head">
           <div>
             <h2>参加者の確認</h2>
             <p>名前を確認し、必要に応じて編集してください。</p>
-          </div>
-          <div class="count-badge" id="participantCount">0人</div>
         </div>
+          <div class="count-badge" id="participantCount">0人</div>
+      </div>
         <div class="participant-grid" id="participantGrid"></div>
         <div class="editor-actions">
           <button class="button secondary" id="addImageBtn">画像を追加</button>
           <button class="button ghost" id="addNameBtn">名前を追加</button>
           <button class="button ghost" id="backToIntroBtn">はじめに戻る</button>
-        </div>
+      </div>
         <div class="loading-line" id="loadingLine" hidden></div>
         <div class="start-row">
           <small>参加者は最大30人です<br>画像は長辺1600ピクセル以内に縮小されます。</small>
           <button class="button primary large" id="beginBtn" aria-disabled="true">ルーレットを始める</button>
-        </div>
-    </main>
-  </div>
+      </div>
+  </main>
+</div>
 </section>
 
 <section class="view roulette-view" id="rouletteView" hidden>
@@ -1047,18 +1047,18 @@
     <div class="top-actions" aria-label="ルーレットの操作">
       <button class="top-button icon-only" id="undoBtn" aria-label="直前の結果を取り消す" title="直前の結果を取り消す" disabled>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a6 6 0 1 1 0 12"/></svg>
-      </button>
+    </button>
       <button class="top-button icon-only" id="soundBtn" aria-pressed="true" aria-label="音を消す" title="音を消す">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16 8.5c1.2 1 1.8 2.1 1.8 3.5S17.2 14.5 16 15.5"/><path d="M18.6 6c2 1.7 3 3.7 3 6s-1 4.3-3 6"/></svg>
-      </button>
+    </button>
       <button class="top-button icon-only" id="fullscreenBtn" aria-label="全画面表示" title="全画面表示">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
-      </button>
+    </button>
       <button class="top-button icon-only" id="menuBtn" aria-label="メニューを開く" title="メニューを開く">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
-      </button>
-    </div>
-  </header>
+    </button>
+  </div>
+</header>
 
   <div class="play-layout">
     <main class="stage">
@@ -1066,15 +1066,15 @@
       <div>
         <div class="current-name" id="currentName"></div>
         <div class="status-line"><span id="orderStatus">まだ選ばれていません</span><span>・</span><span id="remainingStatus"></span></div>
-      </div>
+    </div>
       <div class="main-button-slot" id="mainButtonSlot"><button class="main-button" id="mainButton">スタート</button></div>
-    </main>
+  </main>
 
     <aside class="history-panel">
       <div class="history-head"><h2>決まった順番</h2><div class="history-controls"><span id="historyCount">0人</span><button class="button ghost result-button" id="showResultsBtn" disabled>結果一覧</button></div></div>
       <div class="history-list" id="historyList"></div>
-    </aside>
-  </div>
+  </aside>
+</div>
 </section>
 
 <input type="file" id="imageInput" accept="image/*" multiple hidden>
@@ -1083,7 +1083,7 @@
   <div class="modal-box">
     <div class="modal-head"><h2 id="resultsTitle">結果一覧</h2><button class="close-x" id="closeResultsBtn" aria-label="閉じる">×</button></div>
     <div class="result-grid" id="resultGrid"></div>
-  </div>
+</div>
 </div>
 
 <div class="menu-popover" id="menuPopover" role="menu" aria-label="メニュー" hidden>
@@ -1102,8 +1102,8 @@
           <button type="button" class="step-option" role="radio" data-value="slow" aria-checked="false"><span class="step-dot"></span><span class="step-text">ゆっくり</span></button>
           <button type="button" class="step-option" role="radio" data-value="standard" aria-checked="true"><span class="step-dot"></span><span class="step-text">標準</span></button>
           <button type="button" class="step-option" role="radio" data-value="fast" aria-checked="false"><span class="step-dot"></span><span class="step-text">速い</span></button>
-        </div>
       </div>
+    </div>
       <div class="setting">
         <div class="setting-label" id="stopLabel">停止までの長さ</div>
         <div class="step-selector" id="stopSelector" role="radiogroup" aria-labelledby="stopLabel" data-value="standard">
@@ -1111,23 +1111,23 @@
           <button type="button" class="step-option" role="radio" data-value="short" aria-checked="false"><span class="step-dot"></span><span class="step-text">短い</span></button>
           <button type="button" class="step-option" role="radio" data-value="standard" aria-checked="true"><span class="step-dot"></span><span class="step-text">標準</span></button>
           <button type="button" class="step-option" role="radio" data-value="long" aria-checked="false"><span class="step-dot"></span><span class="step-text">長い</span></button>
-        </div>
       </div>
+    </div>
       <div class="setting toggle-row">
         <div class="toggle-copy"><label for="oneTouchToggle">ワンタッチでスタート&amp;ストップ</label><small>ルーレットの枠内を押すとスタートし、自動でストップします。</small></div>
         <label class="switch-control" aria-label="ワンタッチでスタート&ストップ"><input class="toggle-input" type="checkbox" id="oneTouchToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
-      </div>
+    </div>
       <div class="setting toggle-row">
         <div class="toggle-copy"><label for="hideSelectedToggle">回転中に選出済みを表示しない</label><small>ルーレットの結果には影響しません。</small></div>
         <label class="switch-control" aria-label="回転中に選出済みを表示しない"><input class="toggle-input" type="checkbox" id="hideSelectedToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
-      </div>
+    </div>
       <div class="setting toggle-row">
         <div class="toggle-copy"><label for="reduceEffectsToggle">演出を控えめにする</label><small id="motionNote">演出を少なくします。ルーレットの回転速度は変わりません。</small></div>
         <label class="switch-control" aria-label="演出を控えめにする"><input class="toggle-input" type="checkbox" id="reduceEffectsToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
-      </div>
     </div>
-    <div class="modal-actions settings-actions"><button class="button ghost" id="resetSettingsBtn">初期設定に戻す</button><button class="button primary" id="saveSettingsBtn">決定</button></div>
   </div>
+    <div class="modal-actions settings-actions"><button class="button ghost" id="resetSettingsBtn">初期設定に戻す</button><button class="button primary" id="saveSettingsBtn">決定</button></div>
+</div>
 </div>
 
 <div class="modal-backdrop" id="resetModal" role="dialog" aria-modal="true" aria-labelledby="resetTitle" hidden>
@@ -1137,17 +1137,17 @@
       <button class="reset-option" id="restartRouletteBtn">
         <span class="reset-option-title">ルーレットをやり直す</span>
         <span class="reset-option-text">画像と名前を残したまま、ルーレットをやり直します。</span>
-      </button>
+    </button>
       <button class="reset-option" id="editParticipantsBtn">
         <span class="reset-option-title">参加者を編集する</span>
         <span class="reset-option-text">ルーレットの結果を消して、参加者の編集画面に戻ります。</span>
-      </button>
+    </button>
       <button class="reset-option destructive" id="returnToStartBtn">
         <span class="reset-option-title">はじめに戻る</span>
         <span class="reset-option-text">登録した参加者を消して、はじめの画面に戻ります。</span>
-      </button>
-    </div>
+    </button>
   </div>
+</div>
 </div>
 
 <div class="modal-backdrop" id="confirmModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
@@ -1155,7 +1155,7 @@
     <div class="modal-head"><h2 id="confirmTitle">確認</h2></div>
     <div class="confirm-text" id="confirmText"></div>
     <div class="modal-actions"><button class="button ghost" id="confirmCancelBtn">キャンセル</button><button class="button primary" id="confirmOkBtn">実行する</button></div>
-  </div>
+</div>
 </div>
 
 <div class="modal-backdrop" id="imageErrorModal" role="dialog" aria-modal="true" aria-labelledby="imageErrorTitle" hidden>
@@ -1163,7 +1163,7 @@
     <div class="modal-head"><h2 id="imageErrorTitle">読み込めなかった画像</h2><button class="close-x" id="closeImageErrorBtn" aria-label="閉じる">×</button></div>
     <p class="image-error-summary" id="imageErrorSummary"></p>
     <ul class="image-error-list" id="imageErrorList"></ul>
-  </div>
+</div>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
