@@ -1079,6 +1079,18 @@
     font-size: clamp(18px, 4.2vw, 22px);
     white-space: nowrap;
   }
+  .confirm-title.single-line {
+    font-size: clamp(15px, 4.2vw, 20px);
+    line-height: 1.35;
+    letter-spacing: -.035em;
+    white-space: nowrap;
+  }
+  .confirm-modal-box.single-line-title {
+    width: min(520px, calc(100vw - 16px));
+  }
+  .confirm-modal-box.single-line-title .confirm-content {
+    gap: 12px;
+  }
   .confirm-text {
     width: 100%;
     margin: 0;
@@ -1111,6 +1123,8 @@
     .confirm-actions { gap: 8px; }
     .confirm-actions .button { font-size: 14px; padding-inline: 8px; }
     .confirm-title.compact { font-size: 17px; }
+    .confirm-title.single-line { font-size: 14px; letter-spacing: -.05em; }
+    .confirm-modal-box.single-line-title { padding-inline: 12px; }
   }
 
   @media (max-width: 580px) {
@@ -2563,7 +2577,8 @@
       icon: "warning",
       action: forceCloseSettings,
       okLabel: "保存せず閉じる",
-      tone: "danger"
+      tone: "danger",
+      singleLineTitle: true
     });
   }
 
@@ -2599,12 +2614,15 @@
     tone = "primary",
     icon = "warning",
     compactTitle = false,
+    singleLineTitle = false,
     cancelAction = null
   }) {
     state.confirmAction = typeof action === "function" ? action : null;
     state.confirmCancelAction = typeof cancelAction === "function" ? cancelAction : null;
     $("confirmTitle").textContent = title;
     $("confirmTitle").classList.toggle("compact", compactTitle);
+    $("confirmTitle").classList.toggle("single-line", singleLineTitle);
+    document.querySelector(".confirm-modal-box")?.classList.toggle("single-line-title", singleLineTitle);
     $("confirmText").textContent = message;
     const confirmIcon = $("confirmIcon");
     confirmIcon.hidden = !icon;
