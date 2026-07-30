@@ -17,6 +17,8 @@
     --accent: #e96b4c;
     --accent-dark: #bd4d35;
     --gold: #f2c94c;
+    --focus-ring: #ffd84d;
+    --focus-ring-width: 4px;
     --blue: #3b82b4;
     --blue-dark: #28678f;
     --danger: #b84c4c;
@@ -52,45 +54,12 @@
     width: min(1160px, 100%);
     margin: 0 auto;
   }
-  .brand {
-    color: #fff;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 22px;
-  }
-  .brand h1 {
-    margin: 0;
-    font-size: clamp(28px, 4vw, 46px);
-    letter-spacing: .04em;
-  }
-  .brand p { margin: 8px 0 0; color: rgba(255,255,255,.82); }
-  .privacy-badge {
-    flex: 0 0 auto;
-    border: 1px solid rgba(255,255,255,.4);
-    background: rgba(255,255,255,.1);
-    color: #fff;
-    border-radius: 999px;
-    padding: 9px 14px;
-    font-weight: 700;
-    font-size: 14px;
-  }
-
   .panel {
     background: rgba(255,255,255,.97);
     border-radius: 28px;
     box-shadow: var(--shadow);
     padding: clamp(20px, 4vw, 38px);
   }
-  .intro {
-    display: grid;
-    grid-template-columns: 1.25fr .75fr;
-    gap: clamp(20px, 4vw, 46px);
-    align-items: center;
-  }
-  .intro h2 { margin: 0 0 10px; font-size: clamp(23px, 3vw, 34px); }
-  .intro p { margin: 0; color: var(--muted); line-height: 1.75; }
   .intro-actions { display: grid; gap: 12px; }
 
   .button {
@@ -103,13 +72,12 @@
   }
   .button:hover { filter: brightness(1.04); }
   .button:active { transform: translateY(2px); }
-  .button:focus-visible { outline: 4px solid rgba(242,201,76,.9); outline-offset: 3px; }
+  .button:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 3px; }
   .button:disabled { opacity: .42; cursor: not-allowed; transform: none; filter: none; }
   .primary { background: var(--blue); color: #fff; }
   .secondary { background: #e7f2f8; color: var(--blue-dark); border: 2px solid #a9cddd; }
   .danger-solid { background: var(--danger); color: #fff; }
   .ghost { background: #edf3f6; color: var(--ink); }
-  .danger { background: #f8e8e8; color: var(--danger); }
   .large { min-height: 54px; font-size: 18px; }
 
   .editor-head {
@@ -160,7 +128,8 @@
     font-weight: 700;
     color: var(--ink);
   }
-  .name-input:focus { border-color: var(--blue); outline: 3px solid rgba(59,130,180,.18); }
+  .name-input:focus { border-color: var(--blue); }
+  .name-input:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; }
   .card-actions { display: grid; grid-template-columns: 1fr 1fr auto; gap: 7px; margin-top: 9px; }
   .icon-button {
     border: 0;
@@ -216,7 +185,7 @@
     cursor: pointer;
     font-weight: 700;
   }
-  .top-button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .top-button:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; }
   .top-button:disabled { opacity: .38; cursor: not-allowed; }
 
   .play-layout {
@@ -270,15 +239,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .status-line {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: center;
-    min-height: 30px;
-    color: rgba(255,255,255,.86);
-    font-weight: 700;
-  }
   .main-button {
     border: 0;
     min-width: min(380px, 78vw);
@@ -316,7 +276,6 @@
   .history-head h2 { font-size: 17px; margin: 0; }
   .history-head span { color: rgba(255,255,255,.75); font-size: 14px; }
   .history-list { overflow-y: auto; display: grid; gap: 9px; padding: 2px; }
-  .history-empty { color: rgba(255,255,255,.68); line-height: 1.7; padding: 20px 8px; text-align: center; }
   .history-item {
     display: grid;
     grid-template-columns: 36px 54px minmax(0,1fr);
@@ -365,7 +324,6 @@
   .setting { display: grid; gap: 7px; }
   .setting label { font-weight: 900; }
   .setting small { color: var(--muted); line-height: 1.55; }
-  .setting select { border: 2px solid var(--line); border-radius: 11px; padding: 11px; }
   .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
   .toggle-row input { width: 24px; height: 24px; }
   .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
@@ -389,7 +347,7 @@
 
 
 
-  /*  v1.1 */
+  /* Typography and shared media */
   body {
     font-family:
       "BIZ UDPGothic",
@@ -407,7 +365,6 @@
   .result-media {
     font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
   }
-  .brand { align-items: center; }
   .privacy-note {
     margin-top: 14px !important;
     padding: 11px 14px;
@@ -528,28 +485,9 @@
   }
   .toggle-input:checked + .toggle-switch { background: var(--blue); border-color: var(--blue-dark); }
   .toggle-input:checked + .toggle-switch::after { transform: translateX(24px); }
-  .toggle-input:focus-visible + .toggle-switch { outline: 4px solid rgba(242,201,76,.9); outline-offset: 3px; }
-
-  .reset-options { display: grid; gap: 12px; }
-  .reset-option {
-    width: 100%;
-    border: 2px solid var(--line);
-    border-radius: 15px;
-    background: #fff;
-    color: var(--ink);
-    padding: 15px 16px;
-    text-align: left;
-    cursor: pointer;
-  }
-  .reset-option:hover { border-color: var(--blue); background: #f5fafc; }
-  .reset-option:focus-visible { outline: 4px solid rgba(242,201,76,.9); outline-offset: 2px; }
-  .reset-option.destructive { border-color: #eccaca; background: #fff8f8; color: var(--danger); }
-  .reset-option-title { display: block; font-weight: 900; font-size: 17px; }
-  .reset-option-text { display: block; margin-top: 6px; font-weight: 600; line-height: 1.55; color: var(--muted); }
-  .reset-option.destructive .reset-option-text { color: #865b5b; }
+  .toggle-input:focus-visible + .toggle-switch { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 3px; }
 
   @media (orientation: portrait), (max-width: 760px) {
-    .intro { grid-template-columns: 1fr; }
     .play-layout {
       grid-template-columns: 1fr;
       grid-template-rows: minmax(0, 1fr) minmax(120px, 25vh);
@@ -564,7 +502,6 @@
       overflow-x: auto;
       overflow-y: hidden;
     }
-    .history-empty { padding: 10px; }
     .stage { gap: clamp(7px, 1.5vh, 12px); }
     .main-button { margin-bottom: 2px; }
   }
@@ -585,24 +522,13 @@
     .play-layout { gap: 10px; padding: 0 10px 10px; }
     .stage { gap: 6px; }
     .current-name { font-size: clamp(19px, 3.2vw, 28px); }
-    .status-line { min-height: 24px; font-size: 14px; }
     .main-button { padding: 12px 34px; font-size: clamp(21px, 3vw, 28px); margin-bottom: 2px; }
   }
 
 
 
-  /*  v1.2 */
+  /* Responsive roulette layout */
   .setup-shell { width: min(980px, 100%); }
-  .title-panel { padding: clamp(26px, 5vw, 54px); }
-  .intro { grid-template-columns: minmax(0, 1.15fr) minmax(240px, .85fr); }
-  .intro-copy h1 {
-    margin: 0;
-    font-size: clamp(38px, 5.2vw, 58px);
-    line-height: 1.12;
-    letter-spacing: .035em;
-    color: var(--ink);
-    white-space: nowrap;
-  }
   .title-lead { margin-top: 18px !important; font-size: clamp(17px, 2.3vw, 22px); color: var(--ink) !important; font-weight: 800; }
   .privacy-note {
     margin-top: 20px !important;
@@ -716,7 +642,7 @@
     cursor: pointer;
     touch-action: manipulation;
   }
-  .roulette-card.one-touch:focus-visible { outline: 5px solid #fff; outline-offset: 5px; }
+  .roulette-card.one-touch:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 5px; }
   .roulette-card.one-touch.busy { cursor: wait; }
   .roulette-card > .roulette-face > img { padding: 10px; }
   .main-button { margin-bottom: 0; }
@@ -744,10 +670,6 @@
   .play-layout.stacked .history-order { width: 29px; height: 29px; font-size: 13px; }
   .play-layout.stacked .history-media { width: 44px; height: 44px; }
   .play-layout.stacked .history-media .emoji-content { font-size: 27px; }
-  .history-empty { display: none; }
-
-  .menu-box { width: min(380px, 92vw); }
-  .menu-options { display: grid; gap: 10px; }
   .menu-option {
     width: 100%;
     border: 2px solid var(--line);
@@ -761,13 +683,9 @@
     cursor: pointer;
   }
   .menu-option:hover { border-color: var(--blue); background: #f5fafc; }
-  .menu-option:focus-visible { outline: 4px solid rgba(242,201,76,.9); outline-offset: 2px; }
+  .menu-option:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; }
 
   @media (max-width: 620px) {
-    .title-panel { padding: 26px 20px; }
-    .intro { grid-template-columns: 1fr; }
-    .intro-copy { text-align: center; }
-    .intro-copy h1 { font-size: clamp(32px, 9vw, 42px); }
     .play-topbar { align-items: center; }
     .play-title { padding-top: 0; font-size: 17px; }
     .top-button.icon-only { width: 41px; height: 41px; flex-basis: 41px; }
@@ -785,7 +703,7 @@
 
 
 
-  /*  v1.4 */
+  /* Title screen and header controls */
   .title-screen {
     min-height: calc(var(--vh) - clamp(36px, 7vw, 72px));
     display: grid;
@@ -907,7 +825,7 @@
   .step-option.is-reached { color: var(--ink); }
   .step-option.is-reached .step-dot { border-color: var(--blue); background: var(--blue); }
   .step-option[aria-checked="true"] .step-dot { transform: scale(1.2); box-shadow: 0 0 0 4px rgba(59,130,180,.16); }
-  .step-option:focus-visible { outline: 4px solid rgba(242,201,76,.9); outline-offset: 2px; border-radius: 10px; }
+  .step-option:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; border-radius: 10px; }
   .settings-actions { justify-content: space-between; }
 
   .history-list {
@@ -1000,7 +918,7 @@
   }
 
 
-  /* v1.6 */
+  /* Dialog and menu refinements */
   .note-lines span { display: block; }
   .note-lines span + span { margin-top: 2px; }
 
@@ -1008,6 +926,22 @@
   .history-media > img { padding: 5px; }
   .result-media > img { padding: 7px; }
   .roulette-card > .roulette-face > img { padding: 16px; }
+
+
+  /* Settings spacing */
+  .setting-step {
+    padding-block: 3px;
+  }
+  .setting-step .step-selector {
+    margin-top: 5px;
+    margin-bottom: 3px;
+  }
+  .setting-toggle {
+    min-height: 82px;
+  }
+  .setting-toggle .toggle-copy small {
+    min-height: calc(3.1em + 2px);
+  }
 
   .menu-popover {
     width: max-content;
@@ -1023,46 +957,175 @@
     line-height: 1.25;
   }
 
-  .reset-options { gap: 8px; }
-  .reset-option {
+  .reset-modal-box { width: min(680px, 94vw); }
+  .reset-options {
     display: grid;
-    grid-template-columns: 42px minmax(0, 1fr);
-    align-items: center;
-    gap: 11px;
-    min-height: 72px;
-    padding: 10px 12px;
-    border-width: 1px;
-    border-radius: 13px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
   }
-  .reset-option-icon {
-    width: 38px;
-    height: 38px;
+  .reset-option {
+    min-width: 0;
+    min-height: 152px;
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    background: #fff;
+    color: var(--ink);
+    padding: 19px 12px 17px;
     display: grid;
     place-items: center;
-    border-radius: 10px;
+    align-content: center;
+    gap: 13px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .16s, background .16s, transform .08s, box-shadow .16s;
+  }
+  .reset-option:hover {
+    border-color: var(--blue);
+    background: #f5fafc;
+    box-shadow: 0 8px 20px rgba(20, 63, 92, .10);
+  }
+  .reset-option:active { transform: translateY(2px); }
+  .reset-option:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; }
+  .reset-option-icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 17px;
     background: #e7f2f8;
     color: var(--blue-dark);
   }
   .reset-option-icon svg {
-    width: 23px;
-    height: 23px;
+    width: 31px;
+    height: 31px;
     fill: none;
     stroke: currentColor;
-    stroke-width: 2;
+    stroke-width: 1.9;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  .reset-option-copy { min-width: 0; }
-  .reset-option-title { font-size: 16px; }
-  .reset-option-text { margin-top: 3px; font-size: 13px; line-height: 1.45; }
+  .reset-option-title {
+    display: block;
+    min-width: 0;
+    font-weight: 900;
+    font-size: 16px;
+    line-height: 1.35;
+  }
   .reset-option.destructive {
     border-color: #eccaca;
-    background: #fff;
+    background: #fffafa;
   }
+  .reset-option.destructive:hover { border-color: var(--danger); background: #fff4f4; }
   .reset-option.destructive .reset-option-icon { background: #f8e8e8; color: var(--danger); }
   .reset-option.destructive .reset-option-title { color: var(--danger); }
   .reset-actions { justify-content: center; margin-top: 16px; }
   .reset-actions .button { min-width: 130px; }
+  .confirm-text:empty { display: none; }
+
+  .confirm-modal-box {
+    position: relative;
+    width: min(440px, 94vw);
+    overflow: visible;
+    padding: clamp(26px, 5vw, 36px);
+  }
+  .confirm-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 1;
+  }
+  .confirm-content {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 14px;
+    padding-top: 4px;
+  }
+  .confirm-icon {
+    width: 66px;
+    height: 66px;
+    display: grid;
+    place-items: center;
+    border-radius: 22px;
+    background: #e8f3f8;
+    color: var(--blue-dark);
+    box-shadow: inset 0 0 0 1px rgba(28, 101, 140, .08);
+  }
+  .confirm-icon.danger {
+    background: #f9eaea;
+    color: var(--danger);
+    box-shadow: inset 0 0 0 1px rgba(177, 48, 48, .08);
+  }
+  .confirm-icon[hidden] { display: none; }
+  .confirm-icon svg {
+    width: 34px;
+    height: 34px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .confirm-title {
+    max-width: 100%;
+    margin: 0;
+    font-size: clamp(20px, 4.6vw, 24px);
+    line-height: 1.45;
+    text-wrap: wrap;
+  }
+  .confirm-title.compact {
+    font-size: clamp(18px, 4.2vw, 22px);
+    white-space: nowrap;
+  }
+  .confirm-text {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+    font-weight: 700;
+    text-wrap: balance;
+  }
+  .confirm-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .confirm-actions .button {
+    width: 100%;
+    min-width: 0;
+    min-height: 50px;
+    padding-inline: 12px;
+  }
+  @media (max-width: 360px) {
+    .confirm-modal-box { padding: 24px 18px 20px; }
+    .confirm-close { top: 10px; right: 10px; }
+    .confirm-content { gap: 12px; }
+    .confirm-icon { width: 58px; height: 58px; border-radius: 18px; }
+    .confirm-icon svg { width: 30px; height: 30px; }
+    .confirm-actions { gap: 8px; }
+    .confirm-actions .button { font-size: 14px; padding-inline: 8px; }
+    .confirm-title.compact { font-size: 17px; }
+  }
+
+  @media (max-width: 580px) {
+    .reset-modal-box { width: min(470px, 94vw); }
+    .reset-options { grid-template-columns: 1fr; gap: 9px; }
+    .reset-option {
+      min-height: 76px;
+      grid-template-columns: 52px minmax(0, 1fr);
+      place-items: center stretch;
+      align-content: center;
+      gap: 13px;
+      padding: 10px 14px;
+      text-align: left;
+    }
+    .reset-option-icon { width: 48px; height: 48px; border-radius: 14px; }
+    .reset-option-icon svg { width: 27px; height: 27px; }
+  }
 
   .play-layout.stacked { grid-template-rows: minmax(0, 1fr) 126px; }
   .play-layout.stacked .history-list { padding-bottom: 9px; }
@@ -1076,9 +1139,232 @@
     .play-layout.stacked .history-list { padding-bottom: 2px; }
   }
 
-  .button.primary { background: var(--blue); color: #fff; }
-  .button.secondary { background: #e7f2f8; color: var(--blue-dark); border-color: #a9cddd; }
-  .button.danger-solid { background: var(--danger); color: #fff; }
+  /* Unified keyboard focus and result summary layout */
+  :where(button, input:not(.toggle-input), select, textarea, [href], [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+  .result-summary {
+    width: 100%;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+  }
+
+  /* Progress display and compact-height layout */
+  .progress-panel {
+    width: min(520px, 88vw);
+    padding: 9px 14px 10px;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 13px;
+    background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.08));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
+    color: rgba(255,255,255,.94);
+  }
+  .current-name + .progress-panel { margin-top: 0; }
+  .progress-copy {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 22px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .025em;
+  }
+  #orderStatus { color: #fff; }
+  #remainingStatus { color: rgba(255,255,255,.74); white-space: nowrap; }
+  .progress-track {
+    position: relative;
+    height: 5px;
+    margin-top: 7px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255,255,255,.18);
+  }
+  .progress-fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #f08a64, var(--accent));
+    box-shadow: 0 0 10px rgba(233,107,76,.34);
+    transition-property: width;
+    transition-duration: .36s;
+    transition-timing-function: ease;
+  }
+  .progress-panel.is-complete .progress-fill {
+    background: linear-gradient(90deg, var(--accent), #f2c94c);
+  }
+
+  .roulette-view.scroll-mode {
+    display: block;
+    height: auto;
+    min-height: var(--vh);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .roulette-view.scroll-mode .play-layout {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 126px;
+    gap: 10px;
+    padding: 0 8px max(10px, env(safe-area-inset-bottom));
+  }
+  .roulette-view.scroll-mode .stage {
+    min-height: 0;
+    overflow: visible;
+    grid-template-rows: auto auto auto;
+    gap: 8px;
+    padding-top: 2px;
+  }
+  .roulette-view.scroll-mode .stage-visual {
+    min-height: 170px;
+    overflow: visible;
+  }
+  .roulette-view.scroll-mode .progress-panel {
+    width: min(500px, calc(100vw - 26px));
+  }
+  .roulette-view.scroll-mode .main-button-slot {
+    min-height: 84px;
+    padding-bottom: 18px;
+  }
+  .roulette-view.scroll-mode .history-panel {
+    min-height: 126px;
+  }
+
+  @media (max-width: 380px) {
+    .play-topbar { gap: 6px; padding-left: 8px; padding-right: 8px; }
+    .play-title { font-size: 16px; }
+    .top-actions { gap: 4px; }
+    .top-button.icon-only { width: 40px; height: 40px; flex-basis: 40px; }
+    .top-button svg { width: 22px; height: 22px; }
+    .progress-panel { width: min(500px, 92vw); padding-left: 11px; padding-right: 11px; }
+    .progress-copy { gap: 10px; font-size: 13px; }
+  }
+
+
+
+  /* Settings groups, history scroll cue, and unified dialogs */
+  .history-list-wrap {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+    display: flex;
+  }
+  .history-list-wrap .history-list {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+  }
+  .play-layout.stacked .history-list-wrap::after {
+    content: "";
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 42px;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(90deg, rgba(23,50,77,0), rgba(23,50,77,.84));
+    transition: opacity .18s ease;
+    border-radius: 0 11px 11px 0;
+  }
+  .play-layout.stacked .history-list-wrap.can-scroll-right::after { opacity: 1; }
+
+  .settings-grid { gap: 0; }
+  .settings-group { display: grid; gap: 14px; }
+  .settings-group + .settings-group {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .settings-group-title {
+    margin: 0;
+    color: var(--blue-dark);
+    font-size: 14px;
+    line-height: 1.3;
+    font-weight: 900;
+    letter-spacing: .08em;
+  }
+  .settings-group-content { display: grid; gap: 17px; }
+  .setting-step { padding-block: 2px; }
+  .setting-step .step-selector { margin-top: 5px; margin-bottom: 2px; }
+  .setting-toggle { min-height: 0; }
+  .setting-toggle .toggle-copy small { min-height: 0; }
+
+  .modal-box {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-head {
+    flex: 0 0 auto;
+    min-height: 68px;
+    margin: 0;
+    padding: 14px clamp(18px, 3.2vw, 28px);
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+  .modal-head h2 { font-size: clamp(20px, 2.8vw, 25px); line-height: 1.25; }
+  .close-x {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    color: var(--ink);
+    font-size: 23px;
+    line-height: 1;
+  }
+  .close-x:hover { background: #e2ebf0; }
+  .close-x:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; }
+  .modal-body {
+    min-height: 0;
+    overflow: auto;
+    padding: clamp(20px, 4vw, 32px);
+  }
+  .modal-body > :first-child { margin-top: 0; }
+  .modal-body > :last-child { margin-bottom: 0; }
+  .modal-body .modal-actions { margin-top: 24px; }
+
+  @media (max-width: 620px) {
+    .modal-backdrop { padding: 12px; }
+    .modal-head { min-height: 62px; padding: 11px 16px; }
+    .modal-head h2 { font-size: 20px; }
+    .modal-body { padding: 18px 16px; }
+    .settings-group + .settings-group { margin-top: 19px; padding-top: 17px; }
+    .settings-group-content { gap: 15px; }
+  }
+
+  /* Confirmation dialog balance */
+  .modal-box.confirm-modal-box {
+    width: min(470px, 96vw);
+    padding: clamp(26px, 4vw, 34px);
+    overflow: visible;
+  }
+  .confirm-modal-box .confirm-content {
+    width: 100%;
+  }
+  .confirm-modal-box .confirm-text {
+    max-width: 350px;
+  }
+  .confirm-modal-box .confirm-actions {
+    max-width: 350px;
+  }
+  @media (max-width: 360px) {
+    .modal-box.confirm-modal-box {
+      width: calc(100vw - 24px);
+      padding: 24px 18px 20px;
+    }
+  }
 
 </style>
 </head>
@@ -1145,16 +1431,19 @@
   <div class="play-layout">
     <main class="stage">
       <div class="stage-visual" id="stageVisual"><div class="roulette-card" id="rouletteCard"><div class="roulette-face media-box" id="rouletteFace"></div></div></div>
-      <div>
+      <div class="result-summary">
         <div class="current-name" id="currentName"></div>
-        <div class="status-line"><span id="orderStatus">まだ選ばれていません</span><span>・</span><span id="remainingStatus"></span></div>
+        <div class="progress-panel" id="progressPanel" role="status" aria-live="polite">
+          <div class="progress-copy"><span id="orderStatus">まだ選ばれていません</span><span id="remainingStatus"></span></div>
+          <div class="progress-track" id="progressTrack" role="progressbar" aria-label="順番の決定状況" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><span class="progress-fill" id="progressFill"></span></div>
+        </div>
     </div>
       <div class="main-button-slot" id="mainButtonSlot"><button class="main-button" id="mainButton">スタート</button></div>
   </main>
 
     <aside class="history-panel">
       <div class="history-head"><h2>決まった順番</h2><div class="history-controls"><span id="historyCount">0人</span><button class="button ghost result-button" id="showResultsBtn" disabled>結果一覧</button></div></div>
-      <div class="history-list" id="historyList"></div>
+      <div class="history-list-wrap" id="historyListWrap"><div class="history-list" id="historyList"></div></div>
   </aside>
 </div>
 </section>
@@ -1164,7 +1453,7 @@
 <div class="modal-backdrop" id="resultsModal" role="dialog" aria-modal="true" aria-labelledby="resultsTitle" hidden>
   <div class="modal-box">
     <div class="modal-head"><h2 id="resultsTitle">結果一覧</h2><button class="close-x" id="closeResultsBtn" aria-label="閉じる">×</button></div>
-    <div class="result-grid" id="resultGrid"></div>
+    <div class="modal-body"><div class="result-grid" id="resultGrid"></div></div>
 </div>
 </div>
 
@@ -1176,76 +1465,96 @@
 <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
   <div class="modal-box small">
     <div class="modal-head"><h2 id="settingsTitle">ルーレット設定</h2><button class="close-x" id="closeSettingsBtn" aria-label="閉じる">×</button></div>
-    <div class="settings-grid">
-      <div class="setting">
-        <div class="setting-label" id="speedLabel">回転速度</div>
-        <div class="step-selector" id="speedSelector" role="radiogroup" aria-labelledby="speedLabel" data-value="standard">
-          <div class="step-line" aria-hidden="true"><span class="step-fill"></span></div>
-          <button type="button" class="step-option" role="radio" data-value="slow" aria-checked="false"><span class="step-dot"></span><span class="step-text">ゆっくり</span></button>
-          <button type="button" class="step-option" role="radio" data-value="standard" aria-checked="true"><span class="step-dot"></span><span class="step-text">標準</span></button>
-          <button type="button" class="step-option" role="radio" data-value="fast" aria-checked="false"><span class="step-dot"></span><span class="step-text">速い</span></button>
+    <div class="modal-body">
+      <div class="settings-grid">
+        <section class="settings-group" aria-labelledby="behaviorSettingsTitle">
+          <h3 class="settings-group-title" id="behaviorSettingsTitle">ルーレットの動作</h3>
+          <div class="settings-group-content">
+            <div class="setting setting-step">
+              <div class="setting-label" id="speedLabel">回転速度</div>
+              <div class="step-selector" id="speedSelector" role="radiogroup" aria-labelledby="speedLabel" data-value="standard">
+                <div class="step-line" aria-hidden="true"><span class="step-fill"></span></div>
+                <button type="button" class="step-option" role="radio" data-value="slow" aria-checked="false"><span class="step-dot"></span><span class="step-text">ゆっくり</span></button>
+                <button type="button" class="step-option" role="radio" data-value="standard" aria-checked="true"><span class="step-dot"></span><span class="step-text">標準</span></button>
+                <button type="button" class="step-option" role="radio" data-value="fast" aria-checked="false"><span class="step-dot"></span><span class="step-text">速い</span></button>
+              </div>
+            </div>
+            <div class="setting setting-step">
+              <div class="setting-label" id="stopLabel">停止までの長さ</div>
+              <div class="step-selector" id="stopSelector" role="radiogroup" aria-labelledby="stopLabel" data-value="standard">
+                <div class="step-line" aria-hidden="true"><span class="step-fill"></span></div>
+                <button type="button" class="step-option" role="radio" data-value="short" aria-checked="false"><span class="step-dot"></span><span class="step-text">短い</span></button>
+                <button type="button" class="step-option" role="radio" data-value="standard" aria-checked="true"><span class="step-dot"></span><span class="step-text">標準</span></button>
+                <button type="button" class="step-option" role="radio" data-value="long" aria-checked="false"><span class="step-dot"></span><span class="step-text">長い</span></button>
+              </div>
+            </div>
+            <div class="setting toggle-row setting-toggle">
+              <div class="toggle-copy"><label for="oneTouchToggle">ワンタッチでスタート&amp;ストップ</label><small>ルーレットの枠内を押すと回転し自動で停止します</small></div>
+              <label class="switch-control" aria-label="ワンタッチでスタート&ストップ"><input class="toggle-input" type="checkbox" id="oneTouchToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
+            </div>
+          </div>
+        </section>
+        <section class="settings-group" aria-labelledby="appearanceSettingsTitle">
+          <h3 class="settings-group-title" id="appearanceSettingsTitle">表示と演出</h3>
+          <div class="settings-group-content">
+            <div class="setting toggle-row setting-toggle">
+              <div class="toggle-copy"><label for="hideSelectedToggle">回転中に選出済みを表示しない</label><small class="note-lines"><span>選出済みの参加者を回転中だけ表示しません</span><span>ルーレットの結果には影響しません</span></small></div>
+              <label class="switch-control" aria-label="回転中に選出済みを表示しない"><input class="toggle-input" type="checkbox" id="hideSelectedToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
+            </div>
+            <div class="setting toggle-row setting-toggle">
+              <div class="toggle-copy"><label for="reduceEffectsToggle">演出を控えめにする</label><small id="motionNote" class="note-lines"><span>動きを少なくして刺激を抑えます</span><span>ルーレットの回転速度は変わりません</span></small></div>
+              <label class="switch-control" aria-label="演出を控えめにする"><input class="toggle-input" type="checkbox" id="reduceEffectsToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
+            </div>
+          </div>
+        </section>
       </div>
+      <div class="modal-actions settings-actions"><button class="button ghost" id="resetSettingsBtn">初期設定に戻す</button><button class="button primary" id="saveSettingsBtn">決定</button></div>
     </div>
-      <div class="setting">
-        <div class="setting-label" id="stopLabel">停止までの長さ</div>
-        <div class="step-selector" id="stopSelector" role="radiogroup" aria-labelledby="stopLabel" data-value="standard">
-          <div class="step-line" aria-hidden="true"><span class="step-fill"></span></div>
-          <button type="button" class="step-option" role="radio" data-value="short" aria-checked="false"><span class="step-dot"></span><span class="step-text">短い</span></button>
-          <button type="button" class="step-option" role="radio" data-value="standard" aria-checked="true"><span class="step-dot"></span><span class="step-text">標準</span></button>
-          <button type="button" class="step-option" role="radio" data-value="long" aria-checked="false"><span class="step-dot"></span><span class="step-text">長い</span></button>
-      </div>
-    </div>
-      <div class="setting toggle-row">
-        <div class="toggle-copy"><label for="oneTouchToggle">ワンタッチでスタート&amp;ストップ</label><small>ルーレットの枠内を押すと回転し自動で停止します</small></div>
-        <label class="switch-control" aria-label="ワンタッチでスタート&ストップ"><input class="toggle-input" type="checkbox" id="oneTouchToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
-    </div>
-      <div class="setting toggle-row">
-        <div class="toggle-copy"><label for="hideSelectedToggle">回転中に選出済みを表示しない</label><small class="note-lines"><span>選出済みの参加者を回転中だけ表示しません</span><span>ルーレットの結果には影響しません</span></small></div>
-        <label class="switch-control" aria-label="回転中に選出済みを表示しない"><input class="toggle-input" type="checkbox" id="hideSelectedToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
-    </div>
-      <div class="setting toggle-row">
-        <div class="toggle-copy"><label for="reduceEffectsToggle">演出を控えめにする</label><small id="motionNote" class="note-lines"><span>動きを少なくして刺激を抑えます</span><span>ルーレットの回転速度は変わりません</span></small></div>
-        <label class="switch-control" aria-label="演出を控えめにする"><input class="toggle-input" type="checkbox" id="reduceEffectsToggle"><span class="toggle-switch" aria-hidden="true"></span></label>
-    </div>
-  </div>
-    <div class="modal-actions settings-actions"><button class="button ghost" id="resetSettingsBtn">初期設定に戻す</button><button class="button primary" id="saveSettingsBtn">決定</button></div>
 </div>
 </div>
 
 <div class="modal-backdrop" id="resetModal" role="dialog" aria-modal="true" aria-labelledby="resetTitle" hidden>
-  <div class="modal-box small">
+  <div class="modal-box reset-modal-box">
     <div class="modal-head"><h2 id="resetTitle">リセット</h2><button class="close-x" id="closeResetBtn" aria-label="閉じる">×</button></div>
-    <div class="reset-options">
-      <button class="reset-option" id="restartRouletteBtn">
-        <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4v6h6"/><path d="M5.5 15a8 8 0 1 0 1.2-8.8L4 10"/></svg></span>
-        <span class="reset-option-copy"><span class="reset-option-title">ルーレットをやり直す</span><span class="reset-option-text">画像と名前を残したまま、ルーレットをやり直します。</span></span>
-      </button>
-      <button class="reset-option" id="editParticipantsBtn">
-        <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 16-.8 4.8L8 20l10.8-10.8-4-4L4 16Z"/><path d="m13.8 6.2 4 4"/></svg></span>
-        <span class="reset-option-copy"><span class="reset-option-title">参加者を編集する</span><span class="reset-option-text">ルーレットの結果を消して、参加者の編集画面に戻ります。</span></span>
-      </button>
-      <button class="reset-option destructive" id="returnToStartBtn">
-        <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span>
-        <span class="reset-option-copy"><span class="reset-option-title">はじめに戻る</span><span class="reset-option-text">登録した参加者を消して、はじめの画面に戻ります。</span></span>
-      </button>
+    <div class="modal-body">
+      <div class="reset-options">
+        <button class="reset-option" id="restartRouletteBtn">
+          <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4v6h6"/><path d="M5.5 15a8 8 0 1 0 1.2-8.8L4 10"/></svg></span>
+          <span class="reset-option-title">やり直す</span>
+        </button>
+        <button class="reset-option" id="editParticipantsBtn">
+          <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 16-.8 4.8L8 20l10.8-10.8-4-4L4 16Z"/><path d="m13.8 6.2 4 4"/></svg></span>
+          <span class="reset-option-title">参加者を編集</span>
+        </button>
+        <button class="reset-option destructive" id="returnToStartBtn">
+          <span class="reset-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span>
+          <span class="reset-option-title">はじめに戻る</span>
+        </button>
+      </div>
+      <div class="modal-actions reset-actions"><button class="button ghost" id="cancelResetBtn">キャンセル</button></div>
     </div>
-    <div class="modal-actions reset-actions"><button class="button ghost" id="cancelResetBtn">キャンセル</button></div>
-</div>
+  </div>
 </div>
 
-<div class="modal-backdrop" id="confirmModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
-  <div class="modal-box small">
-    <div class="modal-head"><h2 id="confirmTitle">確認</h2></div>
-    <div class="confirm-text" id="confirmText"></div>
-    <div class="modal-actions"><button class="button ghost" id="confirmCancelBtn">キャンセル</button><button class="button primary" id="confirmOkBtn">実行する</button></div>
-</div>
+<div class="modal-backdrop" id="confirmModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText" hidden>
+  <div class="modal-box small confirm-modal-box">
+    <button class="close-x confirm-close" id="closeConfirmBtn" aria-label="閉じる">×</button>
+    <div class="confirm-content">
+      <div class="confirm-icon" id="confirmIcon" aria-hidden="true"></div>
+      <h2 class="confirm-title" id="confirmTitle">確認</h2>
+      <div class="confirm-text" id="confirmText"></div>
+      <div class="modal-actions confirm-actions"><button class="button ghost" id="confirmCancelBtn">キャンセル</button><button class="button primary" id="confirmOkBtn">実行する</button></div>
+    </div>
+  </div>
 </div>
 
 <div class="modal-backdrop" id="imageErrorModal" role="dialog" aria-modal="true" aria-labelledby="imageErrorTitle" hidden>
   <div class="modal-box small">
     <div class="modal-head"><h2 id="imageErrorTitle">読み込めなかった画像</h2><button class="close-x" id="closeImageErrorBtn" aria-label="閉じる">×</button></div>
-    <p class="image-error-summary" id="imageErrorSummary"></p>
-    <ul class="image-error-list" id="imageErrorList"></ul>
+    <div class="modal-body">
+      <p class="image-error-summary" id="imageErrorSummary"></p>
+      <ul class="image-error-list" id="imageErrorList"></ul>
+    </div>
 </div>
 </div>
 
@@ -1278,7 +1587,6 @@
     { value: "🎈", name: "ふうせん" }, { value: "🍄", name: "きのこ" }, { value: "🚗", name: "くるま" },
     { value: "🚌", name: "バス" }, { value: "🚲", name: "じてんしゃ" }, { value: "✏️", name: "えんぴつ" }
   ]);
-  const emojiPool = Object.freeze(sampleParticipants.map(participant => participant.value));
   const Phase = Object.freeze({ SETUP: "setup", READY: "ready", SPINNING: "spinning", STOPPING: "stopping", RESULT: "result", COMPLETE: "complete", LOADING: "loading" });
   const speedMap = Object.freeze({ slow: 115, standard: 60, fast: 40 });
   const stopMap = Object.freeze({ short: { minSteps: 12, extraCycles: 0, maxDelay: 260 }, standard: { minSteps: 18, extraCycles: 1, maxDelay: 360 }, long: { minSteps: 24, extraCycles: 2, maxDelay: 430 } });
@@ -1302,8 +1610,9 @@
       hideSelectedDuringSpin: DEFAULT_SETTINGS.hideSelectedDuringSpin,
       reduceEffects: DEFAULT_SETTINGS.reduceEffects
     },
-    modalReturnFocus: null,
+    modalStack: [],
     confirmAction: null,
+    confirmCancelAction: null,
     settingsDraftSoundOn: DEFAULT_SETTINGS.soundOn,
     settingsSnapshot: null
   };
@@ -1324,8 +1633,12 @@
   const currentName = $("currentName");
   const orderStatus = $("orderStatus");
   const remainingStatus = $("remainingStatus");
+  const progressPanel = $("progressPanel");
+  const progressTrack = $("progressTrack");
+  const progressFill = $("progressFill");
   const mainButton = $("mainButton");
   const historyList = $("historyList");
+  const historyListWrap = $("historyListWrap");
   const historyCount = $("historyCount");
   const showResultsBtn = $("showResultsBtn");
   const playLayout = document.querySelector(".play-layout");
@@ -1337,6 +1650,28 @@
   const imageErrorModal = $("imageErrorModal");
   const resultGrid = $("resultGrid");
   const toast = $("toast");
+  let pendingImageEditorAnchor = null;
+
+  function captureEditorActionPosition(element) {
+    if (!element || !element.isConnected || element.offsetParent === null) return null;
+    return { element, top: element.getBoundingClientRect().top };
+  }
+
+  function restoreEditorActionPosition(anchor, { focus = true } = {}) {
+    if (!anchor?.element?.isConnected) return;
+    requestAnimationFrame(() => {
+      if (!anchor.element.isConnected) return;
+      if (focus) {
+        try {
+          anchor.element.focus({ preventScroll: true });
+        } catch (error) {
+          anchor.element.focus();
+        }
+      }
+      const delta = anchor.element.getBoundingClientRect().top - anchor.top;
+      if (Math.abs(delta) > 0.5) window.scrollBy({ top: delta, left: 0, behavior: "auto" });
+    });
+  }
 
   function uid(prefix = "p") {
     return crypto.randomUUID?.() || `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -1488,20 +1823,22 @@
     });
   }
 
-  function addNameParticipant({ fixedApple = false } = {}) {
+  function addNameParticipant({ fixedApple = false, keepActionButton = null } = {}) {
     if (state.participants.length >= MAX_PARTICIPANTS) {
       showToast("参加者は最大30人です");
       return;
     }
     const available = unusedSamples();
     if (!available.length) return;
+    const anchor = captureEditorActionPosition(keepActionButton);
     const apple = sampleParticipants.find(sample => sample.value === "🍎");
     const sample = fixedApple && apple && available.includes(apple)
       ? apple
       : available[randomInt(available.length)];
     state.participants.push(participantFromSample(sample));
     renderEditor();
-    requestAnimationFrame(() => participantGrid.lastElementChild?.querySelector("input")?.select());
+    if (anchor) restoreEditorActionPosition(anchor);
+    else requestAnimationFrame(() => participantGrid.lastElementChild?.querySelector("input")?.select());
   }
 
   function startNameOnly() {
@@ -1513,7 +1850,7 @@
   function loadSample() {
     releaseAllParticipants();
     state.participants = shuffled(sampleParticipants).slice(0, 8).map(participantFromSample);
-    renderEditor();
+    enterRoulette();
   }
 
   async function decodeImage(file) {
@@ -1560,7 +1897,7 @@
     }
   }
 
-  async function handleImageFiles(fileList) {
+  async function handleImageFiles(fileList, editorAnchor = null) {
     const available = MAX_PARTICIPANTS - state.participants.length;
     if (available <= 0) {
       showToast("参加者は最大30人です");
@@ -1603,6 +1940,7 @@
     addImageBtn.textContent = "画像を追加";
     imageInput.value = "";
     renderEditor();
+    restoreEditorActionPosition(editorAnchor, { focus: failedFiles.length === 0 });
     if (failedFiles.length) showImageErrors(files.length, failedFiles);
   }
 
@@ -1682,15 +2020,34 @@
     if (rouletteView.hidden) return;
     const rect = playLayout.getBoundingClientRect();
     const side = rect.width >= 900 && rect.height >= 470 && rect.width / Math.max(1, rect.height) >= 1.15;
+    const scrollMode = !side && rect.height < 520;
     playLayout.classList.toggle("side", side);
     playLayout.classList.toggle("stacked", !side);
+    playLayout.classList.toggle("scroll-mode", scrollMode);
+    rouletteView.classList.toggle("scroll-mode", scrollMode);
+    requestAnimationFrame(updateHistoryScrollHint);
   }
 
   function updateRouletteSize() {
     if (rouletteView.hidden) return;
     const rect = stageVisual.getBoundingClientRect();
-    const size = Math.max(96, Math.floor(Math.min(rect.width, rect.height, 720)));
-    rouletteCard.style.setProperty("--roulette-size", `${size}px`);
+    const scrollMode = rouletteView.classList.contains("scroll-mode");
+    let size;
+    if (scrollMode) {
+      const availableWidth = Math.max(160, rect.width);
+      const preferred = Math.min(360, window.innerHeight * .48);
+      size = Math.max(170, Math.floor(Math.min(availableWidth, preferred)));
+      const nextHeight = `${size}px`;
+      if (stageVisual.style.height !== nextHeight) stageVisual.style.height = nextHeight;
+    } else {
+      if (stageVisual.style.height) stageVisual.style.removeProperty("height");
+      const freshRect = stageVisual.getBoundingClientRect();
+      size = Math.max(96, Math.floor(Math.min(freshRect.width, freshRect.height, 720)));
+    }
+    const nextSize = `${size}px`;
+    if (rouletteCard.style.getPropertyValue("--roulette-size") !== nextSize) {
+      rouletteCard.style.setProperty("--roulette-size", nextSize);
+    }
   }
 
   function openReset() {
@@ -1807,12 +2164,22 @@
   }
 
   function renderPlayState() {
-    const remaining = state.participants.length - state.order.length;
-    remainingStatus.textContent = `残り${remaining}人`;
-    historyCount.textContent = `${state.order.length}人`;
-    showResultsBtn.disabled = state.order.length === 0;
+    const total = state.participants.length;
+    const decided = state.order.length;
+    const remaining = total - decided;
     const busy = state.phase === Phase.SPINNING || state.phase === Phase.STOPPING;
-    const undoDisabled = busy || state.order.length === 0;
+    remainingStatus.textContent = `残り${remaining}人`;
+    historyCount.textContent = `${decided}人`;
+    showResultsBtn.disabled = decided === 0;
+    progressTrack.setAttribute("aria-valuemax", String(total));
+    progressTrack.setAttribute("aria-valuenow", String(decided));
+    progressTrack.setAttribute("aria-valuetext", `${total}人中${decided}人の順番が決定`);
+    progressFill.style.width = `${total ? (decided / total) * 100 : 0}%`;
+    progressFill.style.transitionDuration = state.settings.reduceEffects ? "0s" : ".36s";
+    progressPanel.classList.toggle("is-busy", busy);
+    progressPanel.classList.toggle("is-complete", state.phase === Phase.COMPLETE);
+
+    const undoDisabled = busy || decided === 0;
     $("undoBtn").disabled = undoDisabled;
     $("undoBtn").setAttribute("aria-disabled", String(undoDisabled));
     $("menuBtn").disabled = busy;
@@ -1825,30 +2192,36 @@
       mainButton.textContent = "リセット";
       mainButton.classList.add("complete");
       mainButton.disabled = false;
-      orderStatus.textContent = "全員の順番が決まりました";
-    } else if (state.phase === Phase.SPINNING) {
-      mainButton.textContent = "ストップ";
+      orderStatus.textContent = "全員決定";
+    } else if (busy) {
+      mainButton.textContent = state.phase === Phase.SPINNING ? "ストップ" : "スタート";
       mainButton.classList.remove("complete");
-      mainButton.disabled = false;
-      orderStatus.textContent = "回転中";
-    } else if (state.phase === Phase.STOPPING) {
-      mainButton.textContent = "スタート";
-      mainButton.classList.remove("complete");
-      mainButton.disabled = true;
+      mainButton.disabled = state.phase === Phase.STOPPING;
       orderStatus.textContent = "決定中";
     } else {
       mainButton.textContent = "スタート";
       mainButton.classList.remove("complete");
       mainButton.disabled = false;
-      orderStatus.textContent = state.order.length ? `${state.order.length}番まで決定` : "まだ選ばれていません";
+      orderStatus.textContent = decided ? `${decided}番まで決定` : "まだ選ばれていません";
     }
     updateRouletteInteraction();
     renderHistory();
   }
 
+  function updateHistoryScrollHint() {
+    if (!historyListWrap) return;
+    const isHorizontal = playLayout.classList.contains("stacked");
+    const maxScroll = Math.max(0, historyList.scrollWidth - historyList.clientWidth);
+    const canScrollRight = isHorizontal && maxScroll > 2 && historyList.scrollLeft < maxScroll - 2;
+    historyListWrap.classList.toggle("can-scroll-right", canScrollRight);
+  }
+
   function renderHistory() {
     historyList.replaceChildren();
-    if (!state.order.length) return;
+    if (!state.order.length) {
+      requestAnimationFrame(updateHistoryScrollHint);
+      return;
+    }
     state.order.forEach((id, index) => {
       const participant = participantById(id);
       const item = document.createElement("div");
@@ -1866,7 +2239,11 @@
     });
     if (!state.settings.reduceEffects) {
       historyList.scrollTo({ left: historyList.scrollWidth, top: historyList.scrollHeight, behavior: "smooth" });
+    } else {
+      historyList.scrollLeft = historyList.scrollWidth;
+      historyList.scrollTop = historyList.scrollHeight;
     }
+    requestAnimationFrame(updateHistoryScrollHint);
   }
 
   let audioContext = null;
@@ -2027,7 +2404,6 @@
   }
 
   function openResults() {
-    state.modalReturnFocus = document.activeElement;
     resultGrid.replaceChildren();
     state.order.forEach((id, index) => {
       const participant = participantById(id);
@@ -2110,12 +2486,8 @@
   }
 
   function forceCloseSettings() {
-    confirmModal.hidden = true;
-    settingsModal.hidden = true;
-    rouletteView.inert = false;
-    setupView.inert = false;
     state.settingsSnapshot = null;
-    state.modalReturnFocus = null;
+    closeModal(settingsModal, false);
     requestAnimationFrame(() => $("menuBtn").focus());
   }
 
@@ -2125,12 +2497,13 @@
       closeModal(settingsModal);
       return;
     }
-    openConfirm(
-      "設定は保存されません。よろしいですか？",
-      forceCloseSettings,
-      "保存せず閉じる",
-      "danger"
-    );
+    openConfirm({
+      title: "設定は保存されません。よろしいですか？",
+      icon: "warning",
+      action: forceCloseSettings,
+      okLabel: "保存せず閉じる",
+      tone: "danger"
+    });
   }
 
   function saveSettings() {
@@ -2150,28 +2523,92 @@
     requestAnimationFrame(updateRouletteSize);
   }
 
-  function openConfirm(message, action, okLabel = "実行する", tone = "primary") {
-    state.confirmAction = action;
+  const confirmIconMarkup = Object.freeze({
+    restart: '<svg viewBox="0 0 24 24"><path d="M4 4v6h6"/><path d="M5.5 15a8 8 0 1 0 1.2-8.8L4 10"/></svg>',
+    edit: '<svg viewBox="0 0 24 24"><path d="m4 16-.8 4.8L8 20l10.8-10.8-4-4L4 16Z"/><path d="m13.8 6.2 4 4"/></svg>',
+    home: '<svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>',
+    warning: '<svg viewBox="0 0 24 24"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5"/><path d="M12 17.5h.01"/></svg>'
+  });
+
+  function openConfirm({
+    title = "確認",
+    message = "",
+    action,
+    okLabel = "実行する",
+    tone = "primary",
+    icon = "warning",
+    compactTitle = false,
+    cancelAction = null
+  }) {
+    state.confirmAction = typeof action === "function" ? action : null;
+    state.confirmCancelAction = typeof cancelAction === "function" ? cancelAction : null;
+    $("confirmTitle").textContent = title;
+    $("confirmTitle").classList.toggle("compact", compactTitle);
     $("confirmText").textContent = message;
+    const confirmIcon = $("confirmIcon");
+    confirmIcon.hidden = !icon;
+    confirmIcon.innerHTML = icon ? (confirmIconMarkup[icon] || confirmIconMarkup.warning) : "";
+    confirmIcon.classList.toggle("danger", tone === "danger");
     $("confirmOkBtn").textContent = okLabel;
     $("confirmOkBtn").className = `button ${tone === "danger" ? "danger-solid" : "primary"}`;
     openModal(confirmModal, $("confirmCancelBtn"));
   }
 
+  function dismissConfirm() {
+    const cancelAction = state.confirmCancelAction;
+    state.confirmAction = null;
+    state.confirmCancelAction = null;
+    closeModal(confirmModal);
+    cancelAction?.();
+  }
+
+  function acceptConfirm() {
+    const action = state.confirmAction;
+    state.confirmAction = null;
+    state.confirmCancelAction = null;
+    closeModal(confirmModal, false);
+    action?.();
+  }
+
+  function syncModalState() {
+    const hasOpenModal = state.modalStack.length > 0;
+    rouletteView.inert = hasOpenModal && !rouletteView.hidden;
+    setupView.inert = hasOpenModal && !setupView.hidden;
+  }
+
   function openModal(modal, initialFocus) {
-    state.modalReturnFocus = document.activeElement;
+    if (state.modalStack.some(entry => entry.modal === modal)) return;
+    const previous = state.modalStack.at(-1);
+    if (previous) previous.modal.inert = true;
+    const returnFocus = document.activeElement;
     modal.hidden = false;
-    rouletteView.inert = !rouletteView.hidden;
-    setupView.inert = !setupView.hidden;
+    modal.inert = false;
+    state.modalStack.push({ modal, returnFocus });
+    syncModalState();
     requestAnimationFrame(() => initialFocus?.focus());
   }
 
   function closeModal(modal, restoreFocus = true) {
+    const index = state.modalStack.findLastIndex(entry => entry.modal === modal);
+    if (index < 0) {
+      modal.hidden = true;
+      modal.inert = false;
+      syncModalState();
+      return;
+    }
+    const [entry] = state.modalStack.splice(index, 1);
     modal.hidden = true;
-    rouletteView.inert = false;
-    setupView.inert = false;
-    if (restoreFocus && state.modalReturnFocus?.isConnected) state.modalReturnFocus.focus();
-    state.modalReturnFocus = null;
+    modal.inert = false;
+    const current = state.modalStack.at(-1);
+    if (current) current.modal.inert = false;
+    syncModalState();
+    if (!restoreFocus) return;
+    const target = entry.returnFocus?.isConnected
+      ? entry.returnFocus
+      : current
+        ? focusableElements(current.modal)[0]
+        : null;
+    requestAnimationFrame(() => target?.focus());
   }
 
   function focusableElements(container) {
@@ -2211,18 +2648,37 @@
     }
   }
 
-  $("firstImageBtn").addEventListener("click", () => { imageInput.value = ""; imageInput.click(); });
-  $("addImageBtn").addEventListener("click", () => { imageInput.value = ""; imageInput.click(); });
+  $("firstImageBtn").addEventListener("click", () => {
+    pendingImageEditorAnchor = null;
+    imageInput.value = "";
+    imageInput.click();
+  });
+  $("addImageBtn").addEventListener("click", () => {
+    pendingImageEditorAnchor = captureEditorActionPosition($("addImageBtn"));
+    imageInput.value = "";
+    imageInput.click();
+  });
   $("firstNameBtn").addEventListener("click", startNameOnly);
-  $("addNameBtn").addEventListener("click", () => addNameParticipant());
+  $("addNameBtn").addEventListener("click", () => addNameParticipant({ keepActionButton: $("addNameBtn") }));
   $("sampleBtn").addEventListener("click", loadSample);
-  imageInput.addEventListener("change", event => handleImageFiles(event.target.files));
-  $("backToIntroBtn").addEventListener("click", () => openConfirm(
-    "登録した参加者を消して、はじめの画面に戻ります。",
-    () => { closeModal(confirmModal); returnToStart(); },
-    "はじめに戻る",
-    "danger"
-  ));
+  imageInput.addEventListener("change", event => {
+    const files = event.target.files;
+    if (!files?.length) {
+      pendingImageEditorAnchor = null;
+      return;
+    }
+    const anchor = pendingImageEditorAnchor;
+    pendingImageEditorAnchor = null;
+    handleImageFiles(files, anchor);
+  });
+  $("backToIntroBtn").addEventListener("click", () => openConfirm({
+    title: "はじめの画面に戻りますか？",
+    message: "登録した参加者とこれまでの結果はすべて消えます",
+    icon: "home",
+    action: returnToStart,
+    okLabel: "はじめに戻る",
+    tone: "danger"
+  }));
   beginBtn.addEventListener("click", enterRoulette);
 
   mainButton.addEventListener("click", () => {
@@ -2240,7 +2696,7 @@
     state.autoStopTimer = setTimeout(() => {
       state.autoStopTimer = null;
       if (state.phase === Phase.SPINNING) stopSpin();
-    }, 1200);
+    }, 900);
   }
 
   rouletteCard.addEventListener("click", activateOneTouch);
@@ -2252,15 +2708,15 @@
 
   $("undoBtn").addEventListener("click", () => {
     if ($("undoBtn").disabled) return;
-    openConfirm(
-      "直前の結果を取り消しますか？",
-      () => {
-        closeModal(confirmModal, false);
+    openConfirm({
+      title: "直前の結果を取り消しますか？",
+      icon: null,
+      action: () => {
         undoLastResult();
-        $("undoBtn").focus();
+        requestAnimationFrame(() => $("undoBtn").focus());
       },
-      "取り消す"
-    );
+      okLabel: "取り消す"
+    });
   });
 
   $("menuBtn").setAttribute("aria-haspopup", "menu");
@@ -2298,20 +2754,40 @@
 
   $("closeResetBtn").addEventListener("click", () => closeModal(resetModal));
   $("cancelResetBtn").addEventListener("click", () => closeModal(resetModal));
-  $("restartRouletteBtn").addEventListener("click", () => {
-    closeModal(resetModal);
-    resetOrder();
-    mainButton.focus();
-  });
-  $("editParticipantsBtn").addEventListener("click", () => {
-    closeModal(resetModal);
-    resetOrder(false);
-    returnToEditor();
-  });
-  $("returnToStartBtn").addEventListener("click", () => {
-    closeModal(resetModal);
-    returnToStart();
-  });
+  $("restartRouletteBtn").addEventListener("click", () => openConfirm({
+    title: "ルーレットをやり直しますか？",
+    message: "これまでの結果は消えます",
+    icon: "restart",
+    action: () => {
+      closeModal(resetModal, false);
+      resetOrder();
+      requestAnimationFrame(() => mainButton.focus());
+    },
+    okLabel: "やり直す"
+  }));
+  $("editParticipantsBtn").addEventListener("click", () => openConfirm({
+    title: "参加者の編集画面に戻りますか？",
+    message: "これまでの結果は消えます",
+    icon: "edit",
+    compactTitle: true,
+    action: () => {
+      closeModal(resetModal, false);
+      resetOrder(false);
+      returnToEditor();
+    },
+    okLabel: "編集画面に戻る"
+  }));
+  $("returnToStartBtn").addEventListener("click", () => openConfirm({
+    title: "はじめの画面に戻りますか？",
+    message: "登録した参加者とこれまでの結果はすべて消えます",
+    icon: "home",
+    action: () => {
+      closeModal(resetModal, false);
+      returnToStart();
+    },
+    okLabel: "はじめに戻る",
+    tone: "danger"
+  }));
   resetModal.addEventListener("keydown", event => handleModalKeys(event, resetModal));
 
   setupStepSelector($("speedSelector"));
@@ -2369,22 +2845,39 @@
   $("closeImageErrorBtn").addEventListener("click", () => closeModal(imageErrorModal));
   imageErrorModal.addEventListener("keydown", event => handleModalKeys(event, imageErrorModal));
 
-  $("confirmCancelBtn").addEventListener("click", () => closeModal(confirmModal));
-  $("confirmOkBtn").addEventListener("click", () => state.confirmAction?.());
-  confirmModal.addEventListener("keydown", event => handleModalKeys(event, confirmModal));
-
-  const rouletteResizeObserver = new ResizeObserver(() => {
-    updatePlayLayout();
-    updateRouletteSize();
+  $("confirmCancelBtn").addEventListener("click", dismissConfirm);
+  $("closeConfirmBtn").addEventListener("click", dismissConfirm);
+  $("confirmOkBtn").addEventListener("click", acceptConfirm);
+  confirmModal.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      dismissConfirm();
+      return;
+    }
+    handleModalKeys(event, confirmModal, false);
   });
+
+  historyList.addEventListener("scroll", updateHistoryScrollHint, { passive: true });
+
+  let layoutUpdateFrame = null;
+  function scheduleLayoutUpdate() {
+    if (layoutUpdateFrame !== null) return;
+    layoutUpdateFrame = requestAnimationFrame(() => {
+      layoutUpdateFrame = null;
+      updatePlayLayout();
+      updateRouletteSize();
+      updateHistoryScrollHint();
+    });
+  }
+
+  const rouletteResizeObserver = new ResizeObserver(scheduleLayoutUpdate);
   rouletteResizeObserver.observe(playLayout);
   rouletteResizeObserver.observe(stageVisual);
   window.addEventListener("orientationchange", () => requestAnimationFrame(() => {
-    updatePlayLayout();
-    updateRouletteSize();
+    scheduleLayoutUpdate();
     positionMenuPopover();
   }));
-  window.addEventListener("resize", positionMenuPopover);
+  window.addEventListener("resize", () => { positionMenuPopover(); updateHistoryScrollHint(); });
   window.addEventListener("beforeunload", event => {
     if (!state.participants.length) return;
     event.preventDefault();
