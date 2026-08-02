@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- 順番ルーレット v5.46 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -7,12 +8,16 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%2317324d%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%226%22%20width%3D%2240%22%20height%3D%2252%22%20rx%3D%2210%22%20fill%3D%22%23fff8e9%22%2F%3E%3Crect%20x%3D%2217%22%20y%3D%2210%22%20width%3D%2230%22%20height%3D%2244%22%20rx%3D%227%22%20fill%3D%22%23214a6c%22%2F%3E%3Cg%20fill%3D%22%23fff8e9%22%3E%3Crect%20x%3D%2221%22%20y%3D%22-1%22%20width%3D%2222%22%20height%3D%2216%22%20rx%3D%225%22%20opacity%3D%22.42%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%226%22%20r%3D%223%22%20opacity%3D%22.62%22%2F%3E%3Crect%20x%3D%2219%22%20y%3D%2221%22%20width%3D%2226%22%20height%3D%2222%22%20rx%3D%226%22%20fill%3D%22%23f2874f%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2228%22%20r%3D%224%22%2F%3E%3Cpath%20d%3D%22M24%2039c1.5-5%204-7%208-7s6.5%202%208%207%22%20fill%3D%22none%22%20stroke%3D%22%23fff8e9%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2221%22%20y%3D%2249%22%20width%3D%2222%22%20height%3D%2216%22%20rx%3D%225%22%20opacity%3D%22.42%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAFLElEQVR42u3dvW0cSRCG4eVgXNmicw4TOGBNAgpBDmMg5BIKQBYDEOgKjEFJHEBzASUgRw59BaBzjgCNW2J/ume6qp7XlLjDmap3vq3u/eHF++3HP5sEPD893g1wGtszHrtb++Qvr28fonswbTCCzC0eD0IPIzOpCZ1OZlITGiB0hDSV0oQGCD1yikppQoPQAKEBQgOEBggNQuNodsGPT+hReX561El13Gw2m82s8Gen6LbTcYeo7eX1LaGlR87UjiD3TOLhUnpH7oQzdLBE3mWXOUp/ZoUaJqnD7Wq89GqktJ7I3Fzq3QKPEUIjJ3TCBd+LoNtMiRwhrWcyh5itQ4m9ptQTmZGprxOZkam/U6KLfaDRWPVbQ+qpyp2LGkk9kRmZ+p7m7aNXN/ebq5t7Y8dptXu4urlPcS1Thrs0SzNGCIXoKX2xxNfp9rqYfQ34+f3LHT0PT+c9Nezy+3rvUU+BG3F0k3B4naI+63UXukc6GzHijiC9R48pq8xSuk19oknddYZufeKnFtdMff6N3nqm7jVLT5pI5kx0S+hR0llatxM5QkqHELrXIjCz3L3SuKXUPYSeN4UxiuSjywwdIZ2xfj967Hb4KjBI6IhpgBp9kdCQ0EvPRchLa18kNCS0+Rmj9kdCQ0IDhAYIDRAahAYIDRAaIDRAaBAaIDQwDuU+U/jjw69yTf77n78ITeKc159d7pnINeXOKvZMZGJbFJJZvQitOepGaDKrXz2hyayOaYQms3q+Zlb8frz7/G3v//3++mnoukbd/Sj97aNLS7zv50aWm9BF0/lQkd967EhiR01pb05aWeYex6lMSKFHSufWEo4kdcQFooQeUD5JTeg0MpO6mNAjPA0uJdsIUkcbOyQ0JLRRI+/vIzRAaIDQ5cYNYwehQWiA0AChAUIDhAah8SZrb53ZujsMH8EKJNKIn2whNJGJbeQgszGE0CUkITWh08lBakKnk4LUhE4nA6kJfbYErXcazj1edaknMp8u3ot8raR+fbxzjllZavvQjRL05d9PkanHMQktnZuMA69/ptW3j/7++uno8333+VvJF14kdMfZtqVQp0hthpbOiyz8lrqpKt4Atu2CyDzq+RA6UDqPKs8x51UtpcsJXSnhzt3+sygMKPW+BBtdhLcWiZXHkvK7HFn2es3WhA4vBInN0CA0QGiA0EA5oaP+yd6oRKu3hIaEBght7FBnQgNFhJbS6iuhIaGliHQmtOKrJ6FJrY6EJrX65V0UklrdJs0hcybmzE368eEXY4vd+HOFphG7zjPYXK2JFeWuNIbNmotMeOkbhAYIDRAaIDQIDRAaIPSh/Pz+RXcGZtT+SGhI6Le4vL5VVazmi4SGhDZHm58JDUQVuuVcJKXzpnOP9dZcvDl3Wa/t6ub+oWJPL95vP/7pceDnp8fWDSLxynK3frbskdDdhB5N6ooitxQ7gsxlFoVkrlOHUAl9bEoTuU1a91iYh0zoHid9aHHJ3KY+kWReZORYU2qMV+feb42YMhZbOp+f0lFDo+sM3Xue/r+5msznzdM9RV7ijWuLJXTPizGCjF/Hpd6FuVhC907p/5DOp9P1lcWlhF50hvZe6Zos2fcp88WhlsyrCN3xIo0bg9VvjfCaqty5qNHfqeJFI29fp8oXj3z9nEcqwgLbekgeTJOiIFPf5lGLI62JHD6hpTWZ0yX0vqJJbBKHF5rcJE4r9FtFJrhRb/gZ2rytjmWFBggNQgOEBggNEBogNAgNEBogNEBoEBogNDAe/wKMAyxqa6qZbQAAAABJRU5ErkJggg==">
 <meta name="theme-color" content="#17324d">
-<style>
+<style>/*
+  v5.46 production stylesheet
+  Historical patch labels and declarations superseded by an identical selector
+  in the same cascade scope were removed without changing cascade order.
+*/
+
   :root {
     --navy: #17324d;
     --navy-2: #214a6c;
     --cream: #fffaf0;
-    --paper: #ffffff;
     --ink: #17324d;
     --muted: #657789;
     --line: #d9e2e8;
@@ -21,22 +26,15 @@
     --gold: #f2c94c;
     --focus-ring: #ffd84d;
     --focus-ring-width: 4px;
-    --blue: #3b82b4;
-    --blue-dark: #28678f;
     --danger: #b84c4c;
     --shadow: 0 16px 40px rgba(11, 34, 53, .22);
-    --radius: 22px;
     --vh: 100vh;
     --fullscreen-top-guard: 0px;
     --fullscreen-left-guard: 0px;
     --app-height: 100vh;
     --effective-safe-top: max(env(safe-area-inset-top, 0px), var(--fullscreen-top-guard));
-
-    --button-primary-bg: var(--blue);
-    --button-primary-hover: #3478a6;
     --button-secondary-bg: #e7f2f8;
     --button-secondary-hover: #d9ebf4;
-    --button-secondary-text: var(--blue-dark);
     --button-neutral-bg: #edf3f6;
     --button-neutral-hover: #e2ebf0;
     --button-danger-bg: #f8e8e8;
@@ -44,6 +42,61 @@
     --button-danger-text: var(--danger);
     --button-on-dark-bg: rgba(255,255,255,.14);
     --button-on-dark-hover: rgba(255,255,255,.22);
+    --action-blue-soft: #e2f0f7;
+    --action-blue-soft-hover: #d3e8f3;
+    --roulette-soft: #fbe6de;
+    --danger-soft-v5: #f7e4e4;
+    --neutral-surface: #edf2f5;
+    --neutral-hover: #e1e9ed;
+    --disabled-bg: #d9dfe3;
+    --disabled-text: #7d8992;
+    --roulette-radius: 28px;
+    --roulette-border: 14px;
+    --reset-blue: #e4f2f9;
+    --reset-blue-hover: #d6eaf5;
+    --reset-red: #fae9e9;
+    --reset-red-hover: #f5dddd;
+    --action-radius: 18px;
+    --action-shadow-blue: 0 6px 0 #275f82, 0 12px 24px rgba(5,31,50,.22), inset 0 1px 0 rgba(255,255,255,.22);
+    --dialog-action-height: 54px;
+    --neutral-button-text: #405361;
+    --signature-radius: 26px;
+    --app-scrollbar-thumb: rgba(101,119,137,.34);
+    --app-scrollbar-thumb-hover: rgba(101,119,137,.50);
+    --app-scrollbar-size: 8px;
+    --blue: #2f78a5;
+    --blue-rgb: 47, 120, 165;
+    --blue-dark: var(--blue);
+    --action-blue: var(--blue);
+    --action-blue-hover: var(--blue);
+    --choice-blue: var(--blue);
+    --choice-blue-hover: var(--blue);
+    --button-secondary-text: var(--blue);
+    --reset-blue-ink: var(--blue);
+    --on-dark-primary: #fff;
+    --on-dark-secondary: rgba(255,255,255,.72);
+    --on-dark-tertiary: rgba(255,255,255,.56);
+    --on-dark-disabled: rgba(255,255,255,.34);
+    --font-regular: 400;
+    --font-bold: 700;
+    --font-heavy: 900;
+    --radius-inner: 10px;
+    --radius-control: 14px;
+    --radius-compact-card: 15px;
+    --radius-card: 18px;
+    --radius-modal: 24px;
+    --radius-signature: 26px;
+    --radius-feature: 28px;
+    --radius-pill: 999px;
+    --motion-press: 80ms;
+    --motion-control: 130ms;
+    --motion-enter: 140ms;
+    --motion-exit: 100ms;
+    --motion-confirm-enter: 120ms;
+    --motion-confirm-exit: 90ms;
+    --motion-list: 160ms;
+    --motion-result: 300ms;
+    --motion-reduced: 45ms;
   }
 
   @supports (height: 100dvh) {
@@ -87,7 +140,6 @@
   }
   .setup-shell {
     margin: 0 auto;
-    width: min(980px, 100%);
   }
   .panel {
     background: rgba(255,255,255,.97);
@@ -103,7 +155,6 @@
     2. flat surface reset
   */
 .button {
-    border: 0;
     border-radius: 14px;
     padding: 13px 18px;
     font-weight: 700;
@@ -115,7 +166,6 @@
   .button:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 3px; }
   .button:disabled { opacity: .42; cursor: not-allowed; transform: none; filter: none; }
   .primary {
-    background: var(--button-primary-bg);
     color: #fff;
   }
 
@@ -144,12 +194,8 @@
   .editor-head h2 { margin: 0; font-size: clamp(23px, 3vw, 32px); }
   .editor-head p { margin: 7px 0 0; color: var(--muted); }
   .count-badge {
-    min-width: 92px;
     text-align: center;
     border-radius: 999px;
-    background: #edf3f6;
-    padding: 10px 16px;
-    font-weight: 700;
   }
   .participant-grid {
     display: grid;
@@ -188,7 +234,6 @@
   .name-input:focus { border-color: var(--blue); }
   .name-input:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; }
   .participant-remove {
-    position: absolute;
     top: 8px;
     right: 8px;
     z-index: 4;
@@ -210,18 +255,11 @@
   }
   .participant-remove:hover {
     border-color: var(--danger);
-    background: var(--button-danger-hover);
   }
   .participant-remove:active { transform: translateY(1px) scale(.96); }
   .participant-remove:focus-visible {
     outline: var(--focus-ring-width) solid var(--focus-ring);
     outline-offset: 2px;
-  }
-  .editor-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
   }
   .start-row {
     border-top: 1px solid var(--line);
@@ -250,14 +288,12 @@
     4. safe-area top guard
   */
 .play-topbar {
-    height: 68px;
-    padding: 10px max(12px, env(safe-area-inset-right)) 10px max(12px, env(safe-area-inset-left));
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
   }
-  .play-title { font-weight: 900; letter-spacing: .05em; font-size: 19px;
+  .play-title {
  min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   .top-button {
@@ -285,13 +321,6 @@
     3. shared responsive geometry
     4. overflow guard
   */
-.play-layout {
-    height: calc(var(--vh) - 68px);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(230px, 310px);
-    gap: 16px;
-    padding: 0 16px 16px;
-  }
 
   .roulette-card {
     border: clamp(10px, 2vw, 20px) solid var(--gold);
@@ -307,8 +336,6 @@
     height: var(--roulette-size, min(62vh, 62vw, 720px));
     aspect-ratio: auto;
     flex: 0 0 auto;
-    border-width: 14px;
-    border-radius: 28px;
     max-width: 100%;
     max-height: 100%;
   }
@@ -328,7 +355,6 @@
     position: absolute;
     inset: 5px;
     border: 6px solid var(--accent);
-    border-radius: 18px;
     pointer-events: none;
 
  border-width: 6px; }
@@ -358,28 +384,8 @@
     2. bottom-margin reset
   */
 .main-button {
-    border: 0;
-    min-width: min(380px, 78vw);
-    padding: clamp(15px, 2.5vh, 23px) 40px;
-    border-radius: 999px;
-    background: linear-gradient(160deg, var(--accent), var(--accent-dark));
-    color: #fff;
-    font-size: clamp(24px, 4vw, 34px);
-    font-weight: 900;
-    letter-spacing: .08em;
-    box-shadow: 0 10px 0 var(--accent-dark), 0 16px 30px rgba(0,0,0,.3);
     cursor: pointer;
-    margin-bottom: 10px;
   }
-  .main-button:active { transform: translateY(6px); box-shadow: 0 4px 0 var(--accent-dark), 0 10px 20px rgba(0,0,0,.28); }
-  .main-button:disabled {
-    background: linear-gradient(160deg, #697684, #4b5661);
-    box-shadow: 0 6px 0 #37404a, 0 10px 20px rgba(0,0,0,.24);
-    color: rgba(255,255,255,.72);
-    cursor: not-allowed;
-    transform: none;
-  }
-  .main-button.complete { background: linear-gradient(160deg, var(--blue), var(--blue-dark)); box-shadow: 0 10px 0 var(--blue-dark), 0 16px 30px rgba(0,0,0,.3); }
 
     /*
     .history-panel — 2 blocks
@@ -387,35 +393,29 @@
     2. minimum-height reinforcement
   */
 .history-panel {
-    min-height: 0;
     border: 1px solid rgba(255,255,255,.22);
     background: rgba(255,255,255,.09);
     border-radius: 20px;
-    padding: 14px;
     display: flex;
     flex-direction: column;
   }
-  .history-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  .history-head { display: flex; justify-content: space-between; align-items: center;
  gap: 10px; }
-  .history-head h2 { font-size: 17px; margin: 0; }
+  .history-head h2 { margin: 0; }
   .history-head span { color: rgba(255,255,255,.75); font-size: 14px; }
-  .history-list { overflow-y: auto; display: grid; gap: 9px; padding: 2px;
+  .history-list { overflow-y: auto; display: grid;
  min-height: 0; flex: 1 1 auto;
 
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-
- scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.42) transparent; }
+    overscroll-behavior: contain; }
   .history-item {
     display: grid;
     grid-template-columns: 36px 54px minmax(0,1fr);
     align-items: center;
     gap: 9px;
     border-radius: 13px;
-    background: rgba(255,255,255,.11);
-    padding: 7px;
   }
-  .history-order { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; font-weight: 900; }
+  .history-order { border-radius: 50%; background: var(--accent); display: grid; place-items: center; }
   .history-media { width: 54px; height: 54px; border-radius: 9px; background: var(--cream); display: grid; place-items: center; overflow: hidden; font-size: 32px;
 
     font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
@@ -424,11 +424,9 @@
   .history-name {
     min-width: 0;
     overflow: hidden;
-    font-weight: 700;
     white-space: normal;
     text-overflow: clip;
     overflow-wrap: anywhere;
-    line-height: 1.15;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -448,7 +446,6 @@
     background: rgba(7, 19, 31, .82);
     display: grid;
     place-items: center;
-    padding: 20px;
   }
     /*
     .modal-box — 2 blocks
@@ -457,13 +454,9 @@
   */
 .modal-box {
     width: min(780px, 96vw);
-    max-height: min(88vh, 820px);
-    overflow: auto;
     background: #fff;
     color: var(--ink);
-    border-radius: 24px;
     box-shadow: 0 24px 70px rgba(0,0,0,.42);
-    padding: clamp(20px, 4vw, 34px);
   }
   .modal-box.small { width: min(470px, 94vw); }
   .modal-head { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 18px;
@@ -494,7 +487,7 @@
     box-shadow: none;
   }
   .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 13px; }
-  .result-card { border: 1px solid var(--line); border-radius: 15px; padding: 9px; position: relative; background: #fff;
+  .result-card { border: 1px solid var(--line); padding: 9px; position: relative; background: #fff;
  isolation: isolate; }
     /*
     .result-media — 3 blocks
@@ -581,11 +574,9 @@
   }
 
     /* .play-topbar 2/4: auto-height guard */
-.play-topbar { height: auto; min-height: 68px; }
+.play-topbar { height: auto; }
     /* .play-layout 2/4: auto-height and side-column override */
 .play-layout {
-    height: auto;
-    min-height: 0;
     grid-template-columns: minmax(0, 1fr) minmax(240px, 310px);
   }
 
@@ -779,7 +770,6 @@
 
     /* .play-topbar 3/4: compact spacing */
 .play-topbar {
-    min-height: 62px;
     padding: 8px max(10px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
   }
 
@@ -792,8 +782,6 @@
     max-width: none;
   }
   .top-button.icon-only {
-    width: 44px;
-    height: 44px;
     padding: 0;
     display: grid;
     place-items: center;
@@ -804,12 +792,11 @@
     height: 24px;
     fill: none;
     stroke: currentColor;
-    stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
     pointer-events: none;
   }
-  .top-button svg circle { fill: currentColor; stroke: none; }
+  .top-button svg circle { fill: currentColor; }
 
     /* .play-layout 3/4: shared responsive geometry */
 .play-layout {
@@ -820,7 +807,6 @@
     padding: 0 14px max(14px, env(safe-area-inset-bottom));
   }
   .play-layout.side {
-    grid-template-columns: minmax(0, 1fr) minmax(245px, 310px);
     grid-template-rows: minmax(0, 1fr);
   }
   .play-layout.stacked {
@@ -829,7 +815,6 @@
     padding-left: 8px;
     padding-right: 8px;
     padding-bottom: max(8px, env(safe-area-inset-bottom));
-    grid-template-rows: minmax(0, 1fr) 126px;
   }
 
   .roulette-card.one-touch {
@@ -845,8 +830,7 @@
 
     /* .history-panel 2/2: minimum-height reinforcement */
 .history-panel { min-height: 0; }
-  .play-layout.stacked .history-panel { padding: 8px 9px; border-radius: 16px; }
-  .play-layout.stacked .history-head { margin-bottom: 5px; }
+  .play-layout.stacked .history-panel { border-radius: 16px; }
   .play-layout.stacked .history-list {
     min-height: 0;
     overflow-x: auto;
@@ -855,8 +839,6 @@
     grid-auto-flow: column;
     grid-auto-columns: minmax(176px, 210px);
     grid-template-columns: none;
-    gap: 7px;
-    padding: 0 1px 2px;
 
     touch-action: pan-x;
     scroll-snap-type: x proximity;
@@ -864,10 +846,8 @@
 
  padding-bottom: 9px; }
   .play-layout.stacked .history-item {
-    height: 58px;
     grid-template-columns: 30px 44px minmax(0, 1fr);
     gap: 7px;
-    padding: 5px;
 
  scroll-snap-align: start; }
   .play-layout.stacked .history-order { width: 29px; height: 29px; font-size: 13px; }
@@ -905,14 +885,6 @@
   }
 
   /* Title screen and header controls */
-  .title-screen {
-    min-height: calc(var(--vh) - clamp(36px, 7vw, 72px));
-    display: grid;
-    align-content: center;
-    justify-items: center;
-    gap: clamp(18px, 3.2vh, 34px);
-    padding: clamp(12px, 3vw, 26px) 0;
-  }
   .title-hero {
     color: #fff;
     text-align: center;
@@ -943,7 +915,6 @@
   .start-card .intro-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .start-card #sampleBtn { grid-column: 1 / -1; }
   .start-card .privacy-note { text-align: center; margin-bottom: 0 !important; }
 
   .main-button-slot {
@@ -976,18 +947,11 @@
     width: max-content;
     min-width: 148px;
     max-width: min(172px, calc(100vw - 24px));
-    padding: 5px;
     border-radius: 12px;
   }
   .menu-popover .menu-option {
-    border: 0;
-    padding: 9px 11px;
-    border-radius: 8px;
-    font-size: 14px;
     line-height: 1.25;
   }
-  .menu-popover .menu-option + .menu-option { margin-top: 3px; }
-  .menu-popover .menu-option:hover { background: #edf5f8; }
   .menu-popover .menu-option[hidden] { display: none; }
 
   .setting-label { font-weight: 900; }
@@ -1044,7 +1008,7 @@
   }
   .step-option.is-reached { color: var(--ink); }
   .step-option.is-reached .step-dot { border-color: var(--blue); background: var(--blue); }
-  .step-option[aria-checked="true"] .step-dot { transform: scale(1.2); box-shadow: 0 0 0 4px rgba(59,130,180,.16); }
+  .step-option[aria-checked="true"] .step-dot { transform: scale(1.2); }
   .step-option:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; border-radius: 10px; }
   .settings-actions { justify-content: space-between; }
 
@@ -1156,12 +1120,9 @@
   .setting-toggle .toggle-copy small {
     min-height: 0;
   }
-
-  .reset-modal-box { width: min(680px, 94vw); }
   .reset-options {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
   }
   .reset-option {
     min-width: 0;
@@ -1176,8 +1137,6 @@
     cursor: pointer;
     transition: border-color .16s, background .16s, transform .08s, box-shadow .16s;
     border: 0;
-    background: var(--button-secondary-bg);
-    color: var(--button-secondary-text);
     box-shadow: none;
   }
 
@@ -1221,13 +1180,11 @@
   .reset-option.destructive .reset-option-title {
     color: var(--button-danger-text);
   }
-  .reset-actions { justify-content: center; margin-top: 16px; }
-  .reset-actions .button { min-width: 130px; }
+  .reset-actions { justify-content: center; }
   .confirm-text:empty { display: none; }
 
   .confirm-modal-box {
     position: relative;
-    width: min(440px, 94vw);
     overflow: visible;
     padding: clamp(26px, 5vw, 36px);
   }
@@ -1271,7 +1228,6 @@
     text-wrap: wrap;
   }
   .confirm-title.compact {
-    font-size: clamp(18px, 4.2vw, 22px);
     white-space: nowrap;
   }
   .confirm-title.single-line {
@@ -1302,14 +1258,10 @@
     width: 100%;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin-top: 4px;
   }
   .confirm-actions .button {
     width: 100%;
     min-width: 0;
-    min-height: 50px;
-    padding-inline: 12px;
   }
   @media (max-width: 360px) {
     .confirm-modal-box { padding: 24px 18px 20px; }
@@ -1338,10 +1290,6 @@
     .reset-option-icon { width: 48px; height: 48px; border-radius: 14px; }
     .reset-option-icon svg { width: 27px; height: 27px; }
   }
-
-  .history-list::-webkit-scrollbar { height: 7px; width: 7px; }
-  .history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.42); border-radius: 999px; }
-  .history-list::-webkit-scrollbar-track { background: transparent; }
   @media (pointer: coarse) {
     .history-list { scrollbar-width: none; }
     .history-list::-webkit-scrollbar { display: none; }
@@ -1357,17 +1305,13 @@
     width: 100%;
     display: grid;
     justify-items: center;
-    gap: 6px;
   }
 
   /* Progress display and compact-height layout */
   .progress-panel {
     width: min(520px, 88vw);
-    padding: 9px 14px 10px;
     border: 1px solid rgba(255,255,255,.22);
     border-radius: 13px;
-    background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.08));
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
     color: rgba(255,255,255,.94);
   }
   .current-name + .progress-panel { margin-top: 0; }
@@ -1375,21 +1319,14 @@
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 18px;
-    min-height: 22px;
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: .025em;
   }
-  #orderStatus { color: #fff; }
-  #remainingStatus { color: rgba(255,255,255,.74); white-space: nowrap; }
+  #remainingStatus { white-space: nowrap; }
   .progress-track {
     position: relative;
-    height: 5px;
-    margin-top: 7px;
     overflow: hidden;
     border-radius: 999px;
-    background: rgba(255,255,255,.18);
   }
   .progress-fill {
     display: block;
@@ -1397,10 +1334,7 @@
     height: 100%;
     border-radius: inherit;
     background: linear-gradient(90deg, #f08a64, var(--accent));
-    box-shadow: 0 0 10px rgba(233,107,76,.34);
     transition-property: width;
-    transition-duration: .36s;
-    transition-timing-function: ease;
   }
   .progress-panel.is-complete .progress-fill {
     background: linear-gradient(90deg, var(--accent), #f2c94c);
@@ -1418,7 +1352,6 @@
     min-height: 0;
     overflow: visible;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto 126px;
     gap: 10px;
     padding: 0 8px max(10px, env(safe-area-inset-bottom));
   }
@@ -1439,9 +1372,6 @@
   .roulette-view.scroll-mode .main-button-slot {
     min-height: 84px;
     padding-bottom: 18px;
-  }
-  .roulette-view.scroll-mode .history-panel {
-    min-height: 126px;
   }
 
   @media (max-width: 380px) {
@@ -1515,7 +1445,6 @@
   }
   .settings-group-title {
     margin: 0;
-    color: var(--blue-dark);
     font-size: 14px;
     line-height: 1.3;
     font-weight: 900;
@@ -1675,8 +1604,6 @@
   .button:hover {
     filter: none;
   }
-
-  .primary:hover { background: var(--button-primary-hover); }
   .secondary {
     border: 0;
     background: var(--button-secondary-bg);
@@ -1712,14 +1639,12 @@
   .reset-option:hover {
     border-color: var(--blue);
     border: 0;
-    background: var(--button-secondary-hover);
     box-shadow: none;
   }
 
   .reset-option.destructive {
     border-color: #eccaca;
     border: 0;
-    background: var(--button-danger-bg);
     color: var(--button-danger-text);
   }
 
@@ -1732,25 +1657,6 @@
     justify-content: flex-end;
     flex-wrap: wrap;
     gap: 10px;
-  }
-  .participant-name-setting {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 6px 8px 6px 14px;
-    border-radius: 999px;
-    background: var(--button-neutral-bg);
-  }
-  .participant-name-setting-label {
-    font-weight: 700;
-    line-height: 1.3;
-  }
-  .participant-card.names-hidden .participant-media {
-    margin-bottom: 0;
-  }
-  #editorSection.names-hidden .participant-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
   .roulette-view.names-hidden .current-name {
     display: none;
@@ -1811,22 +1717,6 @@
   }
 
   /* v5 semantic UI system and iPad layout */
-  :root {
-    --action-blue: #2f78a5;
-    --action-blue-hover: #28698f;
-    --action-blue-soft: #e2f0f7;
-    --action-blue-soft-hover: #d3e8f3;
-    --choice-blue: #397faa;
-    --choice-blue-hover: #307196;
-    --roulette-soft: #fbe6de;
-    --danger-soft-v5: #f7e4e4;
-    --neutral-surface: #edf2f5;
-    --neutral-hover: #e1e9ed;
-    --disabled-bg: #d9dfe3;
-    --disabled-text: #7d8992;
-    --roulette-radius: 28px;
-    --roulette-border: 14px;
-  }
 
   /* Color carries meaning; size, placement and contrast carry hierarchy. */
   .primary {
@@ -1881,7 +1771,6 @@
     background: var(--action-blue-soft);
     color: var(--action-blue-hover);
   }
-  .add-action:hover { background: var(--action-blue-soft-hover); }
   .neutral-action, .ghost, .warning-soft {
     background: var(--neutral-surface);
     color: var(--ink);
@@ -1909,22 +1798,11 @@
     justify-self: center;
   }
   .sample-action {
-    min-height: 44px;
     width: fit-content;
-    padding: 10px 16px;
-    background: transparent;
-    color: #587080;
-    font-size: 15px;
-    box-shadow: none;
   }
   .sample-action::before {
-    content: "▶";
     margin-right: .45em;
     font-size: .8em;
-  }
-  .sample-action:hover {
-    background: rgba(47,120,165,.08);
-    color: var(--blue-dark);
   }
   .privacy-note {
     display: flex;
@@ -2019,15 +1897,6 @@
   }
 
   /* Dialog actions use a shared rhythm and equal targets. */
-  .confirm-actions {
-    gap: 16px;
-  }
-  .confirm-actions .button {
-    min-height: 52px;
-  }
-  .reset-options {
-    gap: 20px;
-  }
   .reset-option {
     background: #f7f9fa;
     color: var(--ink);
@@ -2045,13 +1914,8 @@
   .reset-option.destructive {
     background: var(--danger-soft-v5);
   }
-  .reset-actions {
-    margin-top: 22px;
-  }
   .reset-actions .button {
     width: min(220px, 100%);
-    min-width: 0;
-    min-height: 52px;
   }
   .confirm-icon.warning {
     background: #eef7fb;
@@ -2062,12 +1926,6 @@
   .result-button:not(:disabled) {
     background: rgba(255,255,255,.9);
     color: var(--navy);
-  }
-  .result-button:not(:disabled):hover { background: #fff; }
-  .result-button:disabled {
-    background: rgba(220,226,230,.7);
-    color: rgba(62,78,90,.72);
-    opacity: .7;
   }
 
   @media (max-width: 620px) {
@@ -2124,24 +1982,12 @@
     .sample-action { min-height: 36px; padding-block: 6px; }
     .privacy-note { margin-top: 10px !important; font-size: 12px; line-height: 1.4 !important; }
   }
-
-
-  /* v5.2 — title cover, empty editor entry points, balanced SVGs and subtle motion */
   .setup-shell { width: min(1040px, 100%); }
 
   .title-screen {
-    min-height: calc(var(--vh) - clamp(36px, 7vw, 72px));
     display: grid;
-    grid-template-rows: minmax(0, auto) auto;
-    align-content: center;
-    justify-items: center;
-    gap: clamp(30px, 5vh, 56px);
-    padding: clamp(18px, 4vh, 44px) 0;
   }
   .title-brand {
-    display: grid;
-    justify-items: center;
-    gap: clamp(8px, 1.6vh, 18px);
     text-align: center;
   }
   .title-wheel-icon {
@@ -2158,46 +2004,15 @@
   .title-wheel-rim { fill: none; stroke: var(--navy); stroke-width: 10; }
   .title-wheel-center-ring { fill: var(--cream); stroke: var(--navy); stroke-width: 6; }
   .title-wheel-center { fill: var(--accent); stroke: #6b3426; stroke-width: 3; }
-  .title-brand h1 {
-    margin: 0;
-    color: #f2874f;
-    font-size: clamp(38px, 6vw, 72px);
-    line-height: 1;
-    font-weight: 900;
-    letter-spacing: .045em;
-    white-space: nowrap;
-    -webkit-text-stroke: clamp(1px, .13vw, 2px) #633727;
-    paint-order: stroke fill;
-    text-shadow:
-      0 3px 0 rgba(255,255,255,.92),
-      0 8px 20px rgba(5,24,39,.3);
-  }
   .title-actions {
-    width: min(510px, 92vw);
     display: grid;
     justify-items: center;
-    gap: clamp(20px, 3vh, 30px);
   }
   .title-register-button {
-    width: 100%;
-    min-height: clamp(64px, 8.5vh, 78px);
-    display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
     gap: 18px;
-    padding: 15px 22px 15px 30px;
-    border: 1px solid rgba(255,255,255,.42);
-    border-radius: 20px;
-    background: linear-gradient(180deg, #4389b3, #2f78a5);
-    color: #fff;
-    box-shadow:
-      0 13px 26px rgba(6,31,49,.28),
-      inset 0 1px 0 rgba(255,255,255,.28);
-    font-size: clamp(19px, 2.4vw, 24px);
-    font-weight: 900;
-    letter-spacing: .035em;
   }
-  .title-register-button:hover { background: linear-gradient(180deg, #4a91bb, #347faa); }
   .title-register-button svg {
     width: 28px;
     height: 28px;
@@ -2209,22 +2024,11 @@
     opacity: .94;
   }
   .sample-action {
-    min-height: 38px;
-    padding: 7px 12px;
-    border-radius: 10px;
-    background: transparent;
-    color: rgba(255,255,255,.66);
-    box-shadow: none;
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: underline;
     text-decoration-color: rgba(255,255,255,.28);
     text-underline-offset: 4px;
   }
   .sample-action::before { content: none; }
   .sample-action:hover {
-    background: rgba(255,255,255,.07);
-    color: rgba(255,255,255,.9);
     text-decoration-color: currentColor;
   }
 
@@ -2309,7 +2113,7 @@
     font-weight: 900;
     letter-spacing: .025em;
   }
-  .editor-panel.is-empty .editor-privacy-note { justify-content: center; text-align: center; margin-bottom: clamp(22px, 4vh, 36px); }
+  .editor-panel.is-empty .editor-privacy-note { margin-bottom: clamp(22px, 4vh, 36px); }
   .editor-panel.is-empty .participant-grid { min-height: 0; }
   .editor-panel.is-empty .start-row { margin-top: 0; }
 
@@ -2349,8 +2153,6 @@
     background-size: 100% 22px, 100% 22px, 100% 8px, 100% 8px;
     background-attachment: local, local, scroll, scroll;
   }
-
-  .reset-options { gap: 16px; }
   .reset-option,
   .reset-option.destructive,
   .restart-option,
@@ -2375,16 +2177,11 @@
     color: var(--navy);
   }
   .reset-option .reset-option-icon svg {
-    width: 30px;
-    height: 30px;
     fill: none;
     stroke: currentColor;
-    stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  .reset-option-title,
-  .reset-option.destructive .reset-option-title { color: var(--ink); }
 
   @media (max-width: 620px) {
     .title-screen { align-content: center; padding-top: 10px; gap: clamp(24px, 4vh, 36px); }
@@ -2449,44 +2246,9 @@
   .reduce-ui-motion .toast.toast-entering,
   .reduce-ui-motion .toast.toast-leaving { animation-duration: 45ms !important; transform: none !important; }
 
-
-
-  /* v5.3 — refined title, stable editor actions, aligned iconography and dialogs */
-  :root {
-    --reset-blue: #e4f2f9;
-    --reset-blue-hover: #d6eaf5;
-    --reset-blue-ink: #28698f;
-    --reset-red: #fae9e9;
-    --reset-red-hover: #f5dddd;
-  }
-
   /* Title: abstract selection window rather than a literal wheel or gambling machine. */
-  .title-screen {
-    min-height: calc(var(--vh) - clamp(28px, 5vw, 58px));
-    grid-template-rows: auto auto;
-    align-content: center;
-    gap: clamp(24px, 4.5vh, 44px);
-    padding: clamp(8px, 2.2vw, 22px) 0;
-  }
-  .title-brand {
-    display: grid;
-    justify-items: center;
-    align-content: center;
-    gap: clamp(9px, 1.8vh, 18px);
-  }
-  .title-selector-icon {
-    width: clamp(205px, 35vmin, 330px);
-    aspect-ratio: 220 / 240;
-    filter: drop-shadow(0 18px 22px rgba(3, 20, 34, .25));
-  }
   .title-selector-icon svg { width: 100%; height: 100%; overflow: visible; }
   .title-selector-shadow { fill: rgba(2, 17, 29, .25); }
-  .title-selector-shell {
-    fill: #fff8e9;
-    stroke: rgba(255,255,255,.8);
-    stroke-width: 3;
-  }
-  .title-selector-window { fill: #17324d; stroke: #0f2538; stroke-width: 4; }
   .title-selector-card rect { stroke-width: 2.2; }
   .title-selector-card circle { stroke-width: 2; }
   .title-selector-card path {
@@ -2504,52 +2266,30 @@
   .title-selector-dot { fill: #f2874f; }
   .title-brand h1 {
     margin: 0;
-    color: #f2874f;
-    font-size: clamp(32px, 6vw, 68px);
     line-height: 1.06;
     font-weight: 900;
-    letter-spacing: .035em;
     white-space: nowrap;
     -webkit-text-stroke: 0;
     paint-order: normal;
-    text-shadow: 0 6px 18px rgba(4, 23, 38, .3);
-  }
-  .title-actions {
-    width: min(390px, 86vw);
-    gap: clamp(22px, 3.4vh, 32px);
   }
   .title-register-button {
-    width: min(360px, 100%);
-    min-height: clamp(76px, 9.5vh, 88px);
     display: grid;
     place-items: center;
-    padding: 19px 28px;
     border: 1px solid rgba(255,255,255,.38);
-    border-radius: 22px;
-    background: linear-gradient(180deg, #448db8 0%, #2f78a5 100%);
     color: #fff;
-    box-shadow: 0 12px 24px rgba(6,31,49,.25), inset 0 1px 0 rgba(255,255,255,.25);
-    font-size: clamp(19px, 2.5vw, 23px);
     font-weight: 900;
-    letter-spacing: .035em;
     text-align: center;
   }
   .title-register-button:hover { background: linear-gradient(180deg, #4a94be 0%, #347fab 100%); }
   .title-register-button svg { display: none; }
   .sample-action {
-    min-height: 30px;
-    padding: 4px 8px;
     border-radius: 8px;
     background: transparent;
-    color: rgba(255,255,255,.48);
     box-shadow: none;
-    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
   }
   .sample-action:hover {
-    background: rgba(255,255,255,.05);
-    color: rgba(255,255,255,.78);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
@@ -2614,43 +2354,22 @@
   .editor-privacy-note,
   .start-row small.editor-note {
     display: block;
-    width: fit-content;
     max-width: 100%;
-    margin-inline: auto;
-    padding-inline: 10px 4px;
     color: var(--muted);
     font-size: clamp(12px, 1.45vw, 13px);
     font-weight: 700;
     line-height: 1.55;
-    text-align: left;
   }
   .editor-privacy-note {
     margin-top: 0;
-    margin-bottom: 20px;
     white-space: normal;
   }
-  .registration-notes span { display: block; }
   .registration-notes span + span { margin-top: 2px; }
 
   /* Card geometry never changes merely because names are hidden. */
   #editorSection.names-hidden .participant-grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
-  .participant-card.names-hidden .participant-media { margin-bottom: 10px; }
-  .participant-card.names-hidden::after {
-    content: "";
-    display: block;
-    height: 43px;
-  }
-
-  .history-head h2 { padding-left: 8px; }
 
   /* Top undo icon uses the same optical box as the other controls. */
-  #undoBtn svg {
-    width: 21px;
-    height: 21px;
-    overflow: visible;
-    transform: translateY(-.5px);
-  }
-  #undoBtn svg path { stroke-width: 1.85; }
 
   /* Reset choices are icon-led; the destination with full data loss is softly red. */
   .reset-modal-box { width: min(720px, 94vw); }
@@ -2706,11 +2425,6 @@
   }
 
   /* Every confirmation presents two distinct, comfortable targets. */
-  .confirm-actions { gap: 18px; }
-  .confirm-actions .button { min-height: 52px; }
-  .confirm-modal-box.responsive-message-box {
-    width: min(570px, calc(100vw - 24px));
-  }
   .confirm-text.responsive-message {
     max-width: none;
     white-space: nowrap;
@@ -2718,7 +2432,6 @@
     font-size: clamp(12.5px, 2.2vw, 14px);
   }
   .confirm-text.responsive-message span { display: inline; }
-  .confirm-text.responsive-message span + span::before { content: " "; }
 
   @media (max-width: 620px) {
     .setup-view { padding-inline: 10px; }
@@ -2843,16 +2556,10 @@
     .editor-action-label,
     .editor-panel.is-empty .editor-action-label { font-size: 18px; }
   }
-
-
-
-  /* Final v5.3 optical fixes */
   .setup-view {
     height: var(--vh);
     min-height: 0;
   }
-  .editor-privacy-note span { display: inline; }
-  .editor-privacy-note span + span::before { content: ""; }
   @media (max-width: 620px) {
     .editor-privacy-note span { display: block; }
   }
@@ -2863,25 +2570,7 @@
     .editor-privacy-note span { width: 100%; }
   }
 
-
-  /* v5.4 — visual-system consolidation, stable editor controls and compact landscape */
-  :root {
-    --action-radius: 18px;
-    --action-shadow-blue: 0 6px 0 #275f82, 0 12px 24px rgba(5,31,50,.22), inset 0 1px 0 rgba(255,255,255,.22);
-    --action-shadow-orange: 0 6px 0 #a94731, 0 12px 24px rgba(4,20,32,.26), inset 0 1px 0 rgba(255,255,255,.2);
-  }
-
   /* Title logo: a real selection window with photo-like participant tiles. */
-  .title-screen {
-    gap: clamp(18px, 3.6vh, 34px);
-  }
-  .title-brand {
-    gap: 0;
-  }
-  .title-selector-icon {
-    width: clamp(214px, 36vmin, 336px);
-    aspect-ratio: 1 / 1;
-  }
   .title-selector-shell {
     fill: #fff8e9;
     stroke: rgba(255,255,255,.8);
@@ -2908,25 +2597,13 @@
   .title-brand h1 {
     position: relative;
     z-index: 2;
-    margin-top: clamp(-24px, -3.2vmin, -15px);
-    padding: .08em .32em .14em;
-    color: #f2874f;
-    background: linear-gradient(180deg, rgba(23,50,77,.96), rgba(23,50,77,.88));
-    border-radius: 14px;
     font-size: clamp(31px, 5.8vw, 65px);
     letter-spacing: .025em;
-    box-shadow: 0 8px 18px rgba(3,20,34,.22);
     text-shadow: none;
   }
-  .title-actions { width: min(350px, 84vw); gap: clamp(22px, 3.4vh, 30px); }
   .title-register-button {
-    width: min(310px, 100%);
-    min-height: clamp(76px, 9.8vh, 88px);
-    padding: 20px 28px;
     border-radius: var(--action-radius);
-    background: linear-gradient(180deg, #4b94bd 0%, #347ca8 100%);
     box-shadow: var(--action-shadow-blue);
-    font-size: clamp(19px, 2.5vw, 22px);
     letter-spacing: .025em;
   }
   .title-register-button:active {
@@ -2939,25 +2616,10 @@
   .sample-action:active {
     text-decoration: none;
   }
-  .sample-action:hover { background: rgba(255,255,255,.055); color: rgba(255,255,255,.76); }
+  .sample-action:hover { background: rgba(255,255,255,.055); }
 
   /* Editor alignment and stable controls. */
   .editor-head h2 { padding-left: clamp(8px, 1.4vw, 14px); }
-  .participant-name-setting {
-    min-height: 46px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 13px 7px 9px;
-    border: 1px solid #d5e0e7;
-    border-radius: 14px;
-    background: #f5f8fa;
-    cursor: pointer;
-    user-select: none;
-    transition: background .15s, border-color .15s, transform .08s;
-  }
-  .participant-name-setting:hover { background: #edf4f7; border-color: #bfd1dc; }
-  .participant-name-setting:active { transform: translateY(1px); }
   .participant-name-checkbox {
     position: absolute;
     inline-size: 1px;
@@ -2998,7 +2660,6 @@
     outline: var(--focus-ring-width) solid var(--focus-ring);
     outline-offset: 3px;
   }
-  .participant-name-setting-label { font-size: 14px; white-space: nowrap; }
 
   .editor-note,
   .editor-privacy-note,
@@ -3018,8 +2679,6 @@
     color: #657789;
     border-color: transparent;
   }
-  .participant-remove:hover { background: #e2e9ee; color: #43586b; }
-  .participant-card.names-hidden .participant-media { margin-bottom: 0; }
   .participant-card.names-hidden::after { display: none; height: 0; content: none; }
 
   /* Shared primary-action craftsmanship across title, editor and roulette. */
@@ -3043,36 +2702,13 @@
     box-shadow: 0 5px 0 #66737e, 0 9px 18px rgba(23,50,77,.16);
     color: rgba(255,255,255,.88);
   }
-  .main-button {
-    min-width: min(340px, 76vw);
-    min-height: clamp(68px, 9vh, 80px);
-    padding: 16px 34px;
-    border-radius: 20px;
-    background: linear-gradient(180deg, #f0805f 0%, #d95f43 100%);
-    box-shadow: var(--action-shadow-orange);
-    font-size: clamp(23px, 3.5vw, 31px);
-    letter-spacing: .06em;
-    transition: transform .08s, box-shadow .08s, filter .15s;
-  }
-  .main-button:hover { filter: brightness(1.035); }
   .main-button:active {
     transform: translateY(3px) scale(.992);
     box-shadow: 0 3px 0 #a94731, 0 7px 15px rgba(4,20,32,.23);
   }
-  .main-button.complete {
-    background: linear-gradient(180deg, #4b94bd 0%, #347ca8 100%);
-    box-shadow: var(--action-shadow-blue);
-  }
 
   /* Unified icon optics. */
   .top-button svg { stroke-width: 2; }
-  #undoBtn svg {
-    width: 25px;
-    height: 25px;
-    transform: none;
-    overflow: visible;
-  }
-  #undoBtn svg path { stroke-width: 2; }
   .reset-option .reset-option-icon svg,
   .restart-option .reset-option-icon svg {
     width: 34px;
@@ -3123,23 +2759,11 @@
     .title-actions { width: min(330px, 100%); gap: 13px; }
     .title-register-button { width: min(290px, 100%); min-height: 66px; }
   }
-
-
-  /* v5.4 final optical adjustments */
   .setup-view.showing-title { overflow: hidden; }
   @media (max-width: 620px) {
     .participant-name-setting { justify-content: flex-start; }
     .editor-privacy-note span { display: block; }
     .title-register-button { width: min(290px, 82vw); }
-  }
-
-
-
-  /* v5.5 — segmented name display, held-touch activation and final optical unification */
-  :root {
-    --dialog-action-height: 54px;
-    --neutral-button-text: #405361;
-    --signature-radius: 26px;
   }
 
   /* Signature actions share one distinct, softly rounded construction. */
@@ -3164,12 +2788,6 @@
       inset 0 1px 0 rgba(255,255,255,.16);
   }
   .title-register-button {
-    background: linear-gradient(180deg, #4b94bd 0%, #347ca8 100%);
-  }
-  .main-button {
-    background: linear-gradient(180deg, #f0805f 0%, #d95f43 100%);
-  }
-  .main-button.complete {
     background: linear-gradient(180deg, #4b94bd 0%, #347ca8 100%);
   }
 
@@ -3212,30 +2830,9 @@
 
   /* Explicit two-choice participant-name control. */
   .participant-name-setting {
-    min-height: 46px;
-    display: inline-flex;
-    align-items: center;
-    gap: 11px;
-    padding: 5px 6px 5px 13px;
-    border: 1px solid #d5e0e7;
-    border-radius: 15px;
-    background: #f5f8fa;
-    cursor: default;
-    user-select: none;
     transition: background .14s ease, border-color .14s ease;
   }
-  .participant-name-setting:hover {
-    background: #f5f8fa;
-    border-color: #d5e0e7;
-  }
   .participant-name-setting:active { transform: none; }
-  .participant-name-setting-label {
-    color: var(--neutral-button-text);
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.3;
-    white-space: nowrap;
-  }
   .participant-name-segments {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3313,19 +2910,11 @@
   }
 
   /* Undo is optically centered around its circular body, not its arrow tip. */
-  #undoBtn svg {
-    width: 21px;
-    height: 21px;
-    overflow: visible;
-    transform: translateX(1.4px);
-  }
-  #undoBtn svg path { stroke-width: 2; }
 
   /* On one line, the responsive sentence is true Japanese text with no inserted gap. */
   .confirm-text.responsive-message span + span::before { content: ""; }
 
   /* Square title frame, filled people, and a larger translucent title plate. */
-  .title-selector-icon { aspect-ratio: 1 / 1; }
   .title-photo-card circle,
   .title-photo-card path { stroke: none; }
   .title-photo-muted circle,
@@ -3346,7 +2935,6 @@
 
   /* Touch and pen presses stay bound to the button where they began. */
   :where(button:not(.step-option), [role="button"]:not(button)) {
-    touch-action: none;
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
@@ -3428,60 +3016,27 @@
     transition: opacity 45ms linear !important;
   }
   .reduce-ui-motion .participant-name-option { transition-duration: 45ms !important; }
-
-
-  /* v5.6 — shared roulette title frame, switch-based name control and optical alignment */
-  .title-brand {
-    gap: 0;
-  }
   .title-selector-icon {
     position: relative;
-    width: clamp(214px, 36vmin, 336px);
-    aspect-ratio: 1 / 1;
     overflow: hidden;
-    border: var(--roulette-border) solid var(--gold);
-    border-radius: var(--roulette-radius);
-    background: var(--cream);
-    box-shadow: 0 10px 30px rgba(0,0,0,.30), inset 0 0 0 4px rgba(0,0,0,.12);
     filter: none;
   }
   .title-selector-window {
     position: absolute;
-    inset: 0;
     overflow: hidden;
-    border-radius: calc(var(--roulette-radius) - var(--roulette-border));
-    background: var(--cream);
   }
   .title-selector-track {
     position: absolute;
-    inset: -54px 0 54px;
-    display: grid;
     justify-items: center;
     align-content: start;
-    gap: 10px;
     padding-top: 0;
-    overflow: hidden;
   }
   .title-photo-card {
     position: relative;
     display: block;
     flex: none;
-    border: 2px solid rgba(23,50,77,.16);
-    box-shadow: 0 5px 12px rgba(11,34,53,.13);
-  }
-  .title-photo-muted {
-    width: 43%;
-    aspect-ratio: 1.12 / 1;
-    border-radius: 18px;
-    background: #dfe9ee;
-    opacity: .72;
   }
   .title-photo-active {
-    width: 56%;
-    aspect-ratio: 1.08 / 1;
-    border-radius: 22px;
-    background: var(--accent);
-    border-color: rgba(189,77,53,.35);
     opacity: 1;
   }
   .title-person-head,
@@ -3493,16 +3048,8 @@
     background: var(--cream);
   }
   .title-person-head {
-    top: 22%;
-    width: 27%;
     aspect-ratio: 1;
     border-radius: 50%;
-  }
-  .title-person-body {
-    bottom: 14%;
-    width: 58%;
-    height: 38%;
-    border-radius: 999px 999px 28% 28%;
   }
   .title-photo-muted .title-person-head,
   .title-photo-muted .title-person-body {
@@ -3567,17 +3114,6 @@
   }
   .participant-name-setting:focus-within .toggle-switch {
     outline: none;
-  }
-
-  #undoBtn svg {
-    width: 22px;
-    height: 22px;
-    overflow: visible;
-    transform: none;
-  }
-  #undoBtn svg path {
-    stroke-width: 2;
-    vector-effect: non-scaling-stroke;
   }
 
   @media (max-width: 620px) {
@@ -3645,9 +3181,6 @@
     transition-duration: 45ms !important;
   }
 
-
-  /* v5.7 — input-modality focus, refined title mark and responsive action balance */
-
   /* Yellow focus is reserved for keyboard navigation. Pointer and touch focus remain visually quiet. */
   :root:not(.keyboard-navigation) :where(
     button,
@@ -3687,24 +3220,15 @@
   .main-button {
     --signature-top: #f0805f;
     --signature-bottom: #d95f43;
-    --signature-edge: #a94731;
-    background: linear-gradient(180deg, var(--signature-top), var(--signature-bottom));
-    border-radius: var(--signature-radius);
   }
   .main-button.complete {
     --signature-top: #4b94bd;
     --signature-bottom: #347ca8;
-    --signature-edge: #275f82;
-    background: linear-gradient(180deg, var(--signature-top), var(--signature-bottom));
   }
   .main-button:active,
   .main-button.press-held.press-inside {
     background: linear-gradient(180deg, var(--signature-top), var(--signature-bottom));
     border-radius: var(--signature-radius);
-    box-shadow:
-      0 3px 0 var(--signature-edge),
-      0 7px 15px rgba(4,20,32,.22),
-      inset 0 1px 0 rgba(255,255,255,.16);
     filter: brightness(.92);
     transform: translateY(3px) scale(.992);
   }
@@ -3712,10 +3236,6 @@
     background: linear-gradient(180deg, var(--signature-top), var(--signature-bottom));
     border: 1px solid rgba(255,255,255,.24);
     border-radius: var(--signature-radius);
-    box-shadow:
-      0 3px 0 var(--signature-edge),
-      0 7px 15px rgba(4,20,32,.18),
-      inset 0 1px 0 rgba(255,255,255,.12);
     color: rgba(255,255,255,.76);
     cursor: not-allowed;
     filter: brightness(.76) saturate(.72);
@@ -3724,19 +3244,6 @@
   }
 
   /* State colors switch immediately so a blue reset button never retains the orange start edge. */
-  .main-button {
-    box-shadow:
-      0 6px 0 #a94731,
-      0 12px 24px rgba(4,20,32,.26),
-      inset 0 1px 0 rgba(255,255,255,.2);
-    transition: transform .08s, filter .15s;
-  }
-  .main-button.complete {
-    box-shadow:
-      0 6px 0 #275f82,
-      0 12px 24px rgba(5,31,50,.22),
-      inset 0 1px 0 rgba(255,255,255,.22);
-  }
   .main-button:active,
   .main-button.press-held.press-inside {
     box-shadow:
@@ -3766,30 +3273,9 @@
   }
 
   /* The undo arrow is a rounded chevron attached to an optically centered circular return path. */
-  #undoBtn svg {
-    width: 22px;
-    height: 22px;
-    overflow: visible;
-    transform: none;
-  }
-  #undoBtn svg path {
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
-  }
 
   /* Title mark: larger roulette frame, calmer depth and a title placed beneath the frame. */
-  .title-screen {
-    gap: clamp(22px, 4vh, 38px);
-  }
-  .title-brand {
-    display: grid;
-    justify-items: center;
-    gap: 0;
-  }
   .title-selector-icon {
-    width: clamp(286px, 45vmin, 424px);
     aspect-ratio: 1 / 1;
     border: var(--roulette-border) solid var(--gold);
     border-radius: var(--roulette-radius);
@@ -3870,18 +3356,12 @@
     position: static;
     z-index: auto;
     min-height: 0;
-    margin: clamp(12px, 2.1vh, 20px) 0 0;
     padding: 0;
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: #f2874f;
     box-shadow: none;
-    font-size: clamp(38px, 6.2vw, 70px);
-    line-height: 1.04;
-    letter-spacing: .035em;
     white-space: nowrap;
-    text-shadow: 0 6px 18px rgba(4,23,38,.28);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -3954,9 +3434,6 @@
     }
   }
 
-
-  /* v5.8 — stable disabled feedback, v5.6 signature action, quiet results and unified title composition */
-
   /* A pseudo-disabled editor action may still explain the minimum count, but it never borrows the active blue press state. */
   #beginBtn.pseudo-disabled,
   #beginBtn.pseudo-disabled:hover,
@@ -3970,8 +3447,6 @@
     filter: none;
     transform: none;
   }
-
-  /* Restore the v5.6 signature-button silhouette and apply that same construction to stopping and reset states. */
   .main-button {
     min-width: min(340px, 76vw);
     min-height: clamp(68px, 9vh, 80px);
@@ -3997,16 +3472,6 @@
       inset 0 1px 0 rgba(255,255,255,.22);
   }
   .main-button:hover { filter: brightness(1.035); }
-  .main-button:active,
-  .main-button.press-held.press-inside,
-  .main-button.complete:active,
-  .main-button.complete.press-held.press-inside {
-    transform: translateY(3px) scale(.992);
-    box-shadow:
-      0 3px 0 rgba(18,48,68,.48),
-      0 7px 15px rgba(4,20,32,.21),
-      inset 0 1px 0 rgba(255,255,255,.16);
-  }
   .main-button:disabled,
   .main-button.complete:disabled {
     border-color: rgba(255,255,255,.24);
@@ -4060,7 +3525,6 @@
     width: 22px;
     height: 22px;
     overflow: visible;
-    transform: translateX(.4px);
   }
   #undoBtn svg path {
     stroke-width: 2;
@@ -4090,7 +3554,6 @@
   .title-brand > h1 {
     margin: clamp(12px, 2vh, 18px) 0 0;
     color: #fff;
-    font-size: clamp(36px, 5.8vw, 64px);
     line-height: 1.04;
     letter-spacing: .035em;
     text-shadow: 0 6px 18px rgba(4,23,38,.34);
@@ -4172,9 +3635,6 @@
     }
   }
 
-
-  /* v5.9 — title spacing, 3:7 editor composition, result proximity and shared subtle scrollbars */
-
   /* The title uses one visual size in both orientations. Keep it outside the icon shadow. */
   .title-brand > h1 {
     margin-top: clamp(24px, 3.2vh, 30px);
@@ -4240,9 +3700,6 @@
   }
 
   /* Keep the approved undo drawing; centre horizontally from the return arc while preserving the shared vertical optical line. */
-  #undoBtn svg {
-    transform: translateX(-.5px);
-  }
 
   /* Landscape add cards use a clear 3:7 split: icon centred on the left, text left-aligned on the right. */
   @media (orientation: landscape) and (min-width: 621px) {
@@ -4304,13 +3761,7 @@
     }
   }
 
-
-  /* v5.10 — touch isolation, stable press recovery and smoother selection feedback */
-
   /* Centre the approved undo drawing on the return arc itself. */
-  #undoBtn svg {
-    transform: translate(-.5px, -3.75px);
-  }
 
   /* Give the compact undo confirmation the same visual hierarchy as other short confirmations. */
   .confirm-title.compact {
@@ -4380,13 +3831,7 @@
     }
   }
 
-
-  /* v5.11 — optical undo alignment, consistent pressed feedback, card rhythm and shared scrollbars */
-
   /* Keep the approved undo drawing and lower it only enough to centre the return arc optically. */
-  #undoBtn svg {
-    transform: translate(-.5px, -3px);
-  }
 
   /* The editor start action and the blue reset state visibly darken while pressed. */
   #beginBtn:not(.pseudo-disabled):active,
@@ -4423,12 +3868,6 @@
 
 
   /* One scrollbar geometry is shared by every scrollable surface in the app. */
-  :root {
-    --app-scrollbar-size: 6px;
-    --app-scrollbar-radius: 999px;
-    --app-scrollbar-thumb: rgba(101,119,137,.34);
-    --app-scrollbar-thumb-hover: rgba(101,119,137,.50);
-  }
   :where(
     .setup-view,
     .roulette-view.scroll-mode,
@@ -4447,43 +3886,8 @@
     .settings-modal-body,
     .history-list,
     .image-error-list
-  )::-webkit-scrollbar {
-    width: var(--app-scrollbar-size);
-    height: var(--app-scrollbar-size);
-  }
-  :where(
-    .setup-view,
-    .roulette-view.scroll-mode,
-    .modal-body,
-    .settings-modal-body,
-    .history-list,
-    .image-error-list
-  )::-webkit-scrollbar-thumb {
-    min-width: 18px;
-    min-height: 18px;
-    border-radius: var(--app-scrollbar-radius);
-    background: var(--surface-scrollbar-thumb, var(--app-scrollbar-thumb));
-  }
-  :where(
-    .setup-view,
-    .roulette-view.scroll-mode,
-    .modal-body,
-    .settings-modal-body,
-    .history-list,
-    .image-error-list
   )::-webkit-scrollbar-thumb:hover {
     background: var(--surface-scrollbar-thumb-hover, var(--app-scrollbar-thumb-hover));
-  }
-  :where(
-    .setup-view,
-    .roulette-view.scroll-mode,
-    .modal-body,
-    .settings-modal-body,
-    .history-list,
-    .image-error-list
-  )::-webkit-scrollbar-track {
-    border-radius: var(--app-scrollbar-radius);
-    background: transparent;
   }
   :where(
     .setup-view,
@@ -4504,9 +3908,6 @@
     :root { --app-scrollbar-size: 5px; }
   }
 
-
-  /* v5.12 — unified layout, fully rounded scrollbars, blended history edges and compositor-only selection emphasis */
-
   /* Preserve the approved undo path and lower its arc centre by another 0.75px. */
   #undoBtn svg {
     transform: translate(-.5px, -2.25px);
@@ -4514,11 +3915,9 @@
 
   /* The history viewport clips to its rounded inner edge; scrollable content fades into that edge without a shadow. */
   .history-list-wrap {
-    overflow: hidden;
     border-radius: 12px;
   }
   .history-list {
-    --history-edge-fade: 11px;
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-size: 100% 100%;
@@ -4550,10 +3949,6 @@
   }
 
   /* Use a slightly wider hit channel with a fully pill-shaped visible thumb on every scroll surface. */
-  :root {
-    --app-scrollbar-size: 8px;
-    --app-scrollbar-thumb-border: 2px;
-  }
   :where(
     .setup-view,
     .roulette-view.scroll-mode,
@@ -4562,9 +3957,7 @@
     .history-list,
     .image-error-list
   )::-webkit-scrollbar-thumb {
-    border: var(--app-scrollbar-thumb-border) solid transparent;
     border-radius: 999px;
-    background-clip: padding-box;
   }
   :where(
     .setup-view,
@@ -4579,12 +3972,8 @@
   @media (pointer: coarse) {
     :root {
       --app-scrollbar-size: 7px;
-      --app-scrollbar-thumb-border: 2px;
     }
   }
-
-
-  /* v5.13 — persistent stopping-state feedback and stable held results control */
 
   /* Disabled roulette actions remain visibly unavailable even when touch browsers latch :hover. */
   .main-button.stopping,
@@ -4635,9 +4024,6 @@
     transform: none;
   }
 
-
-  /* v5.14 — disabled result stability, square history viewport, visible pill scrollbars and annotation consistency */
-
   /* A disabled result control never enters a pressed visual state. */
   .result-button:disabled,
   .result-button:disabled:hover,
@@ -4669,10 +4055,6 @@
   }
 
   /* The scrollbar thumb itself, not the viewport, is a clearly visible pill. */
-  :root {
-    --app-scrollbar-size: 8px;
-    --app-scrollbar-thumb-border: 0px;
-  }
   :where(
     .setup-view,
     .roulette-view.scroll-mode,
@@ -4695,7 +4077,6 @@
     min-width: 22px;
     min-height: 22px;
     border: 0;
-    border-radius: 999px !important;
     background: var(--surface-scrollbar-thumb, var(--app-scrollbar-thumb));
     background-clip: border-box;
   }
@@ -4721,10 +4102,6 @@
   .confirm-modal-box.responsive-message-box .confirm-text {
     font-size: 14px !important;
   }
-
-
-
-  /* v5.15 — continuously blended history edges and Android scrollbar clarification */
 
   /*
     The history edge treatment is always present, but its edge opacity is updated
@@ -4782,9 +4159,6 @@
     border-radius: 9999px !important;
   }
 
-
-  /* v5.18 — restrained primary press, deterministic history auto-scroll and immediately scrollable results */
-
   /* Keep the signature action tactile, but reduce the depth of the press slightly. */
   .main-button:active,
   .main-button.press-held.press-inside,
@@ -4811,9 +4185,6 @@
   /* Programmatic history movement owns the viewport until it reaches the newest result. */
   .history-list.is-auto-scrolling {
     overflow: hidden !important;
-    touch-action: none !important;
-    overscroll-behavior: none !important;
-    cursor: progress;
   }
 
   /* Results should accept a vertical swipe immediately after opening on touch devices. */
@@ -4822,10 +4193,6 @@
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
-
-
-
-  /* v5.19 — immediate modal scrolling, native history easing, incremental history entry and touch-sequence isolation */
 
   /* Programmatic scrolling keeps the native compositor path; only direct user gestures are suppressed. */
   .history-list.is-auto-scrolling {
@@ -4863,15 +4230,8 @@
     filter: none;
   }
 
-
-
-  /* v5.20 — reliable result-grid swipes and shared scroll-edge cues */
-
   /* During roulette deceleration, pin the current history position without changing overflow geometry. */
   .history-list.is-scroll-captured {
-    touch-action: none !important;
-    overscroll-behavior: none !important;
-    scroll-behavior: auto !important;
     cursor: progress;
   }
 
@@ -4916,10 +4276,6 @@
     );
   }
 
-
-
-  /* v5.21 — deterministic result reset, native overscroll and direction-flexible scrolling */
-
   /* Every shared vertical scroll surface keeps the existing edge fade while using
      the browser's natural gesture arbitration and native end-of-scroll feedback. */
   .app-scroll-edge-surface {
@@ -4941,19 +4297,11 @@
     overflow: hidden !important;
     scroll-behavior: auto !important;
   }
-
-
-
-  /* v5.22 — stable history handoff during roulette deceleration */
   .history-list.is-scroll-captured {
     touch-action: none !important;
     overscroll-behavior: none !important;
     scroll-behavior: auto !important;
   }
-
-
-
-  /* v5.23 — unified compact controls, concise reset confirmation and calmer roulette visuals */
 
   /* Match the quiet results control to the application's standard button curvature. */
   .result-button,
@@ -4985,8 +4333,6 @@
     text-align: center;
     text-wrap: balance;
   }
-
-  /* v5.24 — keep visual updates aligned with the draw sound while reducing flash intensity. */
   .roulette-card.spin-visual-active {
     isolation: isolate;
   }
@@ -5083,10 +4429,6 @@
       letter-spacing: -.035em;
     }
   }
-
-
-
-  /* v5.24 — consistent, softer dialog hierarchy and deterministic reset copy. */
   .modal-head h2,
   .confirm-title {
     color: var(--ink);
@@ -5133,9 +4475,6 @@
       font-size: 13px !important;
     }
   }
-
-
-  /* v5.25 — responsive editor balance, quiet menu separation and unified spin rendering. */
   .editor-privacy-note {
     display: block;
     letter-spacing: -.01em;
@@ -5145,17 +4484,6 @@
     width: auto !important;
     white-space: normal !important;
   }
-
-  .menu-popover {
-    padding: 7px;
-  }
-  .menu-popover .menu-option {
-    border: 1px solid rgba(47, 120, 165, .13);
-    background: rgba(237, 243, 246, .58);
-  }
-  .menu-popover .menu-option + .menu-option {
-    margin-top: 6px;
-  }
   .menu-popover .menu-option:hover,
   .menu-popover .menu-option:focus-visible {
     background: rgba(226, 240, 247, .88);
@@ -5164,7 +4492,6 @@
 
   .confirm-modal-box.annotation-message .confirm-text {
     color: var(--muted);
-    font-size: clamp(13px, 3.2vw, 14px) !important;
     font-weight: 400;
     line-height: 1.65;
   }
@@ -5173,24 +4500,15 @@
     position: relative;
   }
   .roulette-visual-content {
-    width: 100%;
-    height: 100%;
     min-width: 0;
     min-height: 0;
-    display: grid;
-    place-items: center;
-    transform: translate3d(0, 0, 0);
   }
   .roulette-visual-content > img {
     display: block;
-    width: 100%;
-    height: 100%;
     min-width: 0;
     min-height: 0;
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain;
-    padding: 16px;
   }
 
   /* Filter only the visual content. A softly feathered clip prevents blur spill without drawing a visible inner frame. */
@@ -5198,18 +4516,6 @@
     filter: none !important;
     transform: none !important;
     transition: none !important;
-  }
-  .roulette-card.spin-visual-active .roulette-visual-content {
-    will-change: filter;
-    filter: blur(25px) saturate(.36) contrast(.80) brightness(.98);
-    transition: filter 180ms ease-out;
-  }
-  .roulette-card.spin-visual-active.spin-visual-reduced .roulette-visual-content {
-    filter: blur(46px) saturate(.10) contrast(.60) brightness(.98);
-  }
-  .roulette-card.spin-visual-active.spin-visual-revealing .roulette-visual-content {
-    filter: blur(0) saturate(1) contrast(1) brightness(1);
-    transition: filter var(--spin-visual-reveal-duration, 900ms) cubic-bezier(.45, 0, .2, 1);
   }
 
   @media (orientation: portrait) and (max-width: 620px) {
@@ -5231,9 +4537,6 @@
       border-color: rgba(47, 120, 165, .13);
     }
   }
-
-
-  /* v5.26 — stable spin visuals, unified dialogs and a lighter two-row menu. */
 
   /* The editor keeps native overscroll but no app-added top/bottom fade. */
   .setup-view.app-scroll-edge-surface,
@@ -5266,7 +4569,6 @@
     margin: 0;
     padding: 10px 12px;
     border: 0;
-    border-radius: 10px;
     background: transparent;
     color: var(--ink);
     font-size: 15px;
@@ -5374,11 +4676,6 @@
   }
   .roulette-card.spin-visual-active .roulette-visual-content {
     will-change: filter;
-    filter: blur(25px) saturate(.36) contrast(.80) brightness(.98);
-    transition: filter 180ms ease-out;
-  }
-  .roulette-card.spin-visual-active.spin-visual-reduced .roulette-visual-content {
-    filter: blur(46px) saturate(.10) contrast(.60) brightness(.98);
   }
   .roulette-card.spin-visual-active.spin-visual-revealing .roulette-visual-content {
     filter: blur(0) saturate(1) contrast(1) brightness(1);
@@ -5403,10 +4700,6 @@
     }
   }
 
-
-
-  /* v5.27 — aligned editor notes, unified reset list and seamless spin reveal. */
-
   /* All three editor-page notes share one deliberate 32px left edge. */
   .editor-panel .editor-privacy-note,
   .editor-panel .registration-notes {
@@ -5422,21 +4715,11 @@
   }
 
   /* Reset choices use the same one-surface operation-list language as the top-right menu. */
-  .reset-modal-box {
-    width: min(480px, calc(100vw - 24px)) !important;
-  }
   .reset-modal-box .modal-head {
     justify-content: space-between !important;
     text-align: left !important;
   }
-  .reset-modal-body {
-    padding: clamp(22px, 4vw, 30px) !important;
-  }
   .reset-options {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 0 !important;
-    width: 100%;
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: 16px;
@@ -5450,14 +4733,10 @@
   .home-option {
     position: relative !important;
     display: grid !important;
-    grid-template-columns: 34px minmax(0, 1fr) !important;
     align-items: center !important;
     justify-items: stretch !important;
-    gap: 13px !important;
     width: 100% !important;
-    min-height: 62px !important;
     margin: 0 !important;
-    padding: 12px 18px !important;
     border: 0 !important;
     border-radius: 0 !important;
     background: transparent !important;
@@ -5600,10 +4879,6 @@
     transition: opacity var(--spin-visual-reveal-duration, 900ms) cubic-bezier(.45, 0, .2, 1);
   }
 
-
-
-  /* v5.28 — shared modal headers, frameless reset actions and immediate first-frame blur. */
-
   /* Give every structured dialog title the same calm breathing room. */
   .modal-head {
     padding-left: clamp(22px, 3.8vw, 32px) !important;
@@ -5640,7 +4915,6 @@
   .home-option {
     grid-template-columns: 34px minmax(0, 1fr) !important;
     gap: 14px !important;
-    min-height: 56px !important;
     padding: 11px 26px !important;
   }
   .reset-option + .reset-option::before {
@@ -5679,9 +4953,6 @@
     transition: none !important;
   }
 
-
-  /* v5.30 — optical reset alignment, roomier actions and double-tap zoom prevention. */
-
   /* Preserve pinch zoom, but disable double-tap zoom throughout the application. */
   html,
   body {
@@ -5710,9 +4981,6 @@
   }
 
   /* The participant-edit glyph is optically lower than the other reset choices. */
-  .edit-option .reset-option-icon {
-    transform: translateY(2px) !important;
-  }
 
   /* Match the edit confirmation glyph to the adjusted menu glyph. */
   #confirmIcon[data-icon="edit"] svg {
@@ -5730,9 +4998,6 @@
     }
   }
 
-
-  /* v5.31 — reset-menu optical spacing refinements. */
-
   /* Add breathing room before the reset-menu glyphs without changing the inset dividers. */
   .reset-option,
   .restart-option,
@@ -5741,8 +5006,6 @@
   .home-option {
     padding-left: 30px !important;
   }
-
-  /* Raise only the participant-edit glyph by one pixel from its v5.30 position. */
   .edit-option .reset-option-icon {
     transform: translateY(1px) !important;
   }
@@ -5756,9 +5019,6 @@
       padding-left: 24px !important;
     }
   }
-
-
-  /* v5.33 — resilient play-screen scrolling and a subtle menu reveal. */
 
   /* Let the whole play screen become a native vertical scroller whenever the compact layout is required. */
   .roulette-view {
@@ -5786,7 +5046,6 @@
   .menu-popover.is-opening {
     --menu-enter-y: -5px;
     transform-origin: top right;
-    animation: menuPopoverInV533 155ms cubic-bezier(.2,.75,.25,1) both;
   }
   .menu-popover.is-opening.opens-up {
     --menu-enter-y: 5px;
@@ -5805,14 +5064,7 @@
     to { opacity: 1; }
   }
 
-
-  /* v5.34 — native history scrollbars and an unmasked compact play screen. */
-
   /* The history list uses the browser's own scrollbar appearance and lifecycle. */
-  .history-list {
-    scrollbar-width: auto !important;
-    scrollbar-color: auto !important;
-  }
   .history-list::-webkit-scrollbar,
   .history-list::-webkit-scrollbar-thumb,
   .history-list::-webkit-scrollbar-thumb:hover,
@@ -5828,19 +5080,13 @@
     mask-image: none !important;
   }
 
-
-  /* v5.35 — plain confirmation glyphs, continuous play-screen background and visible native history scrollbars. */
-
   /* The three reset confirmations use the same ink as their message, without a coloured tile. */
   #confirmIcon[data-icon="restart"],
   #confirmIcon[data-icon="edit"],
   #confirmIcon[data-icon="home"] {
-    width: 72px;
-    height: 72px;
     border: 0;
     border-radius: 0;
     background: transparent !important;
-    color: var(--ink) !important;
     box-shadow: none !important;
   }
   #confirmIcon[data-icon="restart"] svg,
@@ -5905,35 +5151,10 @@
     }
   }
 
-
-  /* v5.36 — optically balanced reset confirmations and pull-to-refresh protection. */
-
   /* Without a coloured tile, the glyph itself becomes the visual anchor. Use a compact
      hit box and per-icon optical sizing rather than leaving an empty 72px square. */
-  #confirmIcon[data-icon="restart"],
-  #confirmIcon[data-icon="edit"],
-  #confirmIcon[data-icon="home"] {
-    width: 62px;
-    height: 62px;
-  }
-  #confirmIcon[data-icon="restart"] svg {
-    width: 64px;
-    height: 64px;
-  }
-  #confirmIcon[data-icon="edit"] svg {
-    width: 58px;
-    height: 58px;
-  }
-  #confirmIcon[data-icon="home"] svg {
-    width: 60px;
-    height: 60px;
-  }
   .confirm-modal-box.reset-confirmation .confirm-content {
-    gap: 9px;
     padding-top: 0;
-  }
-  .confirm-modal-box.reset-confirmation .confirm-actions {
-    margin-top: 7px;
   }
 
   /* Prevent scroll chaining from the app's own scroll surfaces into the browser's
@@ -5974,9 +5195,6 @@
       gap: 8px;
     }
   }
-
-
-  /* v5.37 — quieter reset-confirmation glyphs and zoom-stable page geometry. */
 
   /* Frameless confirmation glyphs remain recognisable without becoming the visual headline.
      Their optical sizes are balanced independently because the circular arrow fills its
@@ -6044,9 +5262,6 @@
     }
   }
 
-
-  /* v5.38 — modal interaction isolation, zoom-stable scrolling and seamless spin blending. */
-
   /* While the toolbar menu is open, an invisible interaction layer owns every press
      outside the popover. The first press therefore closes only the menu and cannot
      activate a control underneath it. */
@@ -6106,12 +5321,6 @@
   #confirmIcon[data-icon="home"] svg {
     transform: translateZ(0);
   }
-
-
-
-
-
-  /* v5.39 — shared landscape composition and refined information hierarchy. */
 
   /* Light surfaces never depend on the browser's default black text. */
   :where(
@@ -6189,20 +5398,17 @@
   /* Progress: preserve the approved two-column structure while clarifying
      primary and secondary information and removing decorative noise. */
   .progress-panel {
-    padding: 10px 14px 11px;
     border-color: rgba(255,255,255,.18);
     background: rgba(255,255,255,.085);
     box-shadow: none;
   }
   .progress-copy {
-    min-height: 22px;
     gap: 16px;
     letter-spacing: 0;
   }
   #orderStatus {
     color: #fff;
     font-size: 15px;
-    font-weight: 900;
     line-height: 1.35;
   }
   #remainingStatus {
@@ -6213,7 +5419,6 @@
   }
   .progress-track {
     height: 6px;
-    margin-top: 7px;
     background: rgba(255,255,255,.16);
   }
   .progress-fill {
@@ -6221,18 +5426,12 @@
   }
 
   /* History: the list content carries more emphasis than its section label. */
-  .history-head {
-    margin-bottom: 11px;
-  }
   .history-head h2 {
     padding-left: 4px;
     color: rgba(255,255,255,.72);
     font-size: 15px;
     font-weight: 700;
     letter-spacing: .01em;
-  }
-  .history-list {
-    gap: 8px;
   }
   .history-item {
     background: rgba(255,255,255,.09);
@@ -6244,7 +5443,6 @@
     font-weight: 900;
   }
   .history-name {
-    color: #fff;
     font-size: 16px;
     font-weight: 700;
     line-height: 1.18;
@@ -6276,10 +5474,6 @@
       font-size: clamp(21px, 5.6vh, 27px);
     }
   }
-
-
-
-  /* v5.40 — unrestricted magnified panning and restored information breathing room. */
 
   /* At normal scale, the existing scroll and pull-to-refresh safeguards remain in
      force. Once the page is magnified, every screen yields gesture arbitration to
@@ -6400,46 +5594,6 @@
     .history-head {
       margin-bottom: 10px;
     }
-  }
-
-
-  /* v5.41 — unified visual language, motion rhythm and presentation viewer. */
-  :root {
-    --blue: #2f78a5;
-    --blue-rgb: 47, 120, 165;
-    --blue-dark: var(--blue);
-    --action-blue: var(--blue);
-    --action-blue-hover: var(--blue);
-    --choice-blue: var(--blue);
-    --choice-blue-hover: var(--blue);
-    --button-primary-bg: var(--blue);
-    --button-primary-hover: var(--blue);
-    --button-secondary-text: var(--blue);
-    --reset-blue-ink: var(--blue);
-    --on-dark-primary: #fff;
-    --on-dark-secondary: rgba(255,255,255,.72);
-    --on-dark-tertiary: rgba(255,255,255,.56);
-    --on-dark-disabled: rgba(255,255,255,.34);
-    --font-regular: 400;
-    --font-bold: 700;
-    --font-heavy: 900;
-    --radius-inner: 10px;
-    --radius-control: 14px;
-    --radius-compact-card: 15px;
-    --radius-card: 18px;
-    --radius-modal: 24px;
-    --radius-signature: 26px;
-    --radius-feature: 28px;
-    --radius-pill: 999px;
-    --motion-press: 80ms;
-    --motion-control: 130ms;
-    --motion-enter: 140ms;
-    --motion-exit: 100ms;
-    --motion-confirm-enter: 120ms;
-    --motion-confirm-exit: 90ms;
-    --motion-list: 160ms;
-    --motion-result: 300ms;
-    --motion-reduced: 45ms;
   }
 
   body, button, input, select, textarea { color: var(--ink); }
@@ -6776,10 +5930,6 @@
   #confirmIcon[data-icon="restart"] > svg { transform: translateY(-1px) !important; }
   #confirmIcon[data-icon="edit"] > svg,
   #confirmIcon[data-icon="home"] > svg { transform: none !important; }
-
-
-
-  /* v5.44 — optical icon alignment refinements. */
   .menu-popover .menu-option-icon > svg {
     transform: translateY(-1px) !important;
   }
@@ -6795,9 +5945,6 @@
   #confirmIcon[data-icon="home"] > svg {
     transform: translateY(-2px) !important;
   }
-
-
-  /* v5.45 — quiet completion state on the roulette frame. */
   .roulette-card {
     transition: border-color 180ms ease-out, box-shadow 180ms ease-out;
   }
@@ -6818,6 +5965,7 @@
 </style>
 </head>
 <body>
+<!-- Setup and participant editor -->
 <section class="view setup-view" id="setupView">
   <div class="setup-shell">
     <section class="title-screen" id="introSection">
@@ -6879,6 +6027,7 @@
   </div>
 </section>
 
+<!-- Roulette play screen -->
 <section class="view roulette-view" id="rouletteView" hidden>
   <header class="play-topbar">
     <div class="play-title" id="playTitle" tabindex="-1">順番ルーレット</div>
@@ -6918,6 +6067,7 @@
 </div>
 </section>
 
+<!-- File input and overlays -->
 <input type="file" id="imageInput" accept="image/*" multiple hidden>
 
 <div class="modal-backdrop results-modal" id="resultsModal" role="dialog" aria-modal="true" aria-labelledby="resultsTitle" hidden>
@@ -7055,6 +6205,10 @@
 (() => {
   "use strict";
 
+  // ---------------------------------------------------------------------------
+  // Configuration
+  // ---------------------------------------------------------------------------
+  const APP_VERSION = "5.46";
   const MAX_PARTICIPANTS = 40;
   const MAX_IMAGE_EDGE = 1600;
   const SIDE_LAYOUT_MIN_WIDTH = 900;
@@ -7070,6 +6224,28 @@
   const VIEWER_CONTROL_HIDE_MS = 2800;
   const VIEWER_SWIPE_DISTANCE = 48;
   const VIEWER_SWIPE_DIRECTION_RATIO = 1.2;
+  const UI_TIMING = Object.freeze({
+    reduced: 50,
+    viewEnterCleanup: 190,
+    toastExit: 105,
+    announcerDelay: 20,
+    editorRemoval: 135,
+    menuClose: 105,
+    menuOpenCleanup: 150,
+    progress: 300,
+    historySettle: 120,
+    historyFallback: 1200,
+    selectionOverlayCleanup: 45,
+    viewerItemChange: 150,
+    viewerLayer: 145,
+    modalConfirmOpen: 130,
+    modalOpen: 155,
+    modalConfirmClose: 95,
+    modalClose: 105,
+    compatibilityClickGuard: 450,
+    orientationSettle: 180
+  });
+  const TOAST_DURATION = Object.freeze({ info: 1800, action: 2200, error: 3200 });
   const DEFAULT_SETTINGS = Object.freeze({
     speed: "standard",
     stopLength: "standard",
@@ -7098,6 +6274,10 @@
   const speedMap = Object.freeze({ slow: 115, standard: 60, fast: 40 });
   const stopMap = Object.freeze({ short: { minSteps: 12, extraCycles: 0, maxDelay: 260 }, standard: { minSteps: 18, extraCycles: 1, maxDelay: 360 }, long: { minSteps: 24, extraCycles: 2, maxDelay: 430 } });
 
+
+  // ---------------------------------------------------------------------------
+  // Application state
+  // ---------------------------------------------------------------------------
   const state = {
     participants: [],
     order: [],
@@ -7134,6 +6314,10 @@
     overlayHistoryDepth: 0
   };
 
+
+  // ---------------------------------------------------------------------------
+  // Cached DOM references
+  // ---------------------------------------------------------------------------
   const $ = id => document.getElementById(id);
   const setupView = $("setupView");
   const rouletteView = $("rouletteView");
@@ -7226,6 +6410,14 @@
   const toastQueue = [];
   let suppressedOverlayPops = 0;
 
+
+  // ---------------------------------------------------------------------------
+  // Input guards and shared interaction helpers
+  // ---------------------------------------------------------------------------
+  function effectDuration(normalDuration, reducedDuration = UI_TIMING.reduced) {
+    return state.settings.reduceEffects ? reducedDuration : normalDuration;
+  }
+
   function clearPressedVisuals() {
     document.querySelectorAll(".press-held, .press-inside").forEach(element => {
       element.classList.remove("press-held", "press-inside");
@@ -7275,12 +6467,13 @@
     });
   }
 
+  // View transitions and setup navigation
   function animateViewIn(element) {
     if (!element || state.settings.reduceEffects) return;
     element.classList.remove("view-entering");
     void element.offsetWidth;
     element.classList.add("view-entering");
-    window.setTimeout(() => element.classList.remove("view-entering"), 190);
+    window.setTimeout(() => element.classList.remove("view-entering"), UI_TIMING.viewEnterCleanup);
   }
 
   function syncReducedEffectsClass() {
@@ -7310,6 +6503,7 @@
   }
 
 
+  // Participant data and local settings
   function uid(prefix = "p") {
     const generated = globalThis.crypto?.randomUUID?.();
     return generated || `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -7381,6 +6575,7 @@
     state.participants.forEach(releaseParticipant);
   }
 
+  // Notifications, announcements and state transitions
   function toastPriorityFor(message) {
     const text = String(message || "");
     if (/できません|失敗|エラー|読み込めな/.test(text)) return 3;
@@ -7408,7 +6603,7 @@
     }
     toast.classList.remove("toast-entering");
     toast.classList.add("toast-leaving");
-    showToast.hideTimer = setTimeout(finish, 105);
+    showToast.hideTimer = setTimeout(finish, UI_TIMING.toastExit);
   }
 
   function showToast(message, durationOrOptions = 3200) {
@@ -7416,7 +6611,7 @@
     const options = typeof durationOrOptions === "number"
       ? { duration: durationOrOptions }
       : { ...(durationOrOptions || {}) };
-    const duration = options.duration ?? (toastPriorityFor(clean) === 3 ? 3200 : toastPriorityFor(clean) === 2 ? 2200 : 1800);
+    const duration = options.duration ?? (toastPriorityFor(clean) === 3 ? TOAST_DURATION.error : toastPriorityFor(clean) === 2 ? TOAST_DURATION.action : TOAST_DURATION.info);
     const priority = options.priority ?? toastPriorityFor(clean);
     const now = performance.now();
 
@@ -7459,7 +6654,7 @@
     lastAnnouncementAt = now;
     clearTimeout(announcementTimer);
     appAnnouncer.textContent = "";
-    announcementTimer = setTimeout(() => { appAnnouncer.textContent = clean; }, 20);
+    announcementTimer = setTimeout(() => { appAnnouncer.textContent = clean; }, UI_TIMING.announcerDelay);
   }
 
   function bumpGeneration() {
@@ -7593,6 +6788,7 @@
     beginBtn.setAttribute("aria-disabled", String(tooFew || state.phase === Phase.LOADING));
   }
 
+  // Participant editor
   function renderEditor() {
     syncNameDisplayMode();
     participantGrid.replaceChildren();
@@ -7653,7 +6849,7 @@
     if (card && !state.settings.reduceEffects) {
       card.querySelectorAll("button, input").forEach(control => { control.disabled = true; });
       card.classList.add("is-removing");
-      window.setTimeout(renderEditor, 135);
+      window.setTimeout(renderEditor, UI_TIMING.editorRemoval);
     } else {
       renderEditor();
     }
@@ -7943,13 +7139,13 @@
   }
 
 
-
   // Browser chrome may change the visible viewport at normal scale, but pinch zoom must
   // not become a responsive-layout signal. Preserve the most recent unzoomed viewport
   // so the roulette keeps the same composition while the user magnifies and pans it.
   let stableUnzoomedViewport = null;
   let stableViewportOrientation = null;
 
+  // Viewport and responsive layout
   function getViewportSize() {
     const root = document.documentElement;
     return {
@@ -8047,6 +7243,7 @@
     }
   }
 
+  // Roulette controls and menu
   function openReset() {
     openModal(resetModal, lastPrimaryPointerType === "touch" ? false : $("closeResetBtn"));
   }
@@ -8136,7 +7333,6 @@
     if (spinRenderFrame !== null) cancelAnimationFrame(spinRenderFrame);
     spinRenderFrame = null;
   }
-
 
 
   function showSpinningParticipant(participant, { force = false } = {}) {
@@ -8245,9 +7441,8 @@
     }
     menuPopover.classList.remove("is-opening");
     menuPopover.classList.add("is-closing");
-    menuCloseTimer = setTimeout(() => finishMenuClose({ restoreFocus }), state.settings.reduceEffects ? 50 : 105);
+    menuCloseTimer = setTimeout(() => finishMenuClose({ restoreFocus }), effectDuration(UI_TIMING.menuClose));
   }
-
 
 
   function positionMenuPopover() {
@@ -8294,13 +7489,13 @@
     pushOverlayHistory("menu");
     void menuPopover.offsetWidth;
     menuPopover.classList.add("is-opening");
-    setTimeout(() => menuPopover.classList.remove("is-opening"), state.settings.reduceEffects ? 50 : 150);
+    setTimeout(() => menuPopover.classList.remove("is-opening"), effectDuration(UI_TIMING.menuOpenCleanup));
     if (lastPrimaryPointerType === "keyboard") requestAnimationFrame(() => focusableElements(menuPopover)[0]?.focus());
     else if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
   }
 
 
-
+  // Play-state rendering
   function renderPlayState({ updateHistory = true, scrollHistoryToLatest = false } = {}) {
     rouletteView.classList.toggle("names-hidden", !state.showNames);
     const total = state.participants.length;
@@ -8325,11 +7520,11 @@
       progressFill.style.width = `${total ? (decided / total) * 100 : 0}%`;
       void progressFill.offsetWidth;
       progressTransitionRestoreFrame = requestAnimationFrame(() => {
-        progressFill.style.transitionDuration = state.settings.reduceEffects ? "0s" : "300ms";
+        progressFill.style.transitionDuration = state.settings.reduceEffects ? "0s" : `${UI_TIMING.progress}ms`;
         progressTransitionRestoreFrame = null;
       });
     } else {
-      progressFill.style.transitionDuration = state.settings.reduceEffects ? "0s" : "300ms";
+      progressFill.style.transitionDuration = state.settings.reduceEffects ? "0s" : `${UI_TIMING.progress}ms`;
       progressFill.style.width = `${total ? (decided / total) * 100 : 0}%`;
     }
     const rouletteIsComplete = state.phase === Phase.COMPLETE;
@@ -8376,6 +7571,7 @@
     if (updateHistory) renderHistory({ scrollToLatest: scrollHistoryToLatest });
   }
 
+  // Scroll surfaces and history
   function edgeFadeAlpha(distance, ramp = 24) {
     const strength = Math.max(0, Math.min(1, distance / ramp));
     return String(Math.round((1 - strength) * 1000) / 1000);
@@ -8548,11 +7744,11 @@
     setHistoryAutoScrollActive(true);
     const finishAfterSettling = () => {
       clearTimeout(historyAutoScrollSettleTimer);
-      historyAutoScrollSettleTimer = window.setTimeout(finishHistoryAutoScroll, 120);
+      historyAutoScrollSettleTimer = window.setTimeout(finishHistoryAutoScroll, UI_TIMING.historySettle);
     };
     historyAutoScrollEndHandler = finishAfterSettling;
     historyList.addEventListener("scroll", historyAutoScrollEndHandler, { passive: true });
-    historyAutoScrollFallbackTimer = window.setTimeout(finishHistoryAutoScroll, 1200);
+    historyAutoScrollFallbackTimer = window.setTimeout(finishHistoryAutoScroll, UI_TIMING.historyFallback);
     historyList.scrollTo({ left: targetLeft, top: targetTop, behavior: "smooth" });
   }
 
@@ -8632,6 +7828,7 @@
   const activeResultOscillators = new Set();
   let lastTickAudioStartTime = 0;
 
+  // Audio engine
   function createTickBuffer(context) {
     const duration = .016;
     const frameCount = Math.max(1, Math.round(context.sampleRate * duration));
@@ -8676,7 +7873,7 @@
     audioMasterGain.gain.linearRampToValueAtTime(.0001, now + .035);
     setTimeout(() => {
       if (stopSources) { stopActiveTickSources(); stopActiveResultTones(); }
-    }, 45);
+    }, UI_TIMING.selectionOverlayCleanup);
     audioNeedsFadeIn = true;
   }
 
@@ -8866,6 +8063,7 @@
     });
   }
 
+  // Spin engine
   function clearFinalSoloAnimation() {
     state.isFinalSoloSpin = false;
   }
@@ -9036,6 +8234,7 @@
   }
 
 
+  // Result lifecycle
   function playSelectionOverlay() {
     if (state.settings.reduceEffects) return;
     clearTimeout(playSelectionOverlay.timer);
@@ -9117,6 +8316,7 @@
   }
 
 
+  // Results list and presentation viewer
   function resetResultsScrollPosition() {
     resultsModalBody.classList.add("is-scroll-resetting");
     resultsModalBody.scrollTop = 0;
@@ -9154,7 +8354,7 @@
       void resultViewerMedia.offsetWidth;
       resultViewerMedia.classList.add("is-changing");
       clearTimeout(viewerTransitionTimer);
-      viewerTransitionTimer = setTimeout(() => resultViewerMedia.classList.remove("is-changing"), 150);
+      viewerTransitionTimer = setTimeout(() => resultViewerMedia.classList.remove("is-changing"), UI_TIMING.viewerItemChange);
     }
     announce(state.showNames ? `${index + 1}番、${participant.name}` : `${index + 1}番の参加者`);
   }
@@ -9181,7 +8381,7 @@
     resultViewer.classList.add("viewer-layer-in");
     viewerLayerTransitioning = true;
     if (!fromHistory) pushOverlayHistory("result-viewer");
-    const duration = state.settings.reduceEffects ? 50 : 145;
+    const duration = effectDuration(UI_TIMING.viewerLayer);
     viewerLayerTransitionTimer = setTimeout(() => {
       resultsListView.hidden = true;
       clearViewerLayerTransition();
@@ -9203,7 +8403,7 @@
     viewerLayerTransitioning = true;
     state.viewerIndex = -1;
     clearTimeout(viewerControlTimer);
-    const duration = state.settings.reduceEffects ? 50 : 145;
+    const duration = effectDuration(UI_TIMING.viewerLayer);
     viewerLayerTransitionTimer = setTimeout(() => {
       resultViewer.hidden = true;
       resultsListView.hidden = false;
@@ -9267,6 +8467,7 @@
   }
 
 
+  // Settings
   function setStepSelector(selector, value, focus = false) {
     const options = Array.from(selector.querySelectorAll(".step-option"));
     const index = Math.max(0, options.findIndex(option => option.dataset.value === value));
@@ -9450,6 +8651,7 @@
     warning: '<svg viewBox="0 0 24 24"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5"/><path d="M12 17.5h.01"/></svg>',
   });
 
+  // Dialogs and focus management
   function openConfirm({
     title = "確認",
     message = "",
@@ -9540,14 +8742,13 @@
     if (!fromHistory) pushOverlayHistory(modal.id);
     void modal.offsetWidth;
     modal.classList.add("is-opening");
-    setTimeout(() => modal.classList.remove("is-opening"), state.settings.reduceEffects ? 50 : modal === confirmModal ? 130 : 155);
+    setTimeout(() => modal.classList.remove("is-opening"), effectDuration(modal === confirmModal ? UI_TIMING.modalConfirmOpen : UI_TIMING.modalOpen));
     state.modalStack.push({ modal, returnFocus });
     syncModalState();
     requestAnimationFrame(scheduleAllScrollEdgeUpdates);
     if (initialFocus !== false) requestAnimationFrame(() => focusFirstAvailable(initialFocus, ...focusableElements(modal)));
     else if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
   }
-
 
 
   function closeModal(modal, restoreFocus = true, { fromHistory = false } = {}) {
@@ -9583,11 +8784,10 @@
     modal.inert = true;
     modal.classList.remove("is-opening");
     modal.classList.add("is-closing");
-    const duration = state.settings.reduceEffects ? 50 : modal === confirmModal ? 95 : 105;
+    const duration = effectDuration(modal === confirmModal ? UI_TIMING.modalConfirmClose : UI_TIMING.modalClose);
     const timer = setTimeout(finish, duration);
     modalCloseTimers.set(modal, timer);
   }
-
 
 
   function focusableElements(container) {
@@ -9759,6 +8959,7 @@
     }, { capture: true });
   }
 
+  // Fullscreen, wake lock and visibility lifecycle
   async function requestWakeLock() {
     if (!isFullscreen() || rouletteView.hidden || document.hidden || !navigator.wakeLock?.request || wakeLockSentinel) return;
     try {
@@ -9824,6 +9025,9 @@
   installFocusModality();
   installHeldButtonBehavior();
 
+  // ---------------------------------------------------------------------------
+  // Event bindings
+  // ---------------------------------------------------------------------------
   $("registerParticipantsBtn").addEventListener("click", openEditorFromTitle);
   $("addImageBtn").addEventListener("click", () => {
     pendingImageEditorAnchor = captureEditorActionPosition($("addImageBtn"));
@@ -10126,7 +9330,7 @@
     const dx = event.clientX - gesture.x;
     const dy = event.clientY - gesture.y;
     if (Math.abs(dx) < VIEWER_SWIPE_DISTANCE || Math.abs(dx) < Math.abs(dy) * VIEWER_SWIPE_DIRECTION_RATIO) return;
-    viewerSuppressClickUntil = performance.now() + 450;
+    viewerSuppressClickUntil = performance.now() + UI_TIMING.compatibilityClickGuard;
     clearResultViewerPressState();
     moveResultViewer(dx < 0 ? 1 : -1);
   });
@@ -10167,8 +9371,7 @@
   historyList.addEventListener("scroll", updateHistoryScrollHint, { passive: true });
 
 
-
-
+  // Page lifecycle and browser integration
   function handleDocumentHidden() {
     clearPressedVisuals();
     fadeAudioOut({ stopSources: true });
@@ -10228,7 +9431,30 @@
     rearmHistoryGuard();
   });
 
+  // Development-only diagnostics exposed without affecting production flow
   window.__SUI_ROULETTE_TEST__ = Object.freeze({
+    version: APP_VERSION,
+    getStateSnapshot() {
+      return {
+        phase: state.phase,
+        participantCount: state.participants.length,
+        orderCount: state.order.length,
+        selectedCount: state.selectedIds.size,
+        currentId: state.currentId,
+        overlayDepth: state.overlayHistoryDepth
+      };
+    },
+    checkInvariants() {
+      const participantIds = new Set(state.participants.map(participant => participant.id));
+      const orderUnique = new Set(state.order);
+      const errors = [];
+      if (participantIds.size !== state.participants.length) errors.push("participant IDs are not unique");
+      if (orderUnique.size !== state.order.length) errors.push("order contains duplicates");
+      if (state.selectedIds.size !== state.order.length) errors.push("selectedIds and order length differ");
+      if (state.order.some(id => !participantIds.has(id))) errors.push("order contains an unknown participant");
+      if ([...state.selectedIds].some(id => !participantIds.has(id))) errors.push("selectedIds contains an unknown participant");
+      return { ok: errors.length === 0, errors };
+    },
     runFairnessCheck(participantCount = 8, trials = 10000) {
       const count = Math.max(2, Math.min(40, Math.floor(participantCount)));
       const total = Math.max(1000, Math.floor(trials));
@@ -10241,6 +9467,7 @@
   });
 
 
+  // Gesture and layout observers
   function installPullToRefreshGuard() {
     let gestureStartX = 0;
     let gestureStartY = 0;
@@ -10327,7 +9554,7 @@
       positionMenuPopover();
     });
     // Mobile browser chrome can settle after the first orientation frame.
-    setTimeout(scheduleLayoutUpdate, 180);
+    setTimeout(scheduleLayoutUpdate, UI_TIMING.orientationSettle);
   });
   window.addEventListener("resize", () => {
     scheduleLayoutUpdate();
@@ -10342,6 +9569,9 @@
   window.addEventListener("pagehide", event => {
     if (!event.persisted) releaseAllParticipants();
   });
+  // ---------------------------------------------------------------------------
+  // Initialization
+  // ---------------------------------------------------------------------------
   installHistoryGuard();
   installPullToRefreshGuard();
   installScrollEdgeSurfaces();
