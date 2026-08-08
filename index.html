@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<!-- 順番スロット v8.0.7 -->
+<!-- 順番スロット v8.0.8 -->
 <html lang="ja">
 <head>
 <meta charset="utf-8"/>
@@ -5108,11 +5108,6 @@ html body .number-card-content[data-digits="2"] .number-card-value {
   }
 
 
-  .current-name {
-    font-size: clamp(19px, 3.2vw, 28px);
-  }
-
-
   .main-button {
     padding: 12px 34px;
     font-size: clamp(21px, 3vw, 28px);
@@ -5195,14 +5190,6 @@ html body .number-card-content[data-digits="2"] .number-card-value {
     height: 38px;
     flex-basis: 38px;
   }
-}
-
-.current-name.name-medium {
-  font-size: clamp(20px, 3.5vw, 32px);
-}
-
-.current-name.name-long {
-  font-size: clamp(17px, 3vw, 27px);
 }
 
 
@@ -9098,9 +9085,8 @@ html.keyboard-navigation body #editorSection :is(.participant-card .participant-
     return wrapper;
   }
 
-  function applyNameClass(element, name) {
+  function applyLongNameClass(element, name) {
     const length = Array.from(name || "").length;
-    element.classList.toggle("name-medium", length > 10 && length <= 18);
     element.classList.toggle("name-long", length > 18);
   }
 
@@ -10713,7 +10699,6 @@ html.keyboard-navigation body #editorSection :is(.participant-card .participant-
     const displayName = activeNamesVisible() && showName ? (participant?.name || "") : "";
     currentName.classList.remove("result-reveal");
     currentName.textContent = displayName;
-    applyNameClass(currentName, displayName);
     slotCard.classList.toggle("selected", selected);
     if (selected && displayName && !reducedEffectsActive()) {
       void currentName.offsetWidth;
@@ -11399,7 +11384,7 @@ html.keyboard-navigation body #editorSection :is(.participant-card .participant-
       const name = document.createElement("div");
       name.className = "history-name";
       name.textContent = participant.name;
-      applyNameClass(name, participant.name);
+      applyLongNameClass(name, participant.name);
       item.appendChild(name);
     }
     if (animate && !reducedEffectsActive()) {
@@ -11866,7 +11851,6 @@ function scheduleTickSequence(stepIntervals) {
     slotCard.classList.remove("selected");
     currentName.classList.remove("result-reveal", "undo-reveal");
     currentName.textContent = "";
-    applyNameClass(currentName, "");
     resetSpinVisualCadence();
     beginSpinVisualTreatment();
     showSpinningParticipant(state.spinPool[state.poolPosition], { force: true });
@@ -12305,7 +12289,7 @@ function scheduleTickSequence(stepIntervals) {
         const name = document.createElement("div");
         name.className = "result-name";
         name.textContent = participant.name;
-        applyNameClass(name, participant.name);
+        applyLongNameClass(name, participant.name);
         card.appendChild(name);
       }
       card.addEventListener("click", () => showResultViewer(index));
